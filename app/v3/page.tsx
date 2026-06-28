@@ -15,6 +15,32 @@ const PIN_POSITIONS = [
   { left: "30%", top: "64%" },
 ];
 
+/* Dashed trail: a viewBox the map stretches to fill (preserveAspectRatio="none").
+ * The path starts at the "you are here" corner and winds through every zone. */
+const TRAIL_VIEWBOX = { w: 1024, h: 352 };
+const TRAIL_START = { left: "84%", top: "86%" };
+/* Visiting order (indices into PIN_POSITIONS) chosen to weave across without crossing. */
+const TRAIL_ORDER = [2, 1, 0, 3];
+const pct = (value: string, total: number) => (parseFloat(value) / 100) * total;
+const TRAIL_PTS = [TRAIL_START, ...TRAIL_ORDER.map((i) => PIN_POSITIONS[i])].map((p) => ({
+  x: pct(p.left, TRAIL_VIEWBOX.w),
+  y: pct(p.top, TRAIL_VIEWBOX.h),
+}));
+
+/* Smooth the trail with a Catmull-Rom spline expressed as cubic Béziers. */
+const TRAIL_D = TRAIL_PTS.reduce((d, p, i, pts) => {
+  if (i === 0) return `M${p.x.toFixed(1)} ${p.y.toFixed(1)}`;
+  const p0 = pts[i - 2] ?? pts[i - 1];
+  const p1 = pts[i - 1];
+  const p2 = p;
+  const p3 = pts[i + 1] ?? p;
+  const c1x = p1.x + (p2.x - p0.x) / 6;
+  const c1y = p1.y + (p2.y - p0.y) / 6;
+  const c2x = p2.x - (p3.x - p1.x) / 6;
+  const c2y = p2.y - (p3.y - p1.y) / 6;
+  return `${d} C${c1x.toFixed(1)} ${c1y.toFixed(1)} ${c2x.toFixed(1)} ${c2y.toFixed(1)} ${p2.x.toFixed(1)} ${p2.y.toFixed(1)}`;
+}, "");
+
 export default function V3Home() {
   const categories = getCategories();
 
@@ -42,6 +68,37 @@ export default function V3Home() {
               backgroundSize: "28px 28px",
             }}
           />
+          {/* Dashed wayfinding arrow from "you are here" through every zone. */}
+          <svg
+            viewBox={`0 0 ${TRAIL_VIEWBOX.w} ${TRAIL_VIEWBOX.h}`}
+            preserveAspectRatio="none"
+            className="pointer-events-none absolute inset-0 h-full w-full text-tomato"
+          >
+            <defs>
+              <marker
+                id="v3-trail-arrow"
+                markerWidth="20"
+                markerHeight="20"
+                refX="14"
+                refY="10"
+                orient="auto"
+                markerUnits="userSpaceOnUse"
+              >
+                <path d="M2 2 L18 10 L2 18 Z" fill="currentColor" />
+              </marker>
+            </defs>
+            <path
+              d={TRAIL_D}
+              fill="none"
+              stroke="currentColor"
+              strokeWidth={3}
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeDasharray="1 11"
+              markerEnd="url(#v3-trail-arrow)"
+              style={{ vectorEffect: "non-scaling-stroke" }}
+            />
+          </svg>
           {categories.map((cat, i) => {
             const c = tokenClasses(cat.color);
             const pos = PIN_POSITIONS[i % PIN_POSITIONS.length];
