@@ -4,6 +4,7 @@ import { getCategories, getCategory, getEventsByCategory } from "@/lib/content";
 import { tokenClasses } from "@/lib/colors";
 import { t, pick, formatDate } from "@/lib/i18n";
 import type { FestivalEvent } from "@/types/content";
+import FestivalMap from "@/components/FestivalMap";
 
 export function generateStaticParams() {
   return getCategories().map((c) => ({ slug: c.slug }));
@@ -46,6 +47,8 @@ export default async function V3Category({ params }: { params: Promise<{ slug: s
           <p className="text-ink/70">{pick(category.description)}</p>
         </div>
       </header>
+
+      <FestivalMap currentSlug={slug} />
 
       <div className="mt-10 space-y-8">
         {days.map(([date, events]) => (
