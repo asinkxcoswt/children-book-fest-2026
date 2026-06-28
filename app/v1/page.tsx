@@ -2,6 +2,7 @@ import Link from "next/link";
 import { getCategories, getEventCount, getFeaturedEvents, getCategory } from "@/lib/content";
 import { tokenClasses } from "@/lib/colors";
 import { t, pick, formatDate } from "@/lib/i18n";
+import Image from "next/image";
 
 /* Variant 1 — "Storybook Pages": editorial, soft peach washes, serif voice, chapter cards. */
 
@@ -67,10 +68,12 @@ export default function V1Home() {
                   href={`/v1/event/${ev.slug}`}
                   className="flex flex-col gap-4 rounded-2xl border-2 border-ink/10 p-4 transition-colors hover:border-ink/30 sm:flex-row sm:items-center"
                 >
-                  <span
+                  <div
                     aria-hidden
-                    className={`h-28 w-full shrink-0 rounded-xl ${c.bg} sm:w-44`}
-                  />
+                    className={`h-28 w-full shrink-0 rounded-xl ${c.bg} sm:w-44 p-2`}
+                  >
+                    <Image src={ev.thumbnail} alt="" width={400} height={400} className="h-full w-full rounded-2xl object-cover" />
+                  </div>
                   <span className="flex-1">
                     <span className={`font-display text-sm ${c.text}`}>
                       {cat && pick(cat.name)}

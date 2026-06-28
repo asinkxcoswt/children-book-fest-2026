@@ -23,8 +23,11 @@ export interface Category {
   slug: string;
   name: Localized;
   description: Localized;
+  /** Zone illustration, path under /public. */
+  thumbnail: string;
   /** Brand color token used to theme this zone across all design variants. */
   color: ColorToken;
+  thumbnailLetter: Localized;
 }
 
 export interface GalleryImage {

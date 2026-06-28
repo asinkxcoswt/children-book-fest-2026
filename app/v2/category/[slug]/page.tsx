@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import { getCategories, getCategory, getEventsByCategory } from "@/lib/content";
 import { tokenClasses } from "@/lib/colors";
 import { t, pick, formatDate } from "@/lib/i18n";
+import Image from "next/image";
 
 export function generateStaticParams() {
   return getCategories().map((c) => ({ slug: c.slug }));
@@ -37,7 +38,9 @@ export default async function V2Category({ params }: { params: Promise<{ slug: s
               href={`/v2/event/${ev.slug}`}
               className="flex flex-col overflow-hidden rounded-2xl border-4 border-ink bg-paper transition-transform hover:-translate-y-1"
             >
-              <span aria-hidden className={`h-28 border-b-4 border-ink ${c.bg}`} />
+              <div aria-hidden className={`h-28 border-b-4 border-ink ${c.bg}`} >
+                <Image src={ev.thumbnail} alt="" width={400} height={400} className="h-full w-full object-cover" />
+              </div>
               <span className="flex flex-1 flex-col p-4">
                 <span className="font-display text-xl text-ink">{pick(ev.title)}</span>
                 <span className="text-sm text-ink/70">{pick(ev.summary)}</span>

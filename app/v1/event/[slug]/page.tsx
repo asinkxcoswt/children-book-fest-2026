@@ -47,7 +47,7 @@ export default async function V1Event({ params }: { params: Promise<{ slug: stri
             key={i}
             role="img"
             aria-label={pick(img.alt)}
-            className={`flex flex-col h-56 items-end rounded-2xl ${c.bg} p-4 gap-4`}
+            className={`flex flex-col h-56 items-end rounded-2xl ${c.bg} p-2 gap-4`}
           >
             <Image src={img.src} alt={pick(img.alt)} width={400} height={400} className="h-full w-full rounded-2xl object-cover" />
           </div>

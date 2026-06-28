@@ -2,6 +2,7 @@ import Link from "next/link";
 import { getCategories, getEventCount, getFeaturedEvents, getCategory } from "@/lib/content";
 import { tokenClasses } from "@/lib/colors";
 import { t, pick, formatDate } from "@/lib/i18n";
+import Image from "next/image";
 
 /* Variant 2 — "Crayon Blocks": flat saturated panels, thick ink outlines, chunky shapes. */
 
@@ -69,7 +70,9 @@ export default function V2Home() {
                   <span className={`border-b-4 border-ink ${c.bg} px-4 py-2 text-sm ${c.on}`}>
                     {cat && pick(cat.name)}
                   </span>
-                  <span aria-hidden className={`h-28 border-b-4 border-ink ${c.bg} opacity-60`} />
+                  <div aria-hidden className={`h-28 border-b-4 border-ink ${c.bg} opacity-60`} >
+                    <Image src={ev.thumbnail} alt="" width={400} height={400} className="h-full w-full object-cover" />
+                  </div>
                   <span className="flex flex-1 flex-col p-4">
                     <span className="font-display text-xl text-ink">{pick(ev.title)}</span>
                     <span className="text-sm text-ink/70">{pick(ev.summary)}</span>

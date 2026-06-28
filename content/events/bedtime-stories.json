@@ -1,7 +1,10 @@
 {
   "slug": "bedtime-stories",
-  "thumbnail": "/content/events/watercolor-creatures/child_drawing.png",
-  "title": { "th": "นิทานก่อนนอนสำหรับครอบครัว", "en": "Family bedtime stories" },
+  "thumbnail": "/content/events/bedtime-stories/bedtime-stories.png",
+  "title": {
+    "th": "นิทานก่อนนอนสำหรับครอบครัว",
+    "en": "Family bedtime stories"
+  },
   "summary": {
     "th": "ค่ำคืนแห่งนิทานอบอุ่น พร้อมเสียงเล่าและภาพฉายขนาดใหญ่",
     "en": "A cozy evening of read-alouds with live narration and giant projected art."
@@ -11,12 +14,32 @@
     "en": "Spread out a mat, gather round, and let our storytellers guide children through a favorite picture book while the artwork is projected on a big screen. A gentle way to close the day together."
   },
   "category": "storytelling",
-  "schedule": { "date": "2026-08-15", "start": "18:30", "end": "19:30", "venue": { "th": "เวทีกลางแจ้งสีชมพู", "en": "Pink outdoor stage" } },
+  "schedule": {
+    "date": "2026-08-15",
+    "start": "18:30",
+    "end": "19:30",
+    "venue": {
+      "th": "เวทีกลางแจ้งสีชมพู",
+      "en": "Pink outdoor stage"
+    }
+  },
   "ageRange": "3–8",
   "capacity": 120,
   "gallery": [
-    { "src": "/placeholders/storytelling-1.svg", "alt": { "th": "เด็ก ๆ นั่งฟังนิทานรอบเวที", "en": "Children gathered around the storytelling stage" } },
-    { "src": "/placeholders/storytelling-2.svg", "alt": { "th": "ภาพจากหนังสือฉายบนจอใหญ่", "en": "Picture-book art projected on a large screen" } }
+    {
+      "src": "/content/events/bedtime-stories/storytelling-1.png",
+      "alt": {
+        "th": "เด็ก ๆ นั่งฟังนิทานรอบเวที",
+        "en": "Children gathered around the storytelling stage"
+      }
+    },
+    {
+      "src": "/content/events/bedtime-stories/storytelling-2.png",
+      "alt": {
+        "th": "ภาพจากหนังสือฉายบนจอใหญ่",
+        "en": "Picture-book art projected on a large screen"
+      }
+    }
   ],
   "registrationUrl": "https://example.com/register/bedtime-stories",
   "featured": true

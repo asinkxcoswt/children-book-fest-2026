@@ -1,7 +1,10 @@
 {
   "slug": "shadow-puppet-tales",
-  "thumbnail": "/content/events/watercolor-creatures/child_drawing.png",
-  "title": { "th": "นิทานหนังตะลุงเงา", "en": "Shadow puppet tales" },
+  "thumbnail": "/content/events/shadow-puppet-tales/shadow-puppet-tales.png",
+  "title": {
+    "th": "นิทานหนังตะลุงเงา",
+    "en": "Shadow puppet tales"
+  },
   "summary": {
     "th": "ชมและลองเชิดหนังเงา เล่าเรื่องจากหนังสือภาพไทย",
     "en": "Watch and try shadow puppetry that retells stories from Thai picture books."
@@ -11,11 +14,25 @@
     "en": "A short shadow-puppet performance adapted from a picture book, followed by a chance for children to come up and work the puppets themselves."
   },
   "category": "storytelling",
-  "schedule": { "date": "2026-08-16", "start": "11:00", "end": "12:00", "venue": { "th": "โรงละครเล็ก", "en": "Little theater" } },
+  "schedule": {
+    "date": "2026-08-16",
+    "start": "11:00",
+    "end": "12:00",
+    "venue": {
+      "th": "โรงละครเล็ก",
+      "en": "Little theater"
+    }
+  },
   "ageRange": "5–10",
   "capacity": 60,
   "gallery": [
-    { "src": "/placeholders/storytelling-3.svg", "alt": { "th": "การแสดงหนังเงาบนจอผ้า", "en": "Shadow puppets performing on a cloth screen" } }
+    {
+      "src": "/content/events/shadow-puppet-tales/storytelling-3.png",
+      "alt": {
+        "th": "การแสดงหนังเงาบนจอผ้า",
+        "en": "Shadow puppets performing on a cloth screen"
+      }
+    }
   ],
   "registrationUrl": "https://example.com/register/shadow-puppet-tales"
 }

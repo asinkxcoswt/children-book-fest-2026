@@ -6,6 +6,8 @@
       "th": "ฟังนิทานสด เล่าเรื่องด้วยเสียงและภาพ ชวนเด็ก ๆ เข้าสู่โลกของจินตนาการ",
       "en": "Live read-alouds and performances that pull children into the world of a story."
     },
+    "thumbnail": "/content/categories/storytelling.png",
+    "thumbnailLetter": { "th": "เล่า", "en": "S" },
     "color": "bubblegum"
   },
   {
@@ -15,6 +17,8 @@
       "th": "เวิร์กชอปลงมือวาด ระบายสี และสร้างตัวละครกับนักวาดภาพประกอบมืออาชีพ",
       "en": "Hands-on workshops to draw, paint, and invent characters with working illustrators."
     },
+    "thumbnail": "/content/categories/illustration.png",
+    "thumbnailLetter": { "th": "วาด", "en": "I" },
     "color": "sky"
   },
   {
@@ -24,6 +28,8 @@
       "th": "พบปะพูดคุยกับนักเขียนและนักวาด เบื้องหลังการสร้างหนังสือภาพเล่มโปรด",
       "en": "Meet the authors and artists behind beloved picture books."
     },
+    "thumbnail": "/content/categories/author-talks.png",
+    "thumbnailLetter": { "th": "พบ", "en": "A" },
     "color": "tangerine"
   },
   {
@@ -33,6 +39,8 @@
       "th": "ฐานกิจกรรมและการละเล่นที่พ่อแม่ลูกร่วมสนุกได้ตลอดทั้งวัน",
       "en": "Drop-in activity stations the whole family can enjoy all day long."
     },
+    "thumbnail": "/content/categories/family-play.png",
+    "thumbnailLetter": { "th": "เล่น", "en": "F" },
     "color": "meadow"
   }
 ]

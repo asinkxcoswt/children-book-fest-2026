@@ -2,6 +2,7 @@ import Link from "next/link";
 import { getCategories, getEventCount } from "@/lib/content";
 import { tokenClasses } from "@/lib/colors";
 import { t, pick } from "@/lib/i18n";
+import Image from "next/image";
 
 /* Variant 3 — "Friendly Map": the festival as a village; each zone is a place you visit.
  * The map is decorative wayfinding; the list below it is the accessible source of truth. */
@@ -53,7 +54,7 @@ export default function V3Home() {
                 <span
                   className={`mx-auto flex h-14 w-14 items-center justify-center rounded-2xl border-4 border-paper ${c.bg} font-display text-2xl ${c.on}`}
                 >
-                  {pick(cat.name).charAt(0)}
+                  {pick(cat.thumbnailLetter)}
                 </span>
                 <span className="mt-1 block text-xs text-ink/80">{pick(cat.name)}</span>
               </div>

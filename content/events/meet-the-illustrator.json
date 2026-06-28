@@ -1,7 +1,10 @@
 {
   "slug": "meet-the-illustrator",
-  "thumbnail": "/content/events/watercolor-creatures/child_drawing.png",
-  "title": { "th": "เปิดสตูดิโอ: พบนักวาดภาพประกอบ", "en": "Open studio: meet the illustrator" },
+  "thumbnail": "/content/events/meet-the-illustrator/meet-the-illustrator.png",
+  "title": {
+    "th": "เปิดสตูดิโอ: พบนักวาดภาพประกอบ",
+    "en": "Open studio: meet the illustrator"
+  },
   "summary": {
     "th": "ฟังเบื้องหลังการทำงาน ตั้งแต่สเก็ตช์แรกจนเป็นหนังสือ",
     "en": "Hear how a picture book goes from first sketch to finished pages."
@@ -11,10 +14,24 @@
     "en": "A guest illustrator shares their real process—idea, sketch, and color—with a Q&A for children and parents curious about the craft."
   },
   "category": "author-talks",
-  "schedule": { "date": "2026-08-17", "start": "13:00", "end": "14:00", "venue": { "th": "เวทีเสวนา", "en": "Talks stage" } },
+  "schedule": {
+    "date": "2026-08-17",
+    "start": "13:00",
+    "end": "14:00",
+    "venue": {
+      "th": "เวทีเสวนา",
+      "en": "Talks stage"
+    }
+  },
   "ageRange": "8+",
   "gallery": [
-    { "src": "/placeholders/talks-1.svg", "alt": { "th": "นักวาดกำลังพูดบนเวทีเสวนา", "en": "An illustrator speaking on the talks stage" } }
+    {
+      "src": "/content/events/meet-the-illustrator/talks-1.png",
+      "alt": {
+        "th": "นักวาดกำลังพูดบนเวทีเสวนา",
+        "en": "An illustrator speaking on the talks stage"
+      }
+    }
   ],
   "registrationUrl": "https://example.com/register/meet-the-illustrator",
   "featured": true
