@@ -7,18 +7,21 @@ const CONCEPTS = [
     name: "Storybook Pages",
     note: "Editorial, illustrative, gift-like. Soft washes and a serif voice.",
     swatch: "bg-peach",
+    text: "v1",
   },
   {
     href: "/v2",
     name: "Crayon Blocks",
     note: "Bold flat color panels with thick ink outlines. Loud and scannable.",
     swatch: "bg-bubblegum",
+    text: "v2",
   },
   {
     href: "/v3",
     name: "Friendly Map",
     note: "A festival village you explore — zones as places on a map.",
     swatch: "bg-meadow",
+    text: "v3",
   },
 ];
 
@@ -41,7 +44,7 @@ export default function ConceptIndex() {
               href={c.href}
               className="flex items-center gap-4 rounded-2xl border-2 border-ink/10 p-5 transition-colors hover:border-ink/30"
             >
-              <span aria-hidden className={`h-12 w-12 shrink-0 rounded-xl ${c.swatch}`} />
+              <span aria-hidden className={`h-12 w-12 shrink-0 rounded-xl ${c.swatch} flex items-center justify-center font-bold`} >{c.text}</span>
               <span className="flex-1">
                 <span className="font-display text-2xl text-ink">{c.name}</span>
                 <span className="block text-sm text-ink/70">{c.note}</span>
