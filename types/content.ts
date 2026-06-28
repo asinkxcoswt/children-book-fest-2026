@@ -44,6 +44,7 @@ export interface EventSchedule {
 
 export interface FestivalEvent {
   slug: string;
+  thumbnail: string;
   title: Localized;
   /** One-line teaser for cards and listings. */
   summary: Localized;

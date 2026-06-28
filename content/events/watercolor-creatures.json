@@ -1,5 +1,6 @@
 {
   "slug": "watercolor-creatures",
+  "thumbnail": "/content/events/watercolor-creatures/child_drawing.png",
   "title": { "th": "เวิร์กชอปสีน้ำ: สัตว์ในจินตนาการ", "en": "Watercolor workshop: imaginary creatures" },
   "summary": {
     "th": "ลงมือระบายสีน้ำ สร้างสัตว์ประหลาดน่ารักของตัวเอง",
@@ -14,9 +15,9 @@
   "ageRange": "6–12",
   "capacity": 24,
   "gallery": [
-    { "src": "/placeholders/illustration-1.svg", "alt": { "th": "เด็กกำลังระบายสีน้ำบนกระดาษ", "en": "A child painting with watercolors" } },
-    { "src": "/placeholders/illustration-2.svg", "alt": { "th": "ภาพสัตว์ในจินตนาการที่วาดเสร็จแล้ว", "en": "A finished painting of an imaginary creature" } }
+    { "src": "/content/events/watercolor-creatures/child_drawing.png", "alt": { "th": "เด็กกำลังระบายสีน้ำบนกระดาษ", "en": "A child painting with watercolors" } },
+    { "src": "/content/events/watercolor-creatures/finished_painting.png", "alt": { "th": "ภาพสัตว์ในจินตนาการที่วาดเสร็จแล้ว", "en": "A finished painting of an imaginary creature" } }
   ],
-  "registrationUrl": "https://example.com/register/watercolor-creatures",
+  "registrationUrl": "https://www.ticketmelon.com/littlepawcraft/watercolor-creatures",
   "featured": true
 }
