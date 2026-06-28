@@ -1,0 +1,20 @@
+{
+  "slug": "meet-the-illustrator",
+  "title": { "th": "เปิดสตูดิโอ: พบนักวาดภาพประกอบ", "en": "Open studio: meet the illustrator" },
+  "summary": {
+    "th": "ฟังเบื้องหลังการทำงาน ตั้งแต่สเก็ตช์แรกจนเป็นหนังสือ",
+    "en": "Hear how a picture book goes from first sketch to finished pages."
+  },
+  "description": {
+    "th": "นักวาดภาพประกอบรับเชิญเล่ากระบวนการทำงานจริง ตั้งแต่ไอเดีย การร่างภาพ ไปจนถึงการลงสี พร้อมช่วงถาม-ตอบสำหรับเด็กและผู้ปกครองที่สนใจเส้นทางสายนี้",
+    "en": "A guest illustrator shares their real process—idea, sketch, and color—with a Q&A for children and parents curious about the craft."
+  },
+  "category": "author-talks",
+  "schedule": { "date": "2026-08-17", "start": "13:00", "end": "14:00", "venue": { "th": "เวทีเสวนา", "en": "Talks stage" } },
+  "ageRange": "8+",
+  "gallery": [
+    { "src": "/placeholders/talks-1.svg", "alt": { "th": "นักวาดกำลังพูดบนเวทีเสวนา", "en": "An illustrator speaking on the talks stage" } }
+  ],
+  "registrationUrl": "https://example.com/register/meet-the-illustrator",
+  "featured": true
+}

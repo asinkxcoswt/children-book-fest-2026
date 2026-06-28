@@ -1,0 +1,22 @@
+{
+  "slug": "watercolor-creatures",
+  "title": { "th": "เวิร์กชอปสีน้ำ: สัตว์ในจินตนาการ", "en": "Watercolor workshop: imaginary creatures" },
+  "summary": {
+    "th": "ลงมือระบายสีน้ำ สร้างสัตว์ประหลาดน่ารักของตัวเอง",
+    "en": "Paint with watercolors and invent your own friendly creature."
+  },
+  "description": {
+    "th": "นักวาดภาพประกอบพาเด็ก ๆ ทดลองเทคนิคสีน้ำง่าย ๆ แล้วออกแบบสัตว์ในจินตนาการของตัวเอง ทุกคนได้ผลงานกลับบ้าน อุปกรณ์เตรียมไว้ให้พร้อม",
+    "en": "An illustrator walks children through simple watercolor techniques, then helps them design a creature all their own. Everyone takes their painting home. Materials provided."
+  },
+  "category": "illustration",
+  "schedule": { "date": "2026-08-15", "start": "10:00", "end": "11:30", "venue": { "th": "ห้องเวิร์กชอปสีฟ้า", "en": "Blue workshop room" } },
+  "ageRange": "6–12",
+  "capacity": 24,
+  "gallery": [
+    { "src": "/placeholders/illustration-1.svg", "alt": { "th": "เด็กกำลังระบายสีน้ำบนกระดาษ", "en": "A child painting with watercolors" } },
+    { "src": "/placeholders/illustration-2.svg", "alt": { "th": "ภาพสัตว์ในจินตนาการที่วาดเสร็จแล้ว", "en": "A finished painting of an imaginary creature" } }
+  ],
+  "registrationUrl": "https://example.com/register/watercolor-creatures",
+  "featured": true
+}

@@ -1,0 +1,38 @@
+[
+  {
+    "slug": "storytelling",
+    "name": { "th": "เล่านิทาน", "en": "Storytelling" },
+    "description": {
+      "th": "ฟังนิทานสด เล่าเรื่องด้วยเสียงและภาพ ชวนเด็ก ๆ เข้าสู่โลกของจินตนาการ",
+      "en": "Live read-alouds and performances that pull children into the world of a story."
+    },
+    "color": "bubblegum"
+  },
+  {
+    "slug": "illustration",
+    "name": { "th": "วาดภาพประกอบ", "en": "Illustration" },
+    "description": {
+      "th": "เวิร์กชอปลงมือวาด ระบายสี และสร้างตัวละครกับนักวาดภาพประกอบมืออาชีพ",
+      "en": "Hands-on workshops to draw, paint, and invent characters with working illustrators."
+    },
+    "color": "sky"
+  },
+  {
+    "slug": "author-talks",
+    "name": { "th": "พบนักเขียน", "en": "Author talks" },
+    "description": {
+      "th": "พบปะพูดคุยกับนักเขียนและนักวาด เบื้องหลังการสร้างหนังสือภาพเล่มโปรด",
+      "en": "Meet the authors and artists behind beloved picture books."
+    },
+    "color": "tangerine"
+  },
+  {
+    "slug": "family-play",
+    "name": { "th": "เล่นสนุกกับครอบครัว", "en": "Family play" },
+    "description": {
+      "th": "ฐานกิจกรรมและการละเล่นที่พ่อแม่ลูกร่วมสนุกได้ตลอดทั้งวัน",
+      "en": "Drop-in activity stations the whole family can enjoy all day long."
+    },
+    "color": "meadow"
+  }
+]

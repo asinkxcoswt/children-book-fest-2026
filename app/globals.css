@@ -1,26 +1,43 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
+/* Design system — single source of truth for the brand palette.
+ * Defined once here; never duplicate these hex values in components (use the token classes). */
+@theme {
+  --color-sunshine: #fce639;
+  --color-meadow: #349849;
+  --color-tomato: #ef432c;
+  --color-sky: #009ac9;
+  --color-bubblegum: #e53d6b;
+  --color-tangerine: #f04b2f;
+  --color-cornflower: #3d67af;
+  --color-peach: #f2c29d;
+  --color-ink: #000000;
+  --color-paper: #ffffff;
+
+  /* Fonts are wired to next/font CSS variables set in app/layout.tsx. */
+  --font-display: var(--font-itim);
+  --font-body: var(--font-plex-thai);
+  --font-sans: var(--font-plex-thai);
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+html {
+  -webkit-text-size-adjust: 100%;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background: var(--color-paper);
+  color: var(--color-ink);
+  font-family: var(--font-body), system-ui, sans-serif;
+  /* Thai needs a looser line-height for legibility. */
+  line-height: 1.65;
+}
+
+/* Respect users who prefer less motion. */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    transition-duration: 0.001ms !important;
+  }
 }

@@ -1,0 +1,19 @@
+{
+  "slug": "how-stories-grow",
+  "title": { "th": "เสวนา: เรื่องเล่าเติบโตอย่างไร", "en": "Panel: how stories grow" },
+  "summary": {
+    "th": "นักเขียนและบรรณาธิการคุยกันเรื่องการสร้างหนังสือเด็ก",
+    "en": "Authors and an editor talk about making books for children."
+  },
+  "description": {
+    "th": "วงเสวนาสำหรับผู้ปกครองและคุณครู ว่าด้วยการเลือกและสร้างหนังสือภาพที่ดีสำหรับเด็ก ตั้งแต่การเล่าเรื่อง ภาษา ไปจนถึงคุณค่าที่อยากส่งต่อ",
+    "en": "A panel for parents and educators on choosing and making good picture books—from narrative and language to the values they carry."
+  },
+  "category": "author-talks",
+  "schedule": { "date": "2026-08-17", "start": "15:00", "end": "16:00", "venue": { "th": "เวทีเสวนา", "en": "Talks stage" } },
+  "ageRange": "ผู้ใหญ่ / adults",
+  "gallery": [
+    { "src": "/placeholders/talks-2.svg", "alt": { "th": "วงเสวนานักเขียนบนเวที", "en": "An author panel on stage" } }
+  ],
+  "registrationUrl": "https://example.com/register/how-stories-grow"
+}

@@ -1,0 +1,20 @@
+{
+  "slug": "make-a-mini-book",
+  "title": { "th": "ทำหนังสือเล่มจิ๋วของฉัน", "en": "Make a mini book" },
+  "summary": {
+    "th": "พับ วาด และเย็บหนังสือภาพเล่มเล็กของตัวเองภายในหนึ่งชั่วโมง",
+    "en": "Fold, draw, and stitch your very own little picture book in one hour."
+  },
+  "description": {
+    "th": "เรียนรู้วิธีทำหนังสือเล่มจิ๋วจากกระดาษแผ่นเดียว ออกแบบปก วาดเรื่องราวสั้น ๆ แล้วเย็บเล่มกลับบ้าน กิจกรรมที่ผสมการเล่าเรื่องเข้ากับงานฝีมือ",
+    "en": "Learn to turn a single sheet of paper into a tiny book—design the cover, draw a short story, and bind it to take home. A mix of storytelling and craft."
+  },
+  "category": "illustration",
+  "schedule": { "date": "2026-08-16", "start": "14:00", "end": "15:00", "venue": { "th": "ห้องเวิร์กชอปสีฟ้า", "en": "Blue workshop room" } },
+  "ageRange": "7–12",
+  "capacity": 24,
+  "gallery": [
+    { "src": "/placeholders/illustration-3.svg", "alt": { "th": "หนังสือเล่มจิ๋วทำมือวางเรียงกัน", "en": "Handmade mini books in a row" } }
+  ],
+  "registrationUrl": "https://example.com/register/make-a-mini-book"
+}

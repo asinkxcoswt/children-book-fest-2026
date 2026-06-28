@@ -1,0 +1,20 @@
+{
+  "slug": "story-treasure-hunt",
+  "title": { "th": "ล่าสมบัติในโลกนิทาน", "en": "Story treasure hunt" },
+  "summary": {
+    "th": "เดินตามเบาะแสจากหนังสือภาพทั่วงาน เก็บตราประทับให้ครบ",
+    "en": "Follow picture-book clues across the festival and collect every stamp."
+  },
+  "description": {
+    "th": "กิจกรรมแบบเดินเล่นทั่วงาน เด็ก ๆ รับสมุดเดินทางแล้วตามหาฐานต่าง ๆ ที่ซ่อนเบาะแสจากหนังสือภาพ สะสมตราประทับครบรับของที่ระลึก เล่นได้ตลอดทั้งวันโดยไม่ต้องจองรอบ",
+    "en": "A roam-anywhere activity: children get a passport and search out stations hiding picture-book clues, collecting stamps for a keepsake. Drop in any time—no session needed."
+  },
+  "category": "family-play",
+  "schedule": { "date": "2026-08-15", "start": "09:00", "end": "17:00", "venue": { "th": "ทั่วบริเวณงาน", "en": "Festival grounds" } },
+  "ageRange": "ทุกวัย / all ages",
+  "gallery": [
+    { "src": "/placeholders/play-1.svg", "alt": { "th": "เด็ก ๆ ถือสมุดเดินทางล่าสมบัติ", "en": "Children holding treasure-hunt passports" } }
+  ],
+  "registrationUrl": "https://example.com/register/story-treasure-hunt",
+  "featured": true
+}

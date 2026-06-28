@@ -1,0 +1,31 @@
+{
+  "festivalName": { "th": "เทศกาลหนังสือภาพสำหรับเด็ก", "en": "Children's Picture Book Festival" },
+  "festivalYear": { "th": "2569", "en": "2026" },
+  "tagline": {
+    "th": "เปิดหน้าหนังสือ เปิดโลกจินตนาการ",
+    "en": "Open a book, open a world" },
+  "heroBody": {
+    "th": "สามวันแห่งนิทาน ภาพประกอบ และการเล่นสนุก สำหรับเด็ก พ่อแม่ และคุณครู",
+    "en": "Three days of stories, illustration, and play for children, parents, and educators." },
+  "browseZones": { "th": "เลือกชมตามโซน", "en": "Browse the zones" },
+  "exploreEvents": { "th": "เลือกชมกิจกรรม", "en": "Explore events" },
+  "featuredEvents": { "th": "กิจกรรมแนะนำ", "en": "Featured events" },
+  "allEvents": { "th": "กิจกรรมทั้งหมด", "en": "All events" },
+  "eventsInZone": { "th": "กิจกรรมในโซนนี้", "en": "Events in this zone" },
+  "register": { "th": "ลงทะเบียน", "en": "Register" },
+  "registerExternalNote": {
+    "th": "การลงทะเบียนดำเนินการผ่านระบบภายนอก",
+    "en": "Registration is handled on an external system." },
+  "viewEvent": { "th": "ดูรายละเอียด", "en": "View details" },
+  "enterZone": { "th": "เข้าโซนนี้", "en": "Enter zone" },
+  "backToHome": { "th": "กลับหน้าแรก", "en": "Back to home" },
+  "backToZone": { "th": "กลับไปที่โซน", "en": "Back to zone" },
+  "when": { "th": "วันและเวลา", "en": "When" },
+  "where": { "th": "สถานที่", "en": "Where" },
+  "ages": { "th": "ช่วงอายุ", "en": "Ages" },
+  "capacity": { "th": "จำนวนที่รับ", "en": "Capacity" },
+  "seats": { "th": "ที่นั่ง", "en": "seats" },
+  "youAreHere": { "th": "คุณอยู่ที่นี่", "en": "You are here" },
+  "festivalMap": { "th": "แผนที่เทศกาล", "en": "Festival map" },
+  "events": { "th": "กิจกรรม", "en": "events" }
+}
