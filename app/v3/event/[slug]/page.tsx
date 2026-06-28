@@ -5,6 +5,7 @@ import { getEvents, getEvent, getCategory } from "@/lib/content";
 import { tokenClasses } from "@/lib/colors";
 import { t, pick, formatDate } from "@/lib/i18n";
 import RegisterCta from "@/components/RegisterCta";
+import Image from "next/image";
 
 export function generateStaticParams() {
   return getEvents().map((e) => ({ slug: e.slug }));
@@ -46,9 +47,9 @@ export default async function V3Event({ params }: { params: Promise<{ slug: stri
             key={i}
             role="img"
             aria-label={pick(img.alt)}
-            className={`flex h-56 items-end rounded-2xl ${c.bg} p-4`}
+            className={`flex h-56 items-end rounded-2xl ${c.bg} p-2`}
           >
-            <span className={`text-sm ${c.on}`}>{pick(img.alt)}</span>
+            <Image src={img.src} alt={pick(img.alt)} width={400} height={400} className="h-full w-full rounded-2xl object-cover" />
           </div>
         ))}
       </div>

@@ -40,7 +40,7 @@ export default function V3Home() {
                     aria-hidden
                     className={`flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl ${c.bg} font-display text-2xl ${c.on}`}
                   >
-                    {pick(cat?.name ?? { th: "", en: "" }).charAt(0)}
+                    {pick(cat!.thumbnailLetter)}
                   </span>
                   <span className="flex-1">
                     <span className={`block font-display text-sm ${c.text}`}>
