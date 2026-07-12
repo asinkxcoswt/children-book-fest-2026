@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import type { ColorToken } from "@/types/content";
 import { tokenClasses } from "@/lib/colors";
 import { t } from "@/lib/i18n";
+import AttendeeFormModal, { type AttendeeForm } from "@/components/v4/AttendeeFormModal";
 
 interface TicketOption {
   code: string;
@@ -19,10 +20,10 @@ function baht(satang: number): string {
   return `฿${(satang / 100).toLocaleString("th-TH")}`;
 }
 
-/** In-app ticket purchase for v4. Fetches live availability through our own
- *  API routes (the platform key never reaches the browser), then hands the
- *  buyer to Stripe Checkout. Falls back to the external link if the ticket
- *  service is unreachable. */
+/** In-app ticket purchase for v4. Buyers pick quantities on ticket-stub cards,
+ *  then fill in attendee details in a confirmation modal; the order is created
+ *  through our own API routes and paid on Stripe Checkout. Falls back to the
+ *  external link if the ticket service is unreachable. */
 export default function TicketPurchase({
   slug,
   color,
@@ -38,10 +39,8 @@ export default function TicketPurchase({
   const [tickets, setTickets] = useState<TicketOption[] | null>(null);
   const [failed, setFailed] = useState(false);
   const [qty, setQty] = useState<Record<string, number>>({});
-  const [email, setEmail] = useState("");
-  const [principal, setPrincipal] = useState("");
+  const [modalOpen, setModalOpen] = useState(false);
   const [submitting, setSubmitting] = useState(false);
-  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     let alive = true;
@@ -60,22 +59,23 @@ export default function TicketPurchase({
 
   const total = (tickets ?? []).reduce((sum, tk) => sum + (qty[tk.code] ?? 0) * tk.price, 0);
   const count = Object.values(qty).reduce((a, b) => a + b, 0);
-  const emailOk = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim());
-  const canSubmit = count > 0 && emailOk && principal.trim().length > 0 && !submitting;
 
-  async function submit(e: React.FormEvent) {
-    e.preventDefault();
-    if (!canSubmit) return;
+  function step(code: string, delta: number, max: number) {
+    setQty((q) => ({ ...q, [code]: Math.min(max, Math.max(0, (q[code] ?? 0) + delta)) }));
+  }
+
+  async function confirmOrder(form: AttendeeForm): Promise<string | null> {
     setSubmitting(true);
-    setError(null);
     try {
       const res = await fetch("/api/v4/orders", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           slug,
-          email: email.trim(),
-          principal: principal.trim(),
+          name: form.name.trim(),
+          childName: form.childName.trim(),
+          email: form.email.trim(),
+          phone: form.phone.trim(),
           items: Object.entries(qty)
             .filter(([, quantity]) => quantity > 0)
             .map(([code, quantity]) => ({ code, quantity })),
@@ -83,18 +83,18 @@ export default function TicketPurchase({
       });
       const data = (await res.json()) as { checkoutUrl?: string | null; error?: string };
       if (!res.ok) {
-        setError(data.error ?? t("ticketsUnavailable"));
         setSubmitting(false);
-        return;
+        return data.error ?? t("ticketsUnavailable");
       }
       if (data.checkoutUrl) {
         window.location.assign(data.checkoutUrl); // paid order → Stripe Checkout
       } else {
         router.push("/v4/checkout/success"); // free order — already PAID
       }
+      return null; // navigating away; keep the modal in its busy state
     } catch {
-      setError(t("ticketsUnavailable"));
       setSubmitting(false);
+      return t("ticketsUnavailable");
     }
   }
 
@@ -120,82 +120,81 @@ export default function TicketPurchase({
   }
 
   return (
-    <form onSubmit={submit}>
+    <div>
       <h2 className="font-display text-lg text-ink">{t("tickets")}</h2>
 
       <ul className="mt-3 space-y-3">
         {tickets.map((tk) => {
           const max = Math.min(tk.limitPerOrder, tk.available);
+          const selected = (qty[tk.code] ?? 0) > 0;
           const soldOut = tk.available === 0;
           return (
-            <li key={tk.code} className="rounded-xl border-2 border-ink/10 p-3">
-              <div className="flex items-baseline justify-between gap-2">
-                <span className="text-sm text-ink">{tk.name}</span>
-                <span className={`font-display text-sm ${c.text}`}>
+            <li
+              key={tk.code}
+              className={`relative overflow-hidden rounded-2xl border-2 pl-4 transition-colors ${
+                soldOut
+                  ? "border-ink/10 opacity-60"
+                  : selected
+                    ? `${c.border} ${c.soft}`
+                    : "border-ink/10 hover:border-ink/25"
+              }`}
+            >
+              {/* Ticket-stub spine. */}
+              <span aria-hidden className={`absolute inset-y-0 left-0 w-2 ${c.bg}`} />
+
+              <div className="flex items-baseline justify-between gap-2 p-3 pb-2">
+                <span className="font-display text-base text-ink">{tk.name}</span>
+                <span
+                  className={`shrink-0 rounded-full px-3 py-0.5 font-display text-sm ${
+                    soldOut ? "bg-ink/10 text-ink/60" : `${c.bg} ${c.on}`
+                  }`}
+                >
                   {tk.price === 0 ? t("free") : baht(tk.price)}
                 </span>
               </div>
+
+              <div className="mx-3 border-t-2 border-dashed border-ink/10" />
+
               {soldOut ? (
-                <p className="mt-1 text-xs text-tomato">{t("soldOut")}</p>
+                <p className="p-3 pt-2 font-display text-sm text-tomato">{t("soldOut")}</p>
               ) : (
-                <div className="mt-2 flex items-center justify-between gap-2">
-                  <label htmlFor={`qty-${tk.code}`} className="text-xs text-ink/60">
-                    {t("quantity")}
-                  </label>
-                  <select
-                    id={`qty-${tk.code}`}
-                    value={qty[tk.code] ?? 0}
-                    onChange={(e) =>
-                      setQty((q) => ({ ...q, [tk.code]: Number(e.target.value) }))
-                    }
-                    className="rounded-lg border-2 border-ink/15 bg-paper px-2 py-1 text-sm"
-                  >
-                    {Array.from({ length: max + 1 }, (_, n) => (
-                      <option key={n} value={n}>
-                        {n}
-                      </option>
-                    ))}
-                  </select>
-                  {tk.available <= 10 && (
-                    <span className="text-xs text-ink/50">
-                      {tk.available} {t("ticketsLeft")}
+                <div className="flex items-center justify-between gap-2 p-3 pt-2">
+                  <div className="flex items-center gap-2">
+                    <button
+                      type="button"
+                      aria-label={`${t("quantity")} − ${tk.name}`}
+                      disabled={(qty[tk.code] ?? 0) === 0}
+                      onClick={() => step(tk.code, -1, max)}
+                      className="flex h-8 w-8 items-center justify-center rounded-full border-2 border-ink/15 font-display text-lg text-ink transition-colors hover:border-ink/40 disabled:opacity-30"
+                    >
+                      −
+                    </button>
+                    <span aria-live="polite" className="w-6 text-center font-display text-lg text-ink">
+                      {qty[tk.code] ?? 0}
                     </span>
-                  )}
+                    <button
+                      type="button"
+                      aria-label={`${t("quantity")} + ${tk.name}`}
+                      disabled={(qty[tk.code] ?? 0) >= max}
+                      onClick={() => step(tk.code, 1, max)}
+                      className={`flex h-8 w-8 items-center justify-center rounded-full border-2 font-display text-lg transition-colors disabled:opacity-30 ${
+                        selected ? `${c.border} ${c.text}` : "border-ink/15 text-ink hover:border-ink/40"
+                      }`}
+                    >
+                      +
+                    </button>
+                  </div>
+                  <span className="text-right text-xs text-ink/50">
+                    {tk.available <= 10
+                      ? `${tk.available} ${t("ticketsLeft")}`
+                      : `${tk.limitPerOrder} ${t("perOrderLimit")}`}
+                  </span>
                 </div>
               )}
             </li>
           );
         })}
       </ul>
-
-      <div className="mt-4 space-y-3">
-        <div>
-          <label htmlFor="tp-name" className="block text-xs text-ink/60">
-            {t("attendeeName")}
-          </label>
-          <input
-            id="tp-name"
-            type="text"
-            required
-            value={principal}
-            onChange={(e) => setPrincipal(e.target.value)}
-            className="mt-1 w-full rounded-lg border-2 border-ink/15 bg-paper px-3 py-2 text-sm"
-          />
-        </div>
-        <div>
-          <label htmlFor="tp-email" className="block text-xs text-ink/60">
-            {t("buyerEmail")}
-          </label>
-          <input
-            id="tp-email"
-            type="email"
-            required
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            className="mt-1 w-full rounded-lg border-2 border-ink/15 bg-paper px-3 py-2 text-sm"
-          />
-        </div>
-      </div>
 
       <div className="mt-4 flex items-baseline justify-between">
         <span className="text-sm text-ink/60">{t("total")}</span>
@@ -204,19 +203,25 @@ export default function TicketPurchase({
         </span>
       </div>
 
-      {error && (
-        <p className="mt-3 text-sm text-tomato" role="alert">
-          {error}
-        </p>
-      )}
-
       <button
-        type="submit"
-        disabled={!canSubmit}
-        className={`mt-4 w-full rounded-full px-7 py-3 text-lg ${c.bg} ${c.on} transition-opacity disabled:opacity-40`}
+        type="button"
+        disabled={count === 0}
+        onClick={() => setModalOpen(true)}
+        className={`mt-4 w-full rounded-full px-7 py-3 text-lg ${c.bg} ${c.on} transition-all hover:scale-[1.02] disabled:opacity-40 disabled:hover:scale-100`}
       >
-        {submitting ? t("processingOrder") : t("getTickets")}
+        {t("getTickets")}
       </button>
-    </form>
+
+      {modalOpen && (
+        <AttendeeFormModal
+          color={color}
+          submitting={submitting}
+          onConfirm={confirmOrder}
+          onClose={() => {
+            if (!submitting) setModalOpen(false);
+          }}
+        />
+      )}
+    </div>
   );
 }

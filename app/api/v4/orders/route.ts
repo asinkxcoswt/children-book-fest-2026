@@ -8,8 +8,11 @@ const ORDER_COOKIE = "ticketOrderId";
 
 interface OrderRequestBody {
   slug?: string;
+  /** Parent / buyer full name. */
+  name?: string;
+  childName?: string;
   email?: string;
-  principal?: string;
+  phone?: string;
   items?: { code?: string; quantity?: number }[];
 }
 
@@ -30,12 +33,14 @@ export async function POST(request: NextRequest) {
   }
 
   const email = body.email?.trim() ?? "";
-  const principal = body.principal?.trim() ?? "";
+  const name = body.name?.trim() ?? "";
+  const childName = body.childName?.trim() ?? "";
+  const phone = body.phone?.trim() ?? "";
   const items = (body.items ?? []).filter(
     (i): i is { code: string; quantity: number } =>
       typeof i.code === "string" && Number.isInteger(i.quantity) && (i.quantity as number) > 0,
   );
-  if (!EMAIL_RE.test(email) || !principal || items.length === 0) {
+  if (!EMAIL_RE.test(email) || !name || !childName || items.length === 0) {
     return NextResponse.json({ error: "invalid form data" }, { status: 400 });
   }
 
@@ -45,7 +50,7 @@ export async function POST(request: NextRequest) {
     main: pick(event.title),
     date: `${event.schedule.date}T${event.schedule.start}:00+07:00`,
     dateDisplay: `${formatDate(event.schedule.date)} ${event.schedule.start} · ${pick(event.schedule.venue)}`,
-    principal,
+    principal: name,
   };
 
   const origin = request.nextUrl.origin;
@@ -54,6 +59,8 @@ export async function POST(request: NextRequest) {
       eventCode: event.ticketEventCode,
       email,
       items: items.map((i) => ({ ...i, passDisplay })),
+      // Purchase-form data for the merchant (flat scalars only — see guide §4.4).
+      metadata: { parentName: name, childName, ...(phone && { phone }) },
       successUrl: `${origin}/v4/checkout/success`,
       cancelUrl: `${origin}/v4/event/${event.slug}`,
     });
