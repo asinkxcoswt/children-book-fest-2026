@@ -27,5 +27,34 @@
   "seats": { "th": "ที่นั่ง", "en": "seats" },
   "youAreHere": { "th": "คุณอยู่ที่นี่", "en": "You are here" },
   "festivalMap": { "th": "แผนที่เทศกาล", "en": "Festival map" },
-  "events": { "th": "กิจกรรม", "en": "events" }
+  "events": { "th": "กิจกรรม", "en": "events" },
+  "tickets": { "th": "บัตรเข้าร่วม", "en": "Tickets" },
+  "soldOut": { "th": "บัตรหมด", "en": "Sold out" },
+  "ticketsLeft": { "th": "คงเหลือ", "en": "left" },
+  "quantity": { "th": "จำนวน", "en": "Quantity" },
+  "free": { "th": "ฟรี", "en": "Free" },
+  "total": { "th": "รวม", "en": "Total" },
+  "buyerEmail": { "th": "อีเมลสำหรับรับบัตร", "en": "Email for ticket delivery" },
+  "attendeeName": { "th": "ชื่อผู้เข้าร่วม", "en": "Attendee name" },
+  "getTickets": { "th": "รับบัตร", "en": "Get tickets" },
+  "processingOrder": { "th": "กำลังดำเนินการ…", "en": "Processing…" },
+  "loadingTickets": { "th": "กำลังโหลดข้อมูลบัตร…", "en": "Loading tickets…" },
+  "ticketsUnavailable": {
+    "th": "ไม่สามารถโหลดข้อมูลบัตรได้ในขณะนี้",
+    "en": "Tickets are unavailable right now." },
+  "checkoutSuccessTitle": { "th": "ขอบคุณสำหรับการสั่งซื้อ", "en": "Thank you for your order" },
+  "checkingOrder": { "th": "กำลังตรวจสอบคำสั่งซื้อ…", "en": "Checking your order…" },
+  "orderPaid": {
+    "th": "ชำระเงินสำเร็จ! บัตรถูกส่งไปที่อีเมลของคุณแล้ว",
+    "en": "Payment complete! Your tickets have been emailed to you." },
+  "orderPending": {
+    "th": "กำลังตรวจสอบการชำระเงิน คุณจะได้รับอีเมลยืนยันเร็ว ๆ นี้",
+    "en": "Payment processing — you'll receive a confirmation email shortly." },
+  "orderExpired": {
+    "th": "คำสั่งซื้อหมดอายุ กรุณาลองใหม่อีกครั้ง",
+    "en": "Order expired — please try again." },
+  "orderNotFound": {
+    "th": "ไม่พบคำสั่งซื้อ",
+    "en": "Order not found." },
+  "ticketsEmailedTo": { "th": "บัตรจะถูกส่งไปที่", "en": "Tickets will be sent to" }
 }

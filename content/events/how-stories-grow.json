@@ -33,5 +33,6 @@
       }
     }
   ],
-  "registrationUrl": "https://www.ticketmelon.com/littlepawcraft/story-treasure-hunt"
+  "registrationUrl": "https://www.ticketmelon.com/littlepawcraft/story-treasure-hunt",
+  "ticketEventCode": "test-event"
 }

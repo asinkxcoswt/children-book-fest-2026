@@ -6,6 +6,7 @@ import { getEvents, getEvent, getCategory } from "@/lib/content";
 import { tokenClasses } from "@/lib/colors";
 import { t, pick, formatDate } from "@/lib/i18n";
 import RegisterCta from "@/components/RegisterCta";
+import TicketPurchase from "@/components/v4/TicketPurchase";
 
 export function generateStaticParams() {
   return getEvents().map((e) => ({ slug: e.slug }));
@@ -89,7 +90,15 @@ export default async function V4Event({ params }: { params: Promise<{ slug: stri
             )}
           </dl>
           <div className="mt-6">
-            <RegisterCta url={event.registrationUrl} className={`${c.bg} ${c.on}`} />
+            {event.ticketEventCode ? (
+              <TicketPurchase
+                slug={event.slug}
+                color={category?.color ?? "peach"}
+                fallbackUrl={event.registrationUrl}
+              />
+            ) : (
+              <RegisterCta url={event.registrationUrl} className={`${c.bg} ${c.on}`} />
+            )}
           </div>
         </aside>
       </div>
