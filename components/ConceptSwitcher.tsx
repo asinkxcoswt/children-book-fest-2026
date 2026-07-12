@@ -4,11 +4,12 @@ const CONCEPTS = [
   { href: "/v1", label: "v1 · Storybook" },
   { href: "/v2", label: "v2 · Crayon Blocks" },
   { href: "/v3", label: "v3 · Friendly Map" },
+  { href: "/v4", label: "v4 · Storybook Village" },
 ];
 
-/** Demo-only bar so reviewers can hop between the three design concepts.
+/** Demo-only bar so reviewers can hop between the design concepts.
  *  Not part of the production microsite. */
-export default function ConceptSwitcher({ current }: { current: "/v1" | "/v2" | "/v3" }) {
+export default function ConceptSwitcher({ current }: { current: "/v1" | "/v2" | "/v3" | "/v4" }) {
   return (
     <div className="w-full border-b-2 border-ink/10 bg-paper">
       <nav

@@ -23,6 +23,13 @@ const CONCEPTS = [
     swatch: "bg-meadow",
     text: "v3",
   },
+  {
+    href: "/v4",
+    name: "Storybook Village",
+    note: "v1's editorial storybook UI with v3's playful explorable map.",
+    swatch: "bg-sunshine",
+    text: "v4",
+  },
 ];
 
 export default function ConceptIndex() {

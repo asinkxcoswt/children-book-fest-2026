@@ -41,7 +41,14 @@ function buildTrail(points: { left: string; top: string }[]): string {
   }, "");
 }
 
-export default function FestivalMap({ currentSlug }: { currentSlug?: string }) {
+export default function FestivalMap({
+  currentSlug,
+  basePath = "/v3",
+}: {
+  currentSlug?: string;
+  /** Route prefix for the variant using the map, e.g. "/v4". */
+  basePath?: string;
+}) {
   const categories = getCategories();
   const currentIndex = categories.findIndex((c) => c.slug === currentSlug);
 
@@ -139,7 +146,7 @@ export default function FestivalMap({ currentSlug }: { currentSlug?: string }) {
                 <div aria-current="page">{badge}</div>
               ) : (
                 <Link
-                  href={`/v3/category/${cat.slug}`}
+                  href={`${basePath}/category/${cat.slug}`}
                   className="block rounded-2xl outline-offset-4 transition-transform hover:-translate-y-0.5"
                 >
                   {badge}
