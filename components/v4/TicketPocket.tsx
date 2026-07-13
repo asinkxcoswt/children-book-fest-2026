@@ -5,27 +5,15 @@ import { tokenClasses } from "@/lib/colors";
 import { t } from "@/lib/i18n";
 import { drawTicket, type TicketDisplay } from "@/lib/ticketImage";
 
-type Wallet = "apple" | "google" | null;
-
-function detectWallet(): Wallet {
-  const ua = navigator.userAgent;
-  if (/iPhone|iPad|iPod/i.test(ua)) return "apple";
-  if (/Android/i.test(ua)) return "google";
-  return null;
-}
-
 /** The order's tickets, fanned out of a paper pocket. Tap a ticket to bring
- *  the next one forward. One button saves every ticket PNG to the gallery;
- *  on iOS/Android a second button adds them to the platform wallet. */
+ *  the next one forward. One button saves every ticket PNG to the gallery.
+ *  No wallet passes — the PNG + email are the ticket (guide §4.6). */
 export default function TicketPocket({ tickets }: { tickets: TicketDisplay[] }) {
   const color = tickets[0]?.color ?? "bubblegum";
   const c = tokenClasses(color);
 
   const [images, setImages] = useState<string[] | null>(null);
   const [front, setFront] = useState(0);
-  const [wallet, setWallet] = useState<Wallet>(null);
-  const [walletNext, setWalletNext] = useState(0);
-  const [walletBusy, setWalletBusy] = useState(false);
 
   useEffect(() => {
     let alive = true;
@@ -33,9 +21,7 @@ export default function TicketPocket({ tickets }: { tickets: TicketDisplay[] }) 
     document.fonts.ready
       .then(() => Promise.all(tickets.map((tk) => drawTicket(tk))))
       .then((urls) => {
-        if (!alive) return;
-        setImages(urls);
-        setWallet(detectWallet());
+        if (alive) setImages(urls);
       })
       .catch(() => {});
     return () => {
@@ -49,35 +35,10 @@ export default function TicketPocket({ tickets }: { tickets: TicketDisplay[] }) 
       setTimeout(() => {
         const a = document.createElement("a");
         a.href = url;
-        a.download = `ticket-${tickets[i].ticketId}.png`;
+        a.download = `ticket-${tickets[i].ticketNo}.png`;
         a.click();
       }, i * 350);
     });
-  }
-
-  async function addToWallet() {
-    if (!wallet || walletBusy) return;
-    setWalletBusy(true);
-    try {
-      const ticket = tickets[walletNext % tickets.length];
-      const res = await fetch(
-        `/api/v4/tickets/wallet?ticketId=${encodeURIComponent(ticket.ticketId)}&platform=${wallet}`,
-      );
-      if (!res.ok) {
-        // Wallet passes not enabled on the platform — hide the button.
-        setWallet(null);
-        return;
-      }
-      const { url } = (await res.json()) as { url: string };
-      if (wallet === "apple") {
-        window.location.href = url; // .pkpass download → add sheet; page stays
-      } else {
-        window.open(url, "_blank", "noopener"); // Save-to-Google-Wallet page
-      }
-      setWalletNext((n) => n + 1);
-    } finally {
-      setWalletBusy(false);
-    }
   }
 
   if (!images) {
@@ -91,7 +52,6 @@ export default function TicketPocket({ tickets }: { tickets: TicketDisplay[] }) 
   }
 
   const many = tickets.length > 1;
-  const walletLabel = wallet === "apple" ? t("addToAppleWallet") : t("saveToGoogleWallet");
 
   return (
     <div className="mx-auto w-full max-w-sm">
@@ -104,7 +64,7 @@ export default function TicketPocket({ tickets }: { tickets: TicketDisplay[] }) 
             const isFront = depth === 0;
             return (
               <button
-                key={tickets[i].ticketId}
+                key={tickets[i].ticketNo}
                 type="button"
                 aria-label={`${t("ticketAlt")} — ${tickets[i].principal}${many ? ` (${i + 1}/${tickets.length})` : ""}`}
                 onClick={() => many && setFront((f) => (f + 1) % tickets.length)}
@@ -155,18 +115,6 @@ export default function TicketPocket({ tickets }: { tickets: TicketDisplay[] }) 
         >
           {many ? t("saveAllTickets") : t("saveTicket")} ↓
         </button>
-
-        {wallet && (
-          <button
-            type="button"
-            onClick={addToWallet}
-            disabled={walletBusy}
-            className="inline-flex items-center gap-2 rounded-full border-2 border-ink bg-ink px-6 py-2.5 text-paper transition-opacity disabled:opacity-50"
-          >
-            {walletLabel}
-            {many && ` (${(walletNext % tickets.length) + 1}/${tickets.length})`}
-          </button>
-        )}
       </div>
     </div>
   );

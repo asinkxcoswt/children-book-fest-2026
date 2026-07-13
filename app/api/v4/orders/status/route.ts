@@ -31,6 +31,7 @@ export async function GET(request: NextRequest) {
 
     return NextResponse.json({
       status: order.status,
+      orderNo: order.orderNo,
       email: order.email,
       event: event
         ? {
@@ -41,7 +42,10 @@ export async function GET(request: NextRequest) {
           festivalName: `${t("festivalName")} ${t("festivalYear")}`,
         }
         : null,
-      tickets: (order.tickets ?? []).map((tk) => ({ id: tk.id, principal: tk.principal })),
+      tickets: (order.tickets ?? []).map((tk) => ({
+        ticketNo: tk.ticketNo,
+        principal: tk.principal,
+      })),
     });
   } catch (err) {
     const status = err instanceof TicketApiError ? err.status : 502;

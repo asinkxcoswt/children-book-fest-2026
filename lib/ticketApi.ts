@@ -128,13 +128,18 @@ export async function createOrder(input: {
 export type OrderStatus = "PENDING" | "PAID" | "EXPIRED" | "CANCELED" | "REFUNDED";
 
 export interface IssuedTicket {
+  /** Internal uuid — API use only, never shown to humans. */
   id: string;
+  /** Human-friendly ticket number (TK-XXXX-XXXX) — goes in the QR and on screen. */
+  ticketNo: string;
   status: string;
   principal: string;
 }
 
 export interface OrderDetail {
   id: string;
+  /** Human-friendly order reference (CT-XXXXXX) — show to the buyer. */
+  orderNo: string;
   status: OrderStatus;
   email: string;
   eventCode: string;
@@ -142,19 +147,6 @@ export interface OrderDetail {
   paidAt: string | null;
   /** Populated once the order is PAID. */
   tickets?: IssuedTicket[];
-}
-
-/** Wallet-pass link for an issued ticket (guide §4.6).
- *  apple → signed .pkpass download (expires in 1h); google → Save-to-Wallet link. */
-export async function getTicketPassUrl(
-  ticketId: string,
-  platform: "apple" | "google",
-): Promise<string> {
-  const res = await ticketApi(
-    `/tickets/url?ticketId=${encodeURIComponent(ticketId)}&platform=${platform}&${echoParams()}`,
-  );
-  if (!res.ok) throw new TicketApiError(res.status, await res.text());
-  return ((await res.json()) as { url: string }).url;
 }
 
 export async function getOrderDetail(orderId: string): Promise<OrderDetail> {

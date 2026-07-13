@@ -7,18 +7,18 @@ self-contained — everything you need is here, no access to the platform repo r
 
 The ticket platform is a **headless commerce core**. Responsibilities split:
 
-| Storefront (you)                                                     | Ticket platform (this API)                                          |
-| --------------------------------------------------------------------- | -------------------------------------------------------------------- |
-| Event pages: name, dates, venue, description, images, SEO            | Ticket types + live availability per event                          |
-| Checkout UI, purchase form (any fields you want)                     | Inventory reservation, order lifecycle, expiry                      |
-| Redirecting the buyer to Stripe                                      | Stripe Checkout session + webhook handling                          |
-| **Ticket page** (`successUrl`): renders each ticket **with a QR code of the ticket `id`** | Issuing tickets; sending the buyer a confirmation email that links back to your `successUrl` |
+| Storefront (you)                                                                          | Ticket platform (this API)                                                                   |
+| ----------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------- |
+| Event pages: name, dates, venue, description, images, SEO                                 | Ticket types + live availability per event                                                   |
+| Checkout UI, purchase form (any fields you want)                                          | Inventory reservation, order lifecycle, expiry                                               |
+| Redirecting the buyer to Stripe                                                           | Stripe Checkout session + webhook handling                                                   |
+| **Ticket page** (`successUrl`): renders each ticket **with a QR code of its `ticketNo`** | Issuing tickets; sending the buyer a confirmation email that links back to your `successUrl` |
 
 **Important**: the platform does not render ticket UI and does not send wallet passes. The
 confirmation email it sends contains only an order summary and a **"View my tickets" button
 pointing at your `successUrl`** — buyers will open that page days later at the venue, so it must
-be a durable, self-contained page (see §4.2) that shows each ticket's QR code (encode the raw
-ticket `id`; that's what gate scanners look up).
+be a durable, self-contained page (see §4.2) that shows each ticket's QR code (encode the
+`ticketNo`, e.g. `TK-7K4M-2QW9` — gate scanners look it up, and staff can type it by hand).
 
 The link between your event pages and the platform is the **`eventCode`** — a stable slug
 (e.g. `concert-2026-01-01`) registered by the merchant in their portal. You never create events,
@@ -31,7 +31,7 @@ ticket types, or prices from the storefront; you read availability and create or
 Server-side environment variables (e.g. `.env.local`):
 
 ```bash
-TICKET_API_URL=https://test-tkapi.showpal.club   # prod: https://tkapi.showpal.club
+TICKET_API_URL=https://test-api.cow-ticket.dev   # prod: https://api.cow-ticket.dev
 TICKET_API_KEY=<customer-type API key from the merchant>   # SECRET — server only
 TICKET_ACCOUNT_ID=<merchant accountId, e.g. my-merchant>
 ```
@@ -172,7 +172,8 @@ Authorization: Bearer <jwt>
 }
 
 200 → {
-  "orderId": "0d9c1e9e-…",
+  "orderId": "0d9c1e9e-…",                  // internal uuid — use in API calls
+  "orderNo": "CT-7K4M2Q",                   // human-friendly reference — show to the buyer
   "status": "PENDING",                      // or "PAID" for free orders
   "expiresAt": "2026-07-12T13:00:00.000Z",  // 1 hour from creation
   "checkoutUrl": "https://checkout.stripe.com/c/pay/…"   // null for free orders
@@ -238,13 +239,15 @@ GET /orders/detail?orderId={orderId}&accountId={ACCOUNT_ID}&customerId={CUSTOMER
 Authorization: Bearer <jwt>
 
 200 → {
-  "id": "…", "status": "PENDING" | "PAID" | "EXPIRED" | "CANCELED" | "REFUNDED",
+  "id": "…",                                 // internal uuid
+  "orderNo": "CT-7K4M2Q",                    // show this to the buyer
+  "status": "PENDING" | "PAID" | "EXPIRED" | "CANCELED" | "REFUNDED",
   "email": "buyer@example.com",
   "eventCode": "…", "event": { "eventCode": "…", "name": "…" },
   "expiresAt": "…", "paidAt": "…" | null,
   "items": [ { "quantity": 2, "unitPrice": 150000, "ticketConfig": { "code": "vip", "name": "VIP Ticket", "price": 150000 } } ],
   "payment": { "provider": "stripe", "status": "PENDING" | "SUCCEEDED" | "REFUNDED", "amount": 300000, … },
-  "tickets": [ { "id": "…", "status": "CLAIMED", "principal": "John Doe", "ownerEmail": "…", "claimedEmail": "…" } ]
+  "tickets": [ { "id": "…", "ticketNo": "TK-7K4M-2QW9", "status": "CLAIMED", "principal": "John Doe", "ownerEmail": "…", "claimedEmail": "…" } ]
 }
 ```
 
@@ -258,13 +261,18 @@ Poll every ~2s (webhooks usually land within seconds of payment) with a ~60s tim
 
 ### 4.6 Rendering tickets (your job)
 
-Once the order is `PAID`, `tickets[]` from `GET /orders/detail` is your source of truth. For each
-ticket render a card with:
+Once the order is `PAID`, `tickets[]` from `GET /orders/detail` is your source of truth. Every
+ticket carries a human-friendly **`ticketNo`** (`TK-XXXX-XXXX`) alongside its internal uuid `id`,
+and the order carries **`orderNo`** (`CT-XXXXXX`) — show these to humans, never the uuids. For
+each ticket render a card with:
 
-- **a QR code encoding the raw ticket `id`** (e.g. with the `qrcode` npm package) — this is the
-  only thing gate scanners understand. Render it black-on-white, ≥200px.
+- **a QR code encoding `ticketNo`** (e.g. with the `qrcode` npm package) — gate scanners accept
+  either `ticketNo` or the uuid, but `ticketNo` doubles as a short code staff can type by hand.
+  Render it black-on-white, ≥200px.
 - the holder name (`principal`), ticket type, and whatever event info your page already has.
-- optionally the ticket `id` as small monospace text, as a manual-entry fallback for staff.
+- **`ticketNo` as visible text under the QR** — the manual-entry fallback when a screen won't scan.
+- the **`orderNo`** somewhere on the page ("Order CT-XXXXXX") — it's what the confirmation email
+  shows and what buyers will quote to support and gate staff.
 
 The same page doubles as the buyer's permanent ticket wallet (the email links to it), so keep it
 fast, mobile-first, and bright enough to scan a screen in daylight. There are no Apple/Google
@@ -289,7 +297,7 @@ Event page                createOrderAction              Stripe            Ticke
 
 ## 8. Testing
 
-- Test environment: `https://test-tkapi.showpal.club` with a test-mode Stripe account behind it.
+- Test environment: `https://test-api.cow-ticket.dev` with a test-mode Stripe account behind it.
 - Card `4242 4242 4242 4242`, any future expiry, any CVC → success.
 - `4000 0000 0000 0002` → declined (order stays PENDING; buyer can retry within the hour).
 - Create a free ticket type (price 0) to test the no-Stripe path.

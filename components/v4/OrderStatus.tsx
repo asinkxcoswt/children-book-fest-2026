@@ -9,6 +9,8 @@ type Phase = "checking" | "paid" | "pending" | "expired" | "notFound";
 
 interface StatusResponse {
   status: string;
+  /** Human-friendly order reference (CT-XXXXXX). */
+  orderNo: string;
   email: string;
   event: {
     title: string;
@@ -17,7 +19,7 @@ interface StatusResponse {
     color: ColorToken;
     festivalName: string;
   } | null;
-  tickets: { id: string; principal: string }[];
+  tickets: { ticketNo: string; principal: string }[];
 }
 
 const POLL_MS = 2000;
@@ -117,8 +119,13 @@ export default function OrderStatus({ orderId, token }: { orderId?: string; toke
     return (
       <div role="status">
         <p className="text-lg text-meadow">{t("orderPaid")}</p>
+        {order?.orderNo && (
+          <p className="mt-2 font-display text-ink">
+            {t("orderNumber")} {order.orderNo}
+          </p>
+        )}
         {order?.email && (
-          <p className="mt-2 text-sm text-ink/60">
+          <p className="mt-1 text-sm text-ink/60">
             {t("ticketsEmailedTo")} {order.email}
           </p>
         )}
@@ -129,7 +136,7 @@ export default function OrderStatus({ orderId, token }: { orderId?: string; toke
             <div className="mt-6">
               <TicketPocket
                 tickets={order.tickets.map((tk) => ({
-                  ticketId: tk.id,
+                  ticketNo: tk.ticketNo,
                   principal: tk.principal,
                   eventTitle: event.title,
                   dateDisplay: event.dateDisplay,

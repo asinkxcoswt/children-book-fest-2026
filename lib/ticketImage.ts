@@ -7,7 +7,9 @@ import type { ColorToken } from "@/types/content";
 import { tokenClasses } from "@/lib/colors";
 
 export interface TicketDisplay {
-  ticketId: string;
+  /** Human-friendly ticket number (TK-XXXX-XXXX): encoded in the QR and printed
+   *  on the stub as the manual-entry fallback for gate staff. */
+  ticketNo: string;
   principal: string;
   eventTitle: string;
   dateDisplay: string;
@@ -85,7 +87,7 @@ export async function drawTicket(ticket: TicketDisplay): Promise<string> {
   const qrSize = 330;
   const qrX = (W - qrSize) / 2;
   const qrY = 268;
-  const qrDataUrl = await QRCode.toDataURL(ticket.ticketId, {
+  const qrDataUrl = await QRCode.toDataURL(ticket.ticketNo, {
     width: qrSize * 2,
     margin: 1,
     color: { dark: ink, light: paper },
@@ -125,10 +127,8 @@ export async function drawTicket(ticket: TicketDisplay): Promise<string> {
   ctx.setLineDash([]);
   ctx.globalAlpha = 1;
   ctx.fillStyle = ink;
-  ctx.globalAlpha = 0.5;
-  ctx.font = `15px ${bodyFont}, monospace`;
-  ctx.fillText(ticket.ticketId, W / 2, perfY + 52);
-  ctx.globalAlpha = 1;
+  ctx.font = `28px ${displayFont}, monospace`;
+  ctx.fillText(ticket.ticketNo, W / 2, perfY + 56);
   ctx.textAlign = "start";
 
   return canvas.toDataURL("image/png");
