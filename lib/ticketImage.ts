@@ -1,10 +1,10 @@
-"use client";
+/* Browser-only: draws an issued ticket to a PNG data URL (canvas + QR).
+ * Colors and fonts are read from the CSS design tokens at draw time —
+ * the token layer in globals.css stays the single source of truth. */
 
-import { useEffect, useState } from "react";
 import QRCode from "qrcode";
 import type { ColorToken } from "@/types/content";
 import { tokenClasses } from "@/lib/colors";
-import { t } from "@/lib/i18n";
 
 export interface TicketDisplay {
   ticketId: string;
@@ -17,12 +17,10 @@ export interface TicketDisplay {
 }
 
 /* Rendered size (CSS px); canvas draws at 2x for crisp gallery saves. */
-const W = 640;
-const H = 900;
+export const TICKET_W = 640;
+export const TICKET_H = 900;
 
-/** Read a design token from the CSS custom properties set in globals.css —
- *  the single source of truth; no hex duplicated here. */
-function cssColor(name: string): string {
+function cssVar(name: string): string {
   return getComputedStyle(document.documentElement).getPropertyValue(name).trim();
 }
 
@@ -45,17 +43,15 @@ function wrapText(ctx: CanvasRenderingContext2D, text: string, maxWidth: number)
   return lines;
 }
 
-async function drawTicket(ticket: TicketDisplay): Promise<string> {
-  const paper = cssColor("--color-paper");
-  const ink = cssColor("--color-ink");
-  const accent = cssColor(`--color-${ticket.color}`);
+export async function drawTicket(ticket: TicketDisplay): Promise<string> {
+  const paper = cssVar("--color-paper");
+  const ink = cssVar("--color-ink");
+  const accent = cssVar(`--color-${ticket.color}`);
   const onAccent = tokenClasses(ticket.color).on === "text-ink" ? ink : paper;
-  const displayFont = getComputedStyle(document.documentElement)
-    .getPropertyValue("--font-itim")
-    .trim();
-  const bodyFont = getComputedStyle(document.documentElement)
-    .getPropertyValue("--font-plex-thai")
-    .trim();
+  const displayFont = cssVar("--font-itim");
+  const bodyFont = cssVar("--font-plex-thai");
+  const W = TICKET_W;
+  const H = TICKET_H;
 
   const canvas = document.createElement("canvas");
   canvas.width = W * 2;
@@ -136,55 +132,4 @@ async function drawTicket(ticket: TicketDisplay): Promise<string> {
   ctx.textAlign = "start";
 
   return canvas.toDataURL("image/png");
-}
-
-/** One issued ticket, drawn to a PNG so it can be long-pressed / downloaded
- *  straight into the photo gallery. */
-export default function TicketCard({ ticket }: { ticket: TicketDisplay }) {
-  const [imgUrl, setImgUrl] = useState<string | null>(null);
-  const c = tokenClasses(ticket.color);
-
-  useEffect(() => {
-    let alive = true;
-    // Wait for the web fonts so the canvas text uses the real typefaces.
-    document.fonts.ready
-      .then(() => drawTicket(ticket))
-      .then((url) => {
-        if (alive) setImgUrl(url);
-      })
-      .catch(() => {});
-    return () => {
-      alive = false;
-    };
-  }, [ticket]);
-
-  if (!imgUrl) {
-    return (
-      <div
-        className={`aspect-[32/45] w-full max-w-xs animate-pulse rounded-3xl ${c.soft}`}
-        role="status"
-        aria-label={t("loadingTickets")}
-      />
-    );
-  }
-
-  return (
-    <figure className="w-full max-w-xs">
-      {/* eslint-disable-next-line @next/next/no-img-element -- canvas data URL, not an optimizable asset */}
-      <img
-        src={imgUrl}
-        alt={`${t("ticketAlt")} — ${ticket.principal}`}
-        className="w-full rounded-3xl border-2 border-ink/10 shadow-lg"
-      />
-      <figcaption className="mt-3 text-center">
-        <a
-          href={imgUrl}
-          download={`ticket-${ticket.ticketId}.png`}
-          className={`inline-flex items-center gap-2 rounded-full px-6 py-2.5 ${c.bg} ${c.on}`}
-        >
-          {t("saveTicket")} ↓
-        </a>
-      </figcaption>
-    </figure>
-  );
 }

@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import type { ColorToken } from "@/types/content";
 import { t } from "@/lib/i18n";
-import TicketCard from "@/components/v4/TicketCard";
+import TicketPocket from "@/components/v4/TicketPocket";
 
 type Phase = "checking" | "paid" | "pending" | "expired" | "notFound";
 
@@ -73,7 +73,41 @@ export default function OrderStatus() {
   }, []);
 
   if (phase === "checking") {
-    return <p className="text-lg text-ink/70" role="status">{t("checkingOrder")}</p>;
+    // Big, obviously-alive loading state: spinner ring + pulsing ticket skeleton.
+    return (
+      <div role="status" aria-label={t("checkingOrder")} className="py-6">
+        <div className="flex items-center gap-4">
+          <span
+            aria-hidden
+            className="h-10 w-10 shrink-0 animate-spin rounded-full border-4 border-ink/10 border-t-tomato"
+          />
+          <div>
+            <p className="font-display text-xl text-ink">{t("checkingOrder")}</p>
+            <span aria-hidden className="mt-1 flex gap-1">
+              {[0, 1, 2].map((i) => (
+                <span
+                  key={i}
+                  className="h-1.5 w-1.5 animate-bounce rounded-full bg-tomato"
+                  style={{ animationDelay: `${i * 150}ms` }}
+                />
+              ))}
+            </span>
+          </div>
+        </div>
+
+        {/* Ticket-shaped skeleton where the real tickets will appear. */}
+        <div aria-hidden className="mt-8 max-w-xs">
+          <div className="animate-pulse overflow-hidden rounded-3xl border-2 border-ink/10">
+            <div className="h-24 bg-ink/10" />
+            <div className="flex flex-col items-center gap-3 p-6">
+              <div className="h-36 w-36 rounded-2xl bg-ink/10" />
+              <div className="h-4 w-32 rounded-full bg-ink/10" />
+              <div className="h-3 w-40 rounded-full bg-ink/5" />
+            </div>
+          </div>
+        </div>
+      </div>
+    );
   }
   if (phase === "paid") {
     const event = order?.event;
@@ -89,21 +123,18 @@ export default function OrderStatus() {
         {event && order.tickets.length > 0 && (
           <section className="mt-8">
             <h2 className="font-display text-2xl text-ink">{t("yourTickets")}</h2>
-            <div className="mt-5 flex flex-wrap gap-8">
-              {order.tickets.map((tk) => (
-                <TicketCard
-                  key={tk.id}
-                  ticket={{
-                    ticketId: tk.id,
-                    principal: tk.principal,
-                    eventTitle: event.title,
-                    dateDisplay: event.dateDisplay,
-                    venue: event.venue,
-                    festivalName: event.festivalName,
-                    color: event.color,
-                  }}
-                />
-              ))}
+            <div className="mt-6">
+              <TicketPocket
+                tickets={order.tickets.map((tk) => ({
+                  ticketId: tk.id,
+                  principal: tk.principal,
+                  eventTitle: event.title,
+                  dateDisplay: event.dateDisplay,
+                  venue: event.venue,
+                  festivalName: event.festivalName,
+                  color: event.color,
+                }))}
+              />
             </div>
           </section>
         )}

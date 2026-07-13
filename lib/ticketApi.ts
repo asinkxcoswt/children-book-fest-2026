@@ -142,6 +142,19 @@ export interface OrderDetail {
   tickets?: IssuedTicket[];
 }
 
+/** Wallet-pass link for an issued ticket (guide §4.6).
+ *  apple → signed .pkpass download (expires in 1h); google → Save-to-Wallet link. */
+export async function getTicketPassUrl(
+  ticketId: string,
+  platform: "apple" | "google",
+): Promise<string> {
+  const res = await ticketApi(
+    `/tickets/url?ticketId=${encodeURIComponent(ticketId)}&platform=${platform}&${echoParams()}`,
+  );
+  if (!res.ok) throw new TicketApiError(res.status, await res.text());
+  return ((await res.json()) as { url: string }).url;
+}
+
 export async function getOrderDetail(orderId: string): Promise<OrderDetail> {
   const res = await ticketApi(
     `/orders/detail?orderId=${encodeURIComponent(orderId)}&${echoParams()}`,
