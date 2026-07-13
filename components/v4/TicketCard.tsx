@@ -1,0 +1,190 @@
+"use client";
+
+import { useEffect, useState } from "react";
+import QRCode from "qrcode";
+import type { ColorToken } from "@/types/content";
+import { tokenClasses } from "@/lib/colors";
+import { t } from "@/lib/i18n";
+
+export interface TicketDisplay {
+  ticketId: string;
+  principal: string;
+  eventTitle: string;
+  dateDisplay: string;
+  venue: string;
+  festivalName: string;
+  color: ColorToken;
+}
+
+/* Rendered size (CSS px); canvas draws at 2x for crisp gallery saves. */
+const W = 640;
+const H = 900;
+
+/** Read a design token from the CSS custom properties set in globals.css —
+ *  the single source of truth; no hex duplicated here. */
+function cssColor(name: string): string {
+  return getComputedStyle(document.documentElement).getPropertyValue(name).trim();
+}
+
+/** Wraps text for canvas. Thai has no spaces, so fall back to per-character wrapping. */
+function wrapText(ctx: CanvasRenderingContext2D, text: string, maxWidth: number): string[] {
+  const units = text.includes(" ") ? text.split(" ") : [...text];
+  const glue = text.includes(" ") ? " " : "";
+  const lines: string[] = [];
+  let line = "";
+  for (const unit of units) {
+    const candidate = line ? line + glue + unit : unit;
+    if (ctx.measureText(candidate).width > maxWidth && line) {
+      lines.push(line);
+      line = unit;
+    } else {
+      line = candidate;
+    }
+  }
+  if (line) lines.push(line);
+  return lines;
+}
+
+async function drawTicket(ticket: TicketDisplay): Promise<string> {
+  const paper = cssColor("--color-paper");
+  const ink = cssColor("--color-ink");
+  const accent = cssColor(`--color-${ticket.color}`);
+  const onAccent = tokenClasses(ticket.color).on === "text-ink" ? ink : paper;
+  const displayFont = getComputedStyle(document.documentElement)
+    .getPropertyValue("--font-itim")
+    .trim();
+  const bodyFont = getComputedStyle(document.documentElement)
+    .getPropertyValue("--font-plex-thai")
+    .trim();
+
+  const canvas = document.createElement("canvas");
+  canvas.width = W * 2;
+  canvas.height = H * 2;
+  const ctx = canvas.getContext("2d")!;
+  ctx.scale(2, 2);
+
+  // Card base.
+  ctx.fillStyle = paper;
+  ctx.beginPath();
+  ctx.roundRect(0, 0, W, H, 32);
+  ctx.fill();
+
+  // Header band.
+  ctx.save();
+  ctx.beginPath();
+  ctx.roundRect(0, 0, W, H, 32);
+  ctx.clip();
+  ctx.fillStyle = accent;
+  ctx.fillRect(0, 0, W, 218);
+  ctx.restore();
+
+  ctx.fillStyle = onAccent;
+  ctx.font = `18px ${bodyFont}, sans-serif`;
+  ctx.fillText(ticket.festivalName, 40, 56);
+  ctx.font = `40px ${displayFont}, sans-serif`;
+  const titleLines = wrapText(ctx, ticket.eventTitle, W - 80).slice(0, 2);
+  titleLines.forEach((line, i) => ctx.fillText(line, 40, 118 + i * 52));
+
+  // QR block with quiet border.
+  const qrSize = 330;
+  const qrX = (W - qrSize) / 2;
+  const qrY = 268;
+  const qrDataUrl = await QRCode.toDataURL(ticket.ticketId, {
+    width: qrSize * 2,
+    margin: 1,
+    color: { dark: ink, light: paper },
+  });
+  const qrImg = new Image();
+  await new Promise<void>((resolve, reject) => {
+    qrImg.onload = () => resolve();
+    qrImg.onerror = () => reject(new Error("qr render failed"));
+    qrImg.src = qrDataUrl;
+  });
+  ctx.strokeStyle = accent;
+  ctx.lineWidth = 4;
+  ctx.beginPath();
+  ctx.roundRect(qrX - 18, qrY - 18, qrSize + 36, qrSize + 36, 24);
+  ctx.stroke();
+  ctx.drawImage(qrImg, qrX, qrY, qrSize, qrSize);
+
+  // Attendee + schedule.
+  ctx.fillStyle = ink;
+  ctx.textAlign = "center";
+  ctx.font = `34px ${displayFont}, sans-serif`;
+  ctx.fillText(ticket.principal, W / 2, qrY + qrSize + 74);
+  ctx.font = `20px ${bodyFont}, sans-serif`;
+  ctx.fillText(ticket.dateDisplay, W / 2, qrY + qrSize + 114);
+  ctx.fillText(ticket.venue, W / 2, qrY + qrSize + 146);
+
+  // Perforation + ticket id stub.
+  const perfY = H - 92;
+  ctx.strokeStyle = ink;
+  ctx.globalAlpha = 0.25;
+  ctx.lineWidth = 2;
+  ctx.setLineDash([2, 10]);
+  ctx.beginPath();
+  ctx.moveTo(32, perfY);
+  ctx.lineTo(W - 32, perfY);
+  ctx.stroke();
+  ctx.setLineDash([]);
+  ctx.globalAlpha = 1;
+  ctx.fillStyle = ink;
+  ctx.globalAlpha = 0.5;
+  ctx.font = `15px ${bodyFont}, monospace`;
+  ctx.fillText(ticket.ticketId, W / 2, perfY + 52);
+  ctx.globalAlpha = 1;
+  ctx.textAlign = "start";
+
+  return canvas.toDataURL("image/png");
+}
+
+/** One issued ticket, drawn to a PNG so it can be long-pressed / downloaded
+ *  straight into the photo gallery. */
+export default function TicketCard({ ticket }: { ticket: TicketDisplay }) {
+  const [imgUrl, setImgUrl] = useState<string | null>(null);
+  const c = tokenClasses(ticket.color);
+
+  useEffect(() => {
+    let alive = true;
+    // Wait for the web fonts so the canvas text uses the real typefaces.
+    document.fonts.ready
+      .then(() => drawTicket(ticket))
+      .then((url) => {
+        if (alive) setImgUrl(url);
+      })
+      .catch(() => {});
+    return () => {
+      alive = false;
+    };
+  }, [ticket]);
+
+  if (!imgUrl) {
+    return (
+      <div
+        className={`aspect-[32/45] w-full max-w-xs animate-pulse rounded-3xl ${c.soft}`}
+        role="status"
+        aria-label={t("loadingTickets")}
+      />
+    );
+  }
+
+  return (
+    <figure className="w-full max-w-xs">
+      {/* eslint-disable-next-line @next/next/no-img-element -- canvas data URL, not an optimizable asset */}
+      <img
+        src={imgUrl}
+        alt={`${t("ticketAlt")} — ${ticket.principal}`}
+        className="w-full rounded-3xl border-2 border-ink/10 shadow-lg"
+      />
+      <figcaption className="mt-3 text-center">
+        <a
+          href={imgUrl}
+          download={`ticket-${ticket.ticketId}.png`}
+          className={`inline-flex items-center gap-2 rounded-full px-6 py-2.5 ${c.bg} ${c.on}`}
+        >
+          {t("saveTicket")} ↓
+        </a>
+      </figcaption>
+    </figure>
+  );
+}

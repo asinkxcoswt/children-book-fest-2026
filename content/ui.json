@@ -62,5 +62,8 @@
   "orderNotFound": {
     "th": "ไม่พบคำสั่งซื้อ",
     "en": "Order not found." },
-  "ticketsEmailedTo": { "th": "บัตรจะถูกส่งไปที่", "en": "Tickets will be sent to" }
+  "ticketsEmailedTo": { "th": "บัตรจะถูกส่งไปที่", "en": "Tickets will be sent to" },
+  "yourTickets": { "th": "บัตรของคุณ", "en": "Your tickets" },
+  "saveTicket": { "th": "บันทึกบัตร", "en": "Save ticket" },
+  "ticketAlt": { "th": "บัตรเข้างานพร้อมคิวอาร์โค้ด", "en": "Event ticket with QR code" }
 }

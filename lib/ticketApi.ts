@@ -125,6 +125,12 @@ export async function createOrder(input: {
 
 export type OrderStatus = "PENDING" | "PAID" | "EXPIRED" | "CANCELED" | "REFUNDED";
 
+export interface IssuedTicket {
+  id: string;
+  status: string;
+  principal: string;
+}
+
 export interface OrderDetail {
   id: string;
   status: OrderStatus;
@@ -132,6 +138,8 @@ export interface OrderDetail {
   eventCode: string;
   expiresAt: string;
   paidAt: string | null;
+  /** Populated once the order is PAID. */
+  tickets?: IssuedTicket[];
 }
 
 export async function getOrderDetail(orderId: string): Promise<OrderDetail> {
