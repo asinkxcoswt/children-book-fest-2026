@@ -7,12 +7,20 @@ import OrderStatus from "@/components/v4/OrderStatus";
 
 export const metadata = { title: t("checkoutSuccessTitle") };
 
-export default function CheckoutSuccess() {
+interface PageProps {
+  searchParams: Promise<{
+    orderId?: string;
+    token?: string;
+  }>;
+}
+
+export default async function CheckoutSuccess({ searchParams }: PageProps) {
+  const params = await searchParams;
   return (
     <main className="mx-auto w-full max-w-2xl flex-1 px-6 py-20">
       <h1 className="font-display text-4xl text-ink">{t("checkoutSuccessTitle")}</h1>
       <div className="mt-6">
-        <OrderStatus />
+        <OrderStatus orderId={params.orderId} token={params.token} />
       </div>
       <Link href="/v4" className="mt-10 inline-block text-sm text-tomato hover:underline">
         ← {t("backToHome")}

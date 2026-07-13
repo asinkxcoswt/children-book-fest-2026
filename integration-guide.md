@@ -7,12 +7,18 @@ self-contained — everything you need is here, no access to the platform repo r
 
 The ticket platform is a **headless commerce core**. Responsibilities split:
 
-| Storefront (you)                                          | Ticket platform (this API)                                               |
-| --------------------------------------------------------- | ------------------------------------------------------------------------ |
-| Event pages: name, dates, venue, description, images, SEO | Ticket types + live availability per event                               |
-| Checkout UI, purchase form (any fields you want)          | Inventory reservation, order lifecycle, expiry                           |
-| Redirecting the buyer to Stripe                           | Stripe Checkout session + webhook handling                               |
-| Success/cancel pages                                      | Issuing tickets (Apple/Google Wallet passes), emailing them to the buyer |
+| Storefront (you)                                                     | Ticket platform (this API)                                          |
+| --------------------------------------------------------------------- | -------------------------------------------------------------------- |
+| Event pages: name, dates, venue, description, images, SEO            | Ticket types + live availability per event                          |
+| Checkout UI, purchase form (any fields you want)                     | Inventory reservation, order lifecycle, expiry                      |
+| Redirecting the buyer to Stripe                                      | Stripe Checkout session + webhook handling                          |
+| **Ticket page** (`successUrl`): renders each ticket **with a QR code of the ticket `id`** | Issuing tickets; sending the buyer a confirmation email that links back to your `successUrl` |
+
+**Important**: the platform does not render ticket UI and does not send wallet passes. The
+confirmation email it sends contains only an order summary and a **"View my tickets" button
+pointing at your `successUrl`** — buyers will open that page days later at the venue, so it must
+be a durable, self-contained page (see §4.2) that shows each ticket's QR code (encode the raw
+ticket `id`; that's what gate scanners look up).
 
 The link between your event pages and the platform is the **`eventCode`** — a stable slug
 (e.g. `concert-2026-01-01`) registered by the merchant in their portal. You never create events,
@@ -161,7 +167,7 @@ Authorization: Bearer <jwt>
     }
   ],
   "metadata": { "shirtSize": "XL", "heardFrom": "facebook" },   // optional, see 4.4
-  "successUrl": "https://your-site.com/checkout/success?orderId={ORDER_ID_YOU_GENERATE_OR_APPEND_LATER}",
+  "successUrl": "https://your-site.com/orders/{ORDER_ID}",      // {ORDER_ID} substituted by the platform
   "cancelUrl": "https://your-site.com/events/concert-2026-01-01"
 }
 
@@ -179,41 +185,43 @@ What happens server-side: inventory is reserved atomically (so the buyer's ticke
 the whole hour), a Stripe Checkout Session with the same 1-hour expiry is created, and the URL is
 returned. **Redirect the buyer to `checkoutUrl`.**
 
-- Since `orderId` is only known after the call, a practical `successUrl` pattern is a generic
-  success page; create the order first, then store `orderId` in a cookie/session **or** put it in
-  the successUrl before redirecting is not possible (the URL is registered at session-creation
-  time) — so either append your own reference you generated client-side, or simplest: set
-  `successUrl` to `https://your-site.com/checkout/success` and keep `orderId` in an httpOnly
-  cookie set by your server action before redirecting.
+- **`{ORDER_ID}` placeholder**: put the literal string `{ORDER_ID}` anywhere in `successUrl`
+  (and/or `cancelUrl`) and the platform replaces it with the real order id before creating the
+  Stripe session. Your success page URL therefore always knows which order it is for.
+- **`successUrl` is also the buyer's permanent ticket page.** The confirmation email's
+  "View my tickets" button points at it, and buyers will reopen it at the venue — possibly weeks
+  later, on a different device, with no cookies. So make it a stable route like
+  `/orders/{ORDER_ID}` that fetches the order server-side and renders the tickets. Do not rely on
+  session state for it.
 - **Free orders** (`total = 0`): `checkoutUrl` is `null` and `status` is already `PAID` — skip
-  the redirect and go straight to your success page. Tickets are issued and emailed immediately.
+  the redirect and navigate straight to the (substituted) success URL yourself. Tickets are
+  issued and the confirmation email is sent immediately.
 - Unpaid orders expire after 1 hour; the Stripe link dies at the same moment and the held
   inventory is released.
 
-### 4.3 `passDisplay` — what gets printed on the wallet pass
+### 4.3 `passDisplay` — display data stored on each ticket
 
-The platform doesn't know your event's date or venue, so **you** provide the display text per
-order item. Every field is optional; omitted fields fall back to defaults (event name, ticket
-type name, order date, buyer email, `-`).
+The platform doesn't know your event's date or venue, so **you** provide display text per order
+item. It's stored on each issued ticket and comes back in ticket/order reads — the merchant's
+redemption console shows it to gate staff, and you can use it when rendering the ticket page.
+Every field is optional; omitted fields fall back to defaults (event name, ticket type name,
+order date, buyer email, `-`).
 
 ```jsonc
 {
   "main": "New Year Concert 2026", // headline (default: event name)
   "description": "VIP — Standing Zone A", // (default: ticket type name)
   "head": "VIP", // small header label
-  "date": "2026-01-01T19:00:00+07:00", // ISO — also used as the pass "relevant date"
+  "date": "2026-01-01T19:00:00+07:00", // ISO datetime
   "dateDisplay": "1 Jan 2026, 19:00", // human-formatted date line
   "principal": "John Doe", // attendee name (default: buyer email)
   "zone": "A",
-  "seat": "12",
-  "templateName": "default", // pass template registered with the merchant
-  "bgColorCode": "#1A1A2E", // pass colors (hex)
-  "textColorCode": "#FFFFFF"
+  "seat": "12"
 }
 ```
 
-Always send at least `main`, `date`, `dateDisplay`, and `principal` (collect the attendee name in
-your purchase form) — passes without them look broken to buyers.
+Always send at least `principal` (collect the attendee name in your purchase form) — gate staff
+search tickets by that name when a QR won't scan.
 
 ### 4.4 `metadata` — your purchase-form data
 
@@ -242,37 +250,41 @@ Authorization: Bearer <jwt>
 
 Poll every ~2s (webhooks usually land within seconds of payment) with a ~60s timeout:
 
-- `PAID` → show confirmation: "your tickets have been emailed to {email}". `tickets[]` is
-  populated once paid.
+- `PAID` → render the tickets (see 4.6). A confirmation email linking back to this page has
+  been sent to the buyer.
 - still `PENDING` after timeout → show "payment processing — you'll receive an email"; do NOT
   show an error (webhook may just be slow).
 - `EXPIRED` → the buyer took longer than 1 hour; send them back to the event page.
 
-### 4.6 Wallet pass links (optional)
+### 4.6 Rendering tickets (your job)
 
-Tickets are **emailed automatically** — you don't have to render pass links. If you want an
-"Add to Apple/Google Wallet" button on the success page:
+Once the order is `PAID`, `tickets[]` from `GET /orders/detail` is your source of truth. For each
+ticket render a card with:
 
-```
-GET /tickets/url?ticketId={id}&accountId={ACCOUNT_ID}&customerId={CUSTOMER_ID}&platform=apple|google
-Authorization: Bearer <jwt>
+- **a QR code encoding the raw ticket `id`** (e.g. with the `qrcode` npm package) — this is the
+  only thing gate scanners understand. Render it black-on-white, ≥200px.
+- the holder name (`principal`), ticket type, and whatever event info your page already has.
+- optionally the ticket `id` as small monospace text, as a manual-entry fallback for staff.
 
-200 → { "url": "https://…" }   // apple: signed .pkpass download (expires in 1h); google: Save-to-Wallet link
-```
+The same page doubles as the buyer's permanent ticket wallet (the email links to it), so keep it
+fast, mobile-first, and bright enough to scan a screen in daylight. There are no Apple/Google
+Wallet passes — don't render "Add to Wallet" buttons.
 
 ## 5. End-to-end flow recap
 
 ```
-Event page                createOrderAction              Stripe            Success page
+Event page                createOrderAction              Stripe            Ticket page (successUrl)
     │  GET availability        │                            │                   │
     │──────────────────────►   │                            │                   │
     │  buyer picks tickets,    │                            │                   │
     │  fills form, submits ──► │ POST /orders               │                   │
     │                          │  (reserve + session) ────► │                   │
-    │                          │ set cookie, redirect ────► │ buyer pays        │
-    │                          │                            │ ──── redirect ──► │ poll /orders/detail
-    │                          │        (platform webhook: issue tickets,       │  … until PAID
-    │                          │         email wallet passes to buyer)          │ show confirmation
+    │                          │ redirect to checkoutUrl ─► │ buyer pays        │
+    │                          │                            │ ── redirect ────► │ poll /orders/detail
+    │                          │   (platform webhook: issue tickets, email      │  … until PAID
+    │                          │    "View my tickets" link → successUrl)        │ render tickets + QR codes
+    │                          │                                                │       ▲
+    │                          │              buyer reopens email later ────────┘  (same page, any device)
 ```
 
 ## 8. Testing
@@ -290,8 +302,10 @@ Event page                createOrderAction              Stripe            Succe
 - [ ] All ticket-API calls are server-side (`server-only` module) — the API key and JWT never reach the browser.
 - [ ] `accountId` + `customerId` echoed on every request (query for GET, body for POST).
 - [ ] Prices rendered as `price / 100` THB; never send prices back (the platform snapshots them).
-- [ ] `passDisplay` sent with `main`, `date`, `dateDisplay`, `principal` at minimum.
-- [ ] Buyer email validated before order creation — it's where the tickets go.
+- [ ] `successUrl` uses the `{ORDER_ID}` placeholder and works cold (no cookies/session) — it's the buyer's permanent ticket page, linked from the confirmation email.
+- [ ] Ticket page renders a **black-on-white QR of each ticket `id`**; no wallet buttons.
+- [ ] `passDisplay.principal` (attendee name) collected and sent — gate staff search by it.
+- [ ] Buyer email validated before order creation — the confirmation email goes there.
 - [ ] Success page polls the API; never trusts the redirect.
 - [ ] Free orders skip the redirect (`checkoutUrl === null`).
 - [ ] Sold-out / limit / selling-period 400s surfaced to the buyer with the API's message.

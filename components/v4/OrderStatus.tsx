@@ -26,7 +26,7 @@ const TIMEOUT_MS = 60000;
 /** Polls our order-status route until the platform confirms payment, then
  *  renders the issued tickets as saveable QR images.
  *  Never trusts the Stripe redirect alone (see integration-guide.md §4.5). */
-export default function OrderStatus() {
+export default function OrderStatus({ orderId, token }: { orderId?: string; token?: string }) {
   const [phase, setPhase] = useState<Phase>("checking");
   const [order, setOrder] = useState<StatusResponse | null>(null);
 
@@ -37,7 +37,10 @@ export default function OrderStatus() {
     async function poll() {
       if (!alive) return;
       try {
-        const res = await fetch("/api/v4/orders/status");
+        const query = new URLSearchParams();
+        if (orderId) query.set("orderId", orderId);
+        if (token) query.set("token", token);
+        const res = await fetch(`/api/v4/orders/status?${query.toString()}`);
         if (res.status === 404) {
           if (alive) setPhase("notFound");
           return;
@@ -70,7 +73,7 @@ export default function OrderStatus() {
     return () => {
       alive = false;
     };
-  }, []);
+  }, [orderId, token]);
 
   if (phase === "checking") {
     // Big, obviously-alive loading state: spinner ring + pulsing ticket skeleton.

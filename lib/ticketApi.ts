@@ -1,3 +1,5 @@
+import crypto from "crypto";
+
 /* Server-only ticket platform client (see integration-guide.md).
  * IMPORTANT: only import this from Route Handlers / Server Components — the API
  * key and JWT must never reach the browser. (Consider adding the `server-only`
@@ -161,4 +163,14 @@ export async function getOrderDetail(orderId: string): Promise<OrderDetail> {
   );
   if (!res.ok) throw new TicketApiError(res.status, await res.text());
   return (await res.json()) as OrderDetail;
+}
+
+export function generateOrderToken(email: string, eventCode: string): string {
+  // Use TICKET_API_KEY as the secret key since it's already a server-only environment variable.
+  // We can also allow ORDER_SECURITY_SECRET if specified.
+  const secret = process.env.ORDER_SECURITY_SECRET || env("TICKET_API_KEY") || "dev-fallback-secret-key";
+  return crypto
+    .createHmac("sha256", secret)
+    .update(`${email.trim().toLowerCase()}:${eventCode}`)
+    .digest("hex");
 }

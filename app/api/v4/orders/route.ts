@@ -1,10 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getEvent } from "@/lib/content";
-import { createOrder, TicketApiError } from "@/lib/ticketApi";
+import { createOrder, TicketApiError, generateOrderToken } from "@/lib/ticketApi";
 import { pick, formatDate } from "@/lib/i18n";
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-const ORDER_COOKIE = "ticketOrderId";
 
 interface OrderRequestBody {
   slug?: string;
@@ -55,26 +54,22 @@ export async function POST(request: NextRequest) {
 
   const origin = request.nextUrl.origin;
   try {
+    const token = generateOrderToken(email, event.ticketEventCode);
     const order = await createOrder({
       eventCode: event.ticketEventCode,
       email,
       items: items.map((i) => ({ ...i, passDisplay })),
       // Purchase-form data for the merchant (flat scalars only — see guide §4.4).
       metadata: { parentName: name, childName, ...(phone && { phone }) },
-      successUrl: `${origin}/v4/checkout/success`,
+      successUrl: `${origin}/v4/checkout/success?orderId={ORDER_ID}&token=${token}`,
       cancelUrl: `${origin}/v4/event/${event.slug}`,
     });
 
     const res = NextResponse.json({
       status: order.status,
       checkoutUrl: order.checkoutUrl,
-    });
-    res.cookies.set(ORDER_COOKIE, order.orderId, {
-      httpOnly: true,
-      sameSite: "lax",
-      secure: process.env.NODE_ENV === "production",
-      path: "/",
-      maxAge: 60 * 60, // matches the order's 1-hour expiry
+      orderId: order.orderId,
+      token: token,
     });
     return res;
   } catch (err) {

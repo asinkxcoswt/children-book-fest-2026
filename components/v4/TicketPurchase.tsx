@@ -81,15 +81,17 @@ export default function TicketPurchase({
             .map(([code, quantity]) => ({ code, quantity })),
         }),
       });
-      const data = (await res.json()) as { checkoutUrl?: string | null; error?: string };
+      const data = (await res.json()) as { checkoutUrl?: string | null; error?: string; orderId?: string; token?: string };
       if (!res.ok) {
         setSubmitting(false);
         return data.error ?? t("ticketsUnavailable");
       }
       if (data.checkoutUrl) {
         window.location.assign(data.checkoutUrl); // paid order → Stripe Checkout
+      } else if (data.orderId && data.token) {
+        router.push(`/v4/checkout/success?orderId=${encodeURIComponent(data.orderId)}&token=${encodeURIComponent(data.token)}`); // free order — already PAID
       } else {
-        router.push("/v4/checkout/success"); // free order — already PAID
+        router.push("/v4/checkout/success"); // fallback
       }
       return null; // navigating away; keep the modal in its busy state
     } catch {
@@ -164,13 +166,12 @@ export default function TicketPurchase({
           return (
             <li
               key={tk.code}
-              className={`relative overflow-hidden rounded-2xl border-2 pl-4 transition-colors ${
-                soldOut
-                  ? "border-ink/10 opacity-60"
-                  : selected
-                    ? `${c.border} ${c.soft}`
-                    : "border-ink/10 hover:border-ink/25"
-              }`}
+              className={`relative overflow-hidden rounded-2xl border-2 pl-4 transition-colors ${soldOut
+                ? "border-ink/10 opacity-60"
+                : selected
+                  ? `${c.border} ${c.soft}`
+                  : "border-ink/10 hover:border-ink/25"
+                }`}
             >
               {/* Ticket-stub spine. */}
               <span aria-hidden className={`absolute inset-y-0 left-0 w-2 ${c.bg}`} />
@@ -178,9 +179,8 @@ export default function TicketPurchase({
               <div className="flex items-baseline justify-between gap-2 p-3 pb-2">
                 <span className="font-display text-base text-ink">{tk.name}</span>
                 <span
-                  className={`shrink-0 rounded-full px-3 py-0.5 font-display text-sm ${
-                    soldOut ? "bg-ink/10 text-ink/60" : `${c.bg} ${c.on}`
-                  }`}
+                  className={`shrink-0 rounded-full px-3 py-0.5 font-display text-sm ${soldOut ? "bg-ink/10 text-ink/60" : `${c.bg} ${c.on}`
+                    }`}
                 >
                   {tk.price === 0 ? t("free") : baht(tk.price)}
                 </span>
@@ -210,9 +210,8 @@ export default function TicketPurchase({
                       aria-label={`${t("quantity")} + ${tk.name}`}
                       disabled={(qty[tk.code] ?? 0) >= max}
                       onClick={() => step(tk.code, 1, max)}
-                      className={`flex h-8 w-8 items-center justify-center rounded-full border-2 font-display text-lg transition-colors disabled:opacity-30 ${
-                        selected ? `${c.border} ${c.text}` : "border-ink/15 text-ink hover:border-ink/40"
-                      }`}
+                      className={`flex h-8 w-8 items-center justify-center rounded-full border-2 font-display text-lg transition-colors disabled:opacity-30 ${selected ? `${c.border} ${c.text}` : "border-ink/15 text-ink hover:border-ink/40"
+                        }`}
                     >
                       +
                     </button>
