@@ -116,7 +116,40 @@ export default function TicketPurchase({
   }
 
   if (!tickets) {
-    return <p className="text-sm text-ink/60" role="status">{t("loadingTickets")}</p>;
+    // Skeleton mirroring the ticket-stub cards so the sidebar doesn't jump.
+    return (
+      <div role="status" aria-label={t("loadingTickets")}>
+        <h2 className="font-display text-lg text-ink">{t("tickets")}</h2>
+        <ul className="mt-3 space-y-3" aria-hidden>
+          {[0, 1].map((i) => (
+            <li
+              key={i}
+              className="relative animate-pulse overflow-hidden rounded-2xl border-2 border-ink/10 pl-4"
+              style={{ animationDelay: `${i * 150}ms` }}
+            >
+              <span className={`absolute inset-y-0 left-0 w-2 ${c.soft}`} />
+              <div className="flex items-center justify-between gap-2 p-3 pb-2">
+                <span className="h-4 w-24 rounded-full bg-ink/10" />
+                <span className={`h-6 w-14 rounded-full ${c.soft}`} />
+              </div>
+              <div className="mx-3 border-t-2 border-dashed border-ink/10" />
+              <div className="flex items-center gap-2 p-3 pt-2">
+                <span className="h-8 w-8 rounded-full border-2 border-ink/10" />
+                <span className="h-4 w-6 rounded bg-ink/10" />
+                <span className="h-8 w-8 rounded-full border-2 border-ink/10" />
+              </div>
+            </li>
+          ))}
+        </ul>
+        <p className="mt-3 flex items-center gap-2 text-sm text-ink/60">
+          <span aria-hidden className="relative flex h-2.5 w-2.5">
+            <span className={`absolute inline-flex h-full w-full animate-ping rounded-full ${c.bg} opacity-60`} />
+            <span className={`relative inline-flex h-2.5 w-2.5 rounded-full ${c.bg}`} />
+          </span>
+          {t("loadingTickets")}
+        </p>
+      </div>
+    );
   }
 
   return (
