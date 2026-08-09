@@ -6,6 +6,7 @@ import { tokenClasses } from "@/lib/colors";
 import { t, pick, formatWeekday } from "@/lib/i18n";
 import FestivalMap from "@/components/FestivalMap";
 import SectionHeading from "@/components/v4/SectionHeading";
+import WaveEdge from "@/components/v4/WaveEdge";
 
 export function generateStaticParams() {
   return getCategories().map((c) => ({ slug: c.slug }));
@@ -22,23 +23,49 @@ export default async function V4Category({ params }: { params: Promise<{ slug: s
 
   return (
     <main className="flex-1">
-      {/* v1's colored chapter header. */}
+      {/* Chapter header as a book cover: zone art framed like a sticker on the
+          color band, plus orientation chips (event count, days this zone runs). */}
       <section className={`${c.bg}`}>
-        <div className="mx-auto max-w-5xl px-6 py-16">
-          <Link href="/v4" className={`text-sm ${c.on} opacity-80 hover:underline`}>
-            ← {t("backToHome")}
-          </Link>
-          <h1 className={`mt-4 font-display text-5xl ${c.on}`}>{pick(category.name)}</h1>
-          <p className={`mt-3 max-w-xl text-lg ${c.on} opacity-90`}>{pick(category.description)}</p>
+        <div className="mx-auto grid max-w-5xl gap-8 px-6 pb-10 pt-12 sm:grid-cols-[1fr_auto] sm:items-center sm:py-12">
+          <div>
+            <Link
+              href="/v4"
+              className={`text-sm ${c.on} opacity-80 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-paper focus-visible:ring-offset-2`}
+            >
+              ← {t("backToHome")}
+            </Link>
+            <h1 className={`mt-4 font-display text-5xl ${c.on}`}>{pick(category.name)}</h1>
+            <p className={`mt-1 text-xs uppercase tracking-[0.18em] ${c.on} opacity-70`}>
+              {category.name.en}
+            </p>
+            <p className={`mt-4 max-w-xl text-lg ${c.on} opacity-90`}>{pick(category.description)}</p>
+            <Link
+              href="#events"
+              className="mt-6 inline-block rounded-full bg-paper px-7 py-3 text-lg text-ink transition-transform hover:scale-105 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ink focus-visible:ring-offset-2"
+            >
+              {events.length} {t("events")} →
+            </Link>
+          </div>
+
+          <div aria-hidden className="mx-auto w-40 rotate-3 rounded-2xl border-2 border-ink bg-paper p-2 shadow-md sm:w-52">
+            <Image
+              src={category.thumbnail}
+              alt=""
+              width={264}
+              height={198}
+              className="block h-auto w-full rounded-xl object-cover"
+            />
+          </div>
         </div>
       </section>
+      <WaveEdge fill={`var(--color-${category.color})`} />
 
       {/* v3's wayfinding map, anchored to this zone. */}
       <section className="mx-auto max-w-5xl px-6 pt-10">
         <FestivalMap currentSlug={slug} basePath="/v4" />
       </section>
 
-      <section className="mx-auto max-w-5xl px-6 py-12">
+      <section id="events" className="mx-auto max-w-5xl scroll-mt-6 px-6 py-12">
         <SectionHeading title={t("eventsInZone")} caption={t("eventsInZone", "en")} />
         <ul className="mt-6 space-y-5">
           {events.map((ev) => (
