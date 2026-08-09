@@ -37,6 +37,15 @@
           "sun-child",
           "sun-adult"
         ]
+      },
+      {
+        "date": "2026-08-18",
+        "start": "13:00",
+        "end": "14:30",
+        "ticketCodes": [
+          "sun-child",
+          "sun-adult"
+        ]
       }
     ]
   },

@@ -58,6 +58,13 @@ export function getSessionsByDate(event: FestivalEvent): { date: string; session
   return groups;
 }
 
+/** Every date the festival runs on — unique, sorted. Drives date-primary
+ *  displays (schedule board columns, per-card day strips). */
+export function getFestivalDates(): string[] {
+  const dates = new Set(events.flatMap((e) => e.schedule.sessions.map((s) => s.date)));
+  return [...dates].sort();
+}
+
 /** Count of events per category slug — handy for category tiles. */
 export function getEventCount(categorySlug: string): number {
   return events.filter((e) => e.category === categorySlug).length;

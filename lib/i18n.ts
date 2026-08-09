@@ -17,6 +17,12 @@ export function t(key: UiKey, locale: Locale = DEFAULT_LOCALE): string {
   return (uiStrings[key] as Localized)[locale];
 }
 
+/** Short weekday label only, e.g. "ส." / "Sat". */
+export function formatWeekday(isoDate: string, locale: Locale = DEFAULT_LOCALE): string {
+  const intlLocale = locale === "th" ? "th-TH" : "en-GB";
+  return new Date(`${isoDate}T00:00:00`).toLocaleDateString(intlLocale, { weekday: "short" });
+}
+
 /** Locale-aware date formatting for schedules. */
 export function formatDate(isoDate: string, locale: Locale = DEFAULT_LOCALE): string {
   const intlLocale = locale === "th" ? "th-TH" : "en-GB";

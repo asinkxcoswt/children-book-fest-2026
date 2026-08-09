@@ -1,9 +1,10 @@
 import Link from "next/link";
 import Image from "next/image";
-import { getCategories, getEventCount, getFeaturedEvents, getCategory } from "@/lib/content";
+import { getCategories, getEventCount, getEvents } from "@/lib/content";
 import { tokenClasses } from "@/lib/colors";
-import { t, pick, formatDate } from "@/lib/i18n";
+import { t, pick } from "@/lib/i18n";
 import FestivalMap from "@/components/FestivalMap";
+import ScheduleBoard from "@/components/v4/ScheduleBoard";
 
 /* Variant 4 — "Storybook Village": v1's editorial storybook UI (soft peach washes,
  * serif voice, chapter cards, magazine rows) combined with v3's playful explorable
@@ -11,7 +12,6 @@ import FestivalMap from "@/components/FestivalMap";
 
 export default function V4Home() {
   const categories = getCategories();
-  const featured = getFeaturedEvents();
 
   return (
     <main className="flex-1">
@@ -79,43 +79,12 @@ export default function V4Home() {
         </div>
       </section>
 
-      {/* Featured events — v1's magazine rows. */}
+      {/* Whole-festival schedule board — the date is the primary axis. */}
       <section className="mx-auto max-w-5xl px-6 pb-20">
-        <h2 className="font-display text-3xl text-ink">{t("featuredEvents")}</h2>
-        <ul className="mt-8 space-y-5">
-          {featured.map((ev) => {
-            const cat = getCategory(ev.category);
-            const c = tokenClasses(cat?.color ?? "peach");
-            return (
-              <li key={ev.slug}>
-                <Link
-                  href={`/v4/event/${ev.slug}`}
-                  className="flex flex-col gap-4 rounded-2xl border-2 border-ink/10 p-4 transition-colors hover:border-ink/30 sm:flex-row sm:items-center"
-                >
-                  <div aria-hidden className={`h-28 w-full shrink-0 rounded-xl ${c.bg} p-2 sm:w-44`}>
-                    <Image
-                      src={ev.thumbnail}
-                      alt=""
-                      width={400}
-                      height={400}
-                      className="h-full w-full rounded-2xl object-cover"
-                    />
-                  </div>
-                  <span className="flex-1">
-                    <span className={`font-display text-sm ${c.text}`}>
-                      {cat && pick(cat.name)}
-                    </span>
-                    <span className="block font-display text-2xl text-ink">{pick(ev.title)}</span>
-                    <span className="block text-ink/70">{pick(ev.summary)}</span>
-                    <span className="mt-1 block text-sm text-ink/60">
-                      {formatDate(ev.schedule.sessions[0].date)} · {ev.schedule.sessions[0].start} · {pick(ev.schedule.venue)}
-                    </span>
-                  </span>
-                </Link>
-              </li>
-            );
-          })}
-        </ul>
+        <h2 className="font-display text-3xl text-ink">{t("programmeByDay")}</h2>
+        <div className="mt-8">
+          <ScheduleBoard events={getEvents()} />
+        </div>
       </section>
     </main>
   );

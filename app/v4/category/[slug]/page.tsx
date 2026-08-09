@@ -1,9 +1,9 @@
 import Link from "next/link";
 import Image from "next/image";
 import { notFound } from "next/navigation";
-import { getCategories, getCategory, getEventsByCategory } from "@/lib/content";
+import { getCategories, getCategory, getEventsByCategory, getFestivalDates } from "@/lib/content";
 import { tokenClasses } from "@/lib/colors";
-import { t, pick, formatDate } from "@/lib/i18n";
+import { t, pick, formatWeekday } from "@/lib/i18n";
 import FestivalMap from "@/components/FestivalMap";
 
 export function generateStaticParams() {
@@ -17,6 +17,7 @@ export default async function V4Category({ params }: { params: Promise<{ slug: s
 
   const events = getEventsByCategory(slug);
   const c = tokenClasses(category.color);
+  const festivalDates = getFestivalDates();
 
   return (
     <main className="flex-1">
@@ -57,9 +58,34 @@ export default async function V4Category({ params }: { params: Promise<{ slug: s
                 <span className="flex-1">
                   <span className="block font-display text-2xl text-ink">{pick(ev.title)}</span>
                   <span className="block text-ink/70">{pick(ev.summary)}</span>
-                  <span className="mt-1 block text-sm text-ink/60">
-                    {formatDate(ev.schedule.sessions[0].date)} · {ev.schedule.sessions[0].start}–{ev.schedule.sessions[0].end} ·{" "}
-                    {pick(ev.schedule.venue)}
+                  <span className="mt-1 block text-sm text-ink/60">{pick(ev.schedule.venue)}</span>
+                  {/* Mini calendar strip — every card shares the same 3-day shape;
+                      days this event runs light up with their start times. */}
+                  <span className="mt-3 flex flex-wrap gap-2">
+                    {festivalDates.map((date) => {
+                      const daySessions = ev.schedule.sessions.filter((s) => s.date === date);
+                      const active = daySessions.length > 0;
+                      return (
+                        <span
+                          key={date}
+                          className={`w-16 min-w-16 shrink-0 rounded-xl border-2 py-1.5 text-center ${
+                            active ? `${c.bg} ${c.border} ${c.on}` : "border-ink/10 text-ink/30"
+                          }`}
+                        >
+                          <span className="block text-[11px] leading-tight">{formatWeekday(date)}</span>
+                          <span className="block font-display text-lg leading-tight">
+                            {Number(date.slice(-2))}
+                          </span>
+                          <span className="block text-[11px] leading-tight">
+                            {active
+                              ? daySessions.length > 1
+                                ? `${daySessions[0].start} +${daySessions.length - 1}`
+                                : daySessions[0].start
+                              : " "}
+                          </span>
+                        </span>
+                      );
+                    })}
                   </span>
                 </span>
                 <span aria-hidden className={`font-display text-lg ${c.text}`}>
