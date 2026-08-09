@@ -89,10 +89,11 @@ export default function TicketPocket({ tickets }: { tickets: TicketDisplay[] }) 
             );
           })}
 
-          {/* Paper sleeve over the bottom of the stack. */}
+          {/* Paper sleeve — a low lip at the bottom of the stack, kept clear of
+              the ticket's info panel so title/date/number stay sharp. */}
           <div
             aria-hidden
-            className={`pointer-events-none absolute -inset-x-3 -bottom-8 top-2/3 z-20 rounded-b-3xl rounded-t-[3rem] border-2 border-ink/10 ${c.soft} backdrop-blur-[1px]`}
+            className={`pointer-events-none absolute -inset-x-3 -bottom-8 top-[97%] z-20 rounded-b-3xl rounded-t-[2rem] border-2 border-ink/10 bg-paper`}
             style={{ boxShadow: "0 -6px 12px -8px rgba(0,0,0,0.25) inset" }}
           />
           {many && (

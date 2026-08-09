@@ -35,8 +35,13 @@ export default function AttendeeFormModal({
   const firstFieldRef = useRef<HTMLInputElement>(null);
   const dialogRef = useRef<HTMLDivElement>(null);
 
+  // Focus the first field once on open — NOT keyed on props, or any parent
+  // re-render (e.g. the submitting flip) would steal focus back here.
   useEffect(() => {
     firstFieldRef.current?.focus();
+  }, []);
+
+  useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
       if (e.key === "Escape") onClose();
       // Focus trap: keep Tab cycling inside the dialog.
@@ -92,6 +97,7 @@ export default function AttendeeFormModal({
         required={required}
         autoComplete={autoComplete}
         aria-describedby={error ? "af-error" : undefined}
+        readOnly={submitting}
         value={form[key]}
         onChange={(e) => setForm((f) => ({ ...f, [key]: e.target.value }))}
         className="mt-1 w-full rounded-xl border-2 border-ink/15 bg-paper px-3 py-2 text-base focus:border-ink/40 focus:outline-none"
@@ -120,7 +126,7 @@ export default function AttendeeFormModal({
         </h2>
         <div className="mb-5 mt-3 border-t-2 border-dashed border-ink/10" />
 
-        <form onSubmit={submit} className="space-y-4">
+        <form onSubmit={submit} aria-busy={submitting} className="space-y-4">
           {field("name", t("parentName"), "text", true, "name", firstFieldRef)}
           {field("childName", t("childName"), "text", true, "off")}
           {field("email", t("buyerEmail"), "email", true, "email")}
@@ -141,11 +147,23 @@ export default function AttendeeFormModal({
             >
               {t("cancel")}
             </button>
+            {/* While submitting the button stays enabled (submit() guards
+                re-entry) so it keeps focus — disabling would drop focus and
+                read as a dead control mid-loading. */}
             <button
               type="submit"
-              disabled={!valid || submitting}
-              className={`flex-1 rounded-full px-5 py-2.5 ${c.bg} ${c.on} transition-opacity focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ink focus-visible:ring-offset-2 disabled:opacity-40`}
+              disabled={!valid}
+              aria-disabled={!valid || submitting}
+              className={`flex-1 rounded-full px-5 py-2.5 ${c.bg} ${c.on} transition-opacity focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ink focus-visible:ring-offset-2 disabled:opacity-40 ${
+                submitting ? "cursor-wait opacity-70" : ""
+              }`}
             >
+              {submitting && (
+                <span
+                  aria-hidden
+                  className="mr-2 inline-block h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent align-[-2px]"
+                />
+              )}
               {submitting ? t("processingOrder") : t("confirm")}
             </button>
           </div>
