@@ -13,17 +13,19 @@ interface TokenClasses {
   on: string;
   /** Soft 10% tint of the token, for selected/backdrop surfaces. */
   soft: string;
+  /** Hard riso-style offset shadow in the token color (with pressed-in hover). */
+  stamp: string;
 }
 
 const TOKENS: Record<ColorToken, TokenClasses> = {
-  sunshine: { bg: "bg-sunshine", text: "text-sunshine", border: "border-sunshine", on: "text-ink", soft: "bg-sunshine/10" },
-  meadow: { bg: "bg-meadow", text: "text-meadow", border: "border-meadow", on: "text-paper", soft: "bg-meadow/10" },
-  tomato: { bg: "bg-tomato", text: "text-tomato", border: "border-tomato", on: "text-paper", soft: "bg-tomato/10" },
-  sky: { bg: "bg-sky", text: "text-sky", border: "border-sky", on: "text-paper", soft: "bg-sky/10" },
-  bubblegum: { bg: "bg-bubblegum", text: "text-bubblegum", border: "border-bubblegum", on: "text-paper", soft: "bg-bubblegum/10" },
-  tangerine: { bg: "bg-tangerine", text: "text-tangerine", border: "border-tangerine", on: "text-paper", soft: "bg-tangerine/10" },
-  cornflower: { bg: "bg-cornflower", text: "text-cornflower", border: "border-cornflower", on: "text-paper", soft: "bg-cornflower/10" },
-  peach: { bg: "bg-peach", text: "text-peach", border: "border-peach", on: "text-ink", soft: "bg-peach/10" },
+  sunshine: { bg: "bg-sunshine", text: "text-sunshine", border: "border-sunshine", on: "text-ink", soft: "bg-sunshine/10", stamp: "shadow-[3px_3px_0_var(--color-sunshine)] hover:shadow-[1px_1px_0_var(--color-sunshine)]" },
+  meadow: { bg: "bg-meadow", text: "text-meadow", border: "border-meadow", on: "text-paper", soft: "bg-meadow/10", stamp: "shadow-[3px_3px_0_var(--color-meadow)] hover:shadow-[1px_1px_0_var(--color-meadow)]" },
+  tomato: { bg: "bg-tomato", text: "text-tomato", border: "border-tomato", on: "text-paper", soft: "bg-tomato/10", stamp: "shadow-[3px_3px_0_var(--color-tomato)] hover:shadow-[1px_1px_0_var(--color-tomato)]" },
+  sky: { bg: "bg-sky", text: "text-sky", border: "border-sky", on: "text-paper", soft: "bg-sky/10", stamp: "shadow-[3px_3px_0_var(--color-sky)] hover:shadow-[1px_1px_0_var(--color-sky)]" },
+  bubblegum: { bg: "bg-bubblegum", text: "text-bubblegum", border: "border-bubblegum", on: "text-paper", soft: "bg-bubblegum/10", stamp: "shadow-[3px_3px_0_var(--color-bubblegum)] hover:shadow-[1px_1px_0_var(--color-bubblegum)]" },
+  tangerine: { bg: "bg-tangerine", text: "text-tangerine", border: "border-tangerine", on: "text-paper", soft: "bg-tangerine/10", stamp: "shadow-[3px_3px_0_var(--color-tangerine)] hover:shadow-[1px_1px_0_var(--color-tangerine)]" },
+  cornflower: { bg: "bg-cornflower", text: "text-cornflower", border: "border-cornflower", on: "text-paper", soft: "bg-cornflower/10", stamp: "shadow-[3px_3px_0_var(--color-cornflower)] hover:shadow-[1px_1px_0_var(--color-cornflower)]" },
+  peach: { bg: "bg-peach", text: "text-peach", border: "border-peach", on: "text-ink", soft: "bg-peach/10", stamp: "shadow-[3px_3px_0_var(--color-peach)] hover:shadow-[1px_1px_0_var(--color-peach)]" },
 };
 
 export function tokenClasses(token: ColorToken): TokenClasses {

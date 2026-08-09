@@ -1,6 +1,6 @@
 import type { FestivalEvent } from "@/types/content";
-import { getCategory, getFestivalDates } from "@/lib/content";
-import { t, pick, formatDate, formatWeekday } from "@/lib/i18n";
+import { getCategories, getCategory, getFestivalDates } from "@/lib/content";
+import { t, pick, formatDate, formatWeekday, formatMonth } from "@/lib/i18n";
 import ScheduleBoardGrid, { type BoardBlock } from "@/components/v4/ScheduleBoardGrid";
 
 /** Day × time-of-day schedule board (v4 home). Every session of every event
@@ -51,7 +51,9 @@ export default function ScheduleBoard({ events }: { events: FestivalEvent[] }) {
         label: formatDate(date),
         weekday: formatWeekday(date),
         dayNum: Number(date.slice(-2)),
+        month: formatMonth(date),
       }))}
+      legend={getCategories().map((cat) => ({ label: pick(cat.name), color: cat.color }))}
       bands={BANDS.map((band) => ({
         label: t(band.key),
         cells: dates.map((date) => blocks.get(date)?.get(band.key) ?? []),
