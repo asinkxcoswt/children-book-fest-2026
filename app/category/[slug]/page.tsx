@@ -5,8 +5,8 @@ import { getCategories, getCategory, getEventsByCategory, getFestivalDates } fro
 import { tokenClasses } from "@/lib/colors";
 import { t, pick, formatWeekday } from "@/lib/i18n";
 import FestivalMap from "@/components/FestivalMap";
-import SectionHeading from "@/components/v4/SectionHeading";
-import WaveEdge from "@/components/v4/WaveEdge";
+import SectionHeading from "@/components/SectionHeading";
+import WaveEdge from "@/components/WaveEdge";
 
 export function generateStaticParams() {
   return getCategories().map((c) => ({ slug: c.slug }));
@@ -43,7 +43,7 @@ export default async function V4Category({ params }: { params: Promise<{ slug: s
         <div className="mx-auto grid max-w-5xl gap-8 px-6 pb-10 pt-12 sm:grid-cols-[1fr_auto] sm:items-center sm:py-12">
           <div>
             <Link
-              href="/v4"
+              href="/"
               className={`text-sm ${c.on} opacity-80 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-paper focus-visible:ring-offset-2`}
             >
               ← {t("backToHome")}
@@ -74,9 +74,9 @@ export default async function V4Category({ params }: { params: Promise<{ slug: s
       </section>
       <WaveEdge fill={`var(--color-${category.color})`} />
 
-      {/* v3's wayfinding map, anchored to this zone. */}
+      {/* Wayfinding map, anchored to this zone. */}
       <section className="mx-auto max-w-5xl px-6 pt-10">
-        <FestivalMap currentSlug={slug} basePath="/v4" />
+        <FestivalMap currentSlug={slug} />
       </section>
 
       <section id="events" className="mx-auto max-w-5xl scroll-mt-6 px-6 py-12">
@@ -85,7 +85,7 @@ export default async function V4Category({ params }: { params: Promise<{ slug: s
           {events.map((ev) => (
             <li key={ev.slug}>
               <Link
-                href={`/v4/event/${ev.slug}`}
+                href={`/event/${ev.slug}`}
                 className="flex flex-col gap-4 rounded-2xl border-2 border-ink/10 p-4 transition-colors hover:border-ink/30 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ink focus-visible:ring-offset-2 sm:flex-row sm:items-center"
               >
                 <div aria-hidden className={`h-28 w-full shrink-0 rounded-xl ${c.bg} p-2 sm:w-44`}>

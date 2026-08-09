@@ -80,5 +80,6 @@
   "copied": { "th": "คัดลอกแล้ว ✓", "en": "Copied ✓" },
   "shareVia": { "th": "แชร์กิจกรรมนี้", "en": "Share this event" },
   "lineApp": { "th": "LINE", "en": "LINE" },
-  "facebook": { "th": "Facebook", "en": "Facebook" }
+  "facebook": { "th": "Facebook", "en": "Facebook" },
+  "hostedBy": { "th": "จัดโดย", "en": "Hosted by" }
 }

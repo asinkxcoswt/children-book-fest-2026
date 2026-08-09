@@ -1,9 +1,9 @@
 import type { FestivalEvent } from "@/types/content";
 import { getCategories, getCategory, getFestivalDates } from "@/lib/content";
 import { t, pick, formatDate, formatWeekday, formatMonth } from "@/lib/i18n";
-import ScheduleBoardGrid, { type BoardBlock } from "@/components/v4/ScheduleBoardGrid";
+import ScheduleBoardGrid, { type BoardBlock } from "@/components/ScheduleBoardGrid";
 
-/** Day × time-of-day schedule board (v4 home). Every session of every event
+/** Day × time-of-day schedule board (home page). Every session of every event
  *  appears as a colored block in its day column, so visitors see the whole
  *  festival at a glance with the date as the primary axis. This server half
  *  resolves content into plain props; ScheduleBoardGrid renders them with

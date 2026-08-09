@@ -43,10 +43,10 @@ function buildTrail(points: { left: string; top: string }[]): string {
 
 export default function FestivalMap({
   currentSlug,
-  basePath = "/v3",
+  basePath = "",
 }: {
   currentSlug?: string;
-  /** Route prefix for the variant using the map, e.g. "/v4". */
+  /** Optional route prefix for links on the map. */
   basePath?: string;
 }) {
   const categories = getCategories();

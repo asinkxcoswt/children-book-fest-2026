@@ -15,7 +15,7 @@ interface OrderRequestBody {
   items?: { code?: string; quantity?: number }[];
 }
 
-/** Creates a platform order for a v4 event and returns the Stripe checkout URL
+/** Creates a platform order for an event and returns the Stripe checkout URL
  *  (null for free orders). The orderId goes into an httpOnly cookie so the
  *  success page can poll it without exposing it in the URL. */
 export async function POST(request: NextRequest) {
@@ -66,8 +66,8 @@ export async function POST(request: NextRequest) {
       items: items.map((i) => ({ ...i, passDisplay: passDisplayFor(i.code) })),
       // Purchase-form data for the merchant (flat scalars only — see guide §4.4).
       metadata: { parentName: name, childName, ...(phone && { phone }) },
-      successUrl: `${origin}/v4/checkout/success?orderId={ORDER_ID}&token=${token}`,
-      cancelUrl: `${origin}/v4/event/${event.slug}`,
+      successUrl: `${origin}/checkout/success?orderId={ORDER_ID}&token=${token}`,
+      cancelUrl: `${origin}/event/${event.slug}`,
     });
 
     const res = NextResponse.json({

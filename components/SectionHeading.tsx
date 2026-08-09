@@ -1,4 +1,4 @@
-/** v4 section header: display-font title on the same 3px peach rule the
+/** Section header: display-font title on the same 3px peach rule the
  *  schedule board's day headers sit on, with an optional small letterspaced
  *  English caption on the right — one heading language across the site. */
 export default function SectionHeading({

@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import type { ColorToken } from "@/types/content";
 import { t } from "@/lib/i18n";
-import TicketPocket from "@/components/v4/TicketPocket";
+import TicketPocket from "@/components/TicketPocket";
 
 type Phase = "checking" | "paid" | "pending" | "expired" | "notFound";
 
@@ -42,7 +42,7 @@ export default function OrderStatus({ orderId, token }: { orderId?: string; toke
         const query = new URLSearchParams();
         if (orderId) query.set("orderId", orderId);
         if (token) query.set("token", token);
-        const res = await fetch(`/api/v4/orders/status?${query.toString()}`);
+        const res = await fetch(`/api/orders/status?${query.toString()}`);
         if (res.status === 404) {
           if (alive) setPhase("notFound");
           return;

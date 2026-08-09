@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Itim, IBM_Plex_Sans_Thai } from "next/font/google";
 import "./globals.css";
 import { t } from "@/lib/i18n";
+import SiteFooter from "@/components/SiteFooter";
 
 /* Display face — rounded, friendly, full Thai + Latin coverage. */
 const itim = Itim({
@@ -46,7 +47,10 @@ export default function RootLayout({
   // Default locale is Thai; lang drives Thai line-breaking and font rendering.
   return (
     <html lang="th" className={`${itim.variable} ${plexThai.variable} h-full antialiased`}>
-      <body className="min-h-full flex flex-col bg-paper text-ink">{children}</body>
+      <body className="min-h-full flex flex-col bg-paper text-ink">
+        {children}
+        <SiteFooter />
+      </body>
     </html>
   );
 }

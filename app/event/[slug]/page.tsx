@@ -6,8 +6,8 @@ import { getEvents, getEvent, getCategory, getSessionsByDate } from "@/lib/conte
 import { tokenClasses } from "@/lib/colors";
 import { t, pick, formatDate } from "@/lib/i18n";
 import RegisterCta from "@/components/RegisterCta";
-import TicketPurchase from "@/components/v4/TicketPurchase";
-import ShareButton from "@/components/v4/ShareButton";
+import TicketPurchase from "@/components/TicketPurchase";
+import ShareButton from "@/components/ShareButton";
 
 export function generateStaticParams() {
   return getEvents().map((e) => ({ slug: e.slug }));
@@ -47,7 +47,7 @@ export default async function V4Event({ params }: { params: Promise<{ slug: stri
   return (
     <main className="mx-auto max-w-5xl flex-1 px-6 py-12">
       {category && (
-        <Link href={`/v4/category/${category.slug}`} className={`text-sm ${c.text} hover:underline`}>
+        <Link href={`/category/${category.slug}`} className={`text-sm ${c.text} hover:underline`}>
           ← {pick(category.name)}
         </Link>
       )}
@@ -107,7 +107,7 @@ export default async function V4Event({ params }: { params: Promise<{ slug: stri
           <div className="mb-5 flex flex-wrap items-center gap-2">
             {category && (
               <Link
-                href={`/v4/category/${category.slug}`}
+                href={`/category/${category.slug}`}
                 className="inline-flex items-center gap-2 rounded-full border-2 border-ink/10 bg-paper px-3 py-1 text-sm text-ink transition-colors hover:border-ink/30 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ink focus-visible:ring-offset-2"
               >
                 <span aria-hidden className={`h-3 w-3 rounded border-2 border-ink ${c.bg}`} />

@@ -70,7 +70,7 @@ export default function ScheduleBoardGrid({ days, bands, legend }: Props) {
     return (
       <Link
         key={`${b.slug}${b.start}`}
-        href={`/v4/event/${b.slug}`}
+        href={`/event/${b.slug}`}
         {...hoverHandlers(b.slug)}
         className={`block min-w-0 ${c.bg} ${c.on} transition-[transform,opacity] hover:-translate-y-0.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ink focus-visible:ring-offset-2 ${
           compact ? "rounded-md p-1" : "rounded-lg p-2"

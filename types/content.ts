@@ -71,9 +71,9 @@ export interface FestivalEvent {
   /** Seats, if shown. */
   capacity?: number;
   gallery: GalleryImage[];
-  /** External registration system URL — used by v1–v3 (and as v4's fallback). */
+  /** External registration system URL — fallback when the ticket service is unavailable. */
   registrationUrl: string;
-  /** Event code registered in the ticket platform. When set, v4 sells tickets
+  /** Event code registered in the ticket platform. When set, the site sells tickets
    *  in-app through the ticket API instead of linking out. */
   ticketEventCode?: string;
   /** Surfaced on home pages when true. */

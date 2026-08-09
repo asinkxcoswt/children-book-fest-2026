@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import type { ColorToken } from "@/types/content";
 import { tokenClasses } from "@/lib/colors";
 import { t } from "@/lib/i18n";
-import AttendeeFormModal, { type AttendeeForm } from "@/components/v4/AttendeeFormModal";
+import AttendeeFormModal, { type AttendeeForm } from "@/components/AttendeeFormModal";
 
 interface TicketOption {
   code: string;
@@ -20,7 +20,7 @@ function baht(satang: number): string {
   return `฿${(satang / 100).toLocaleString("th-TH")}`;
 }
 
-/** In-app ticket purchase for v4. Buyers pick quantities on ticket-stub cards,
+/** In-app ticket purchase. Buyers pick quantities on ticket-stub cards,
  *  then fill in attendee details in a confirmation modal; the order is created
  *  through our own API routes and paid on Stripe Checkout. Falls back to the
  *  external link if the ticket service is unreachable. */
@@ -44,7 +44,7 @@ export default function TicketPurchase({
 
   useEffect(() => {
     let alive = true;
-    fetch(`/api/v4/tickets?slug=${encodeURIComponent(slug)}`)
+    fetch(`/api/tickets?slug=${encodeURIComponent(slug)}`)
       .then((res) => (res.ok ? res.json() : Promise.reject()))
       .then((data: { tickets: TicketOption[] }) => {
         if (alive) setTickets(data.tickets);
@@ -67,7 +67,7 @@ export default function TicketPurchase({
   async function confirmOrder(form: AttendeeForm): Promise<string | null> {
     setSubmitting(true);
     try {
-      const res = await fetch("/api/v4/orders", {
+      const res = await fetch("/api/orders", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -89,9 +89,9 @@ export default function TicketPurchase({
       if (data.checkoutUrl) {
         window.location.assign(data.checkoutUrl); // paid order → Stripe Checkout
       } else if (data.orderId && data.token) {
-        router.push(`/v4/checkout/success?orderId=${encodeURIComponent(data.orderId)}&token=${encodeURIComponent(data.token)}`); // free order — already PAID
+        router.push(`/checkout/success?orderId=${encodeURIComponent(data.orderId)}&token=${encodeURIComponent(data.token)}`); // free order — already PAID
       } else {
-        router.push("/v4/checkout/success"); // fallback
+        router.push("/checkout/success"); // fallback
       }
       return null; // navigating away; keep the modal in its busy state
     } catch {
