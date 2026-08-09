@@ -41,15 +41,15 @@ export default async function V4Event({ params }: { params: Promise<{ slug: stri
       <h1 className="mt-3 font-display text-4xl text-ink sm:text-5xl">{pick(event.title)}</h1>
       <p className="mt-2 text-lg text-ink/70">{pick(event.summary)}</p>
 
-      {/* Gallery — v1's editorial spread. */}
-      <div className="mt-8 grid gap-3 sm:grid-cols-2">
+      {/* Gallery — editorial spread with varied sizes, like a picture-book page. */}
+      <div className="mt-8 grid gap-3 sm:grid-cols-3">
         {event.gallery.map((img, i) => (
-          <div key={i} className={`h-56 rounded-2xl ${c.bg} p-2`}>
+          <div key={i} className={`h-56 rounded-2xl ${c.bg} p-2 sm:h-72 ${i % 3 === 0 ? "sm:col-span-2" : ""}`}>
             <Image
               src={img.src}
               alt={pick(img.alt)}
-              width={400}
-              height={400}
+              width={800}
+              height={600}
               className="h-full w-full rounded-2xl object-cover"
             />
           </div>
@@ -57,15 +57,11 @@ export default async function V4Event({ params }: { params: Promise<{ slug: stri
       </div>
 
       <div className="mt-10 grid gap-10 sm:grid-cols-[1fr_18rem]">
-        <article className="text-lg leading-relaxed text-ink/85">{pick(event.description)}</article>
+        <div>
+          <article className="text-lg leading-relaxed text-ink/85">{pick(event.description)}</article>
 
-        {/* v1's sidebar with v3's "you are here" wayfinding flavor. */}
-        <aside className="h-fit rounded-2xl border-2 border-ink/10 p-6">
-          <div className="mb-4 inline-flex items-center gap-1 rounded-full border-2 border-sunshine bg-paper px-3 py-1 text-xs text-ink">
-            <span aria-hidden className="h-2 w-2 rounded-full bg-tomato" />
-            {t("youAreHere")}
-          </div>
-          <dl className="space-y-4 text-sm">
+          {/* Practical details live with the content; the sidebar stays transactional. */}
+          <dl className="mt-8 grid gap-x-8 gap-y-5 border-t-[3px] border-peach pt-5 text-sm sm:grid-cols-2">
             <div>
               <dt className="font-display text-ink/60">{t("when")}</dt>
               {getSessionsByDate(event).map(({ date, sessions }) => (
@@ -91,7 +87,20 @@ export default async function V4Event({ params }: { params: Promise<{ slug: stri
               </div>
             )}
           </dl>
-          <div className="mt-6">
+        </div>
+
+        <aside className="h-fit rounded-2xl border-2 border-ink/10 p-6">
+          {/* Zone chip — names the color coding and links back to the zone. */}
+          {category && (
+            <Link
+              href={`/v4/category/${category.slug}`}
+              className="mb-5 inline-flex items-center gap-2 rounded-full border-2 border-ink/10 bg-paper px-3 py-1 text-sm text-ink transition-colors hover:border-ink/30 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ink focus-visible:ring-offset-2"
+            >
+              <span aria-hidden className={`h-3 w-3 rounded border-2 border-ink ${c.bg}`} />
+              {pick(category.name)}
+            </Link>
+          )}
+          <div>
             {event.ticketEventCode ? (
               <TicketPurchase
                 slug={event.slug}

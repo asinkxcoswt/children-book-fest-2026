@@ -111,7 +111,7 @@ export default function TicketPocket({ tickets }: { tickets: TicketDisplay[] }) 
         <button
           type="button"
           onClick={saveAll}
-          className={`inline-flex items-center gap-2 rounded-full px-7 py-3 text-lg ${c.bg} ${c.on} transition-transform hover:scale-105`}
+          className={`inline-flex items-center gap-2 rounded-full px-7 py-3 text-lg ${c.bg} ${c.on} transition-transform hover:scale-105 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ink focus-visible:ring-offset-2`}
         >
           {many ? t("saveAllTickets") : t("saveTicket")} ↓
         </button>

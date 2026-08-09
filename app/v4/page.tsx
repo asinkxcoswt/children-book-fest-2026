@@ -5,6 +5,7 @@ import { tokenClasses } from "@/lib/colors";
 import { t, pick } from "@/lib/i18n";
 import FestivalMap from "@/components/FestivalMap";
 import ScheduleBoard from "@/components/v4/ScheduleBoard";
+import SectionHeading from "@/components/v4/SectionHeading";
 
 /* Variant 4 — "Storybook Village": v1's editorial storybook UI (soft peach washes,
  * serif voice, chapter cards, magazine rows) combined with v3's playful explorable
@@ -36,13 +37,13 @@ export default function V4Home() {
 
       {/* The playful village map (from v3) as primary zone navigation. */}
       <section id="map" className="mx-auto max-w-5xl px-6 pt-14">
-        <h2 className="font-display text-3xl text-ink">{t("festivalMap")}</h2>
+        <SectionHeading title={t("festivalMap")} caption={t("festivalMap", "en")} />
         <FestivalMap basePath="/v4" />
       </section>
 
       {/* Chapter cards — v1's editorial tiles, now with zone illustrations and a playful tilt. */}
       <section className="mx-auto max-w-5xl px-6 py-14">
-        <h2 className="font-display text-3xl text-ink">{t("browseZones")}</h2>
+        <SectionHeading title={t("browseZones")} caption={t("browseZones", "en")} />
         <div className="mt-8 grid gap-6 sm:grid-cols-2">
           {categories.map((cat, i) => {
             const c = tokenClasses(cat.color);
@@ -50,7 +51,7 @@ export default function V4Home() {
               <Link
                 key={cat.slug}
                 href={`/v4/category/${cat.slug}`}
-                className={`group block rounded-3xl ${c.bg} p-7 transition-transform hover:-translate-y-1 ${
+                className={`group block rounded-3xl ${c.bg} p-7 transition-transform hover:-translate-y-1 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ink focus-visible:ring-offset-2 ${
                   i % 2 ? "hover:rotate-1" : "hover:-rotate-1"
                 }`}
               >
@@ -81,7 +82,7 @@ export default function V4Home() {
 
       {/* Whole-festival schedule board — the date is the primary axis. */}
       <section className="mx-auto max-w-5xl px-6 pb-20">
-        <h2 className="font-display text-3xl text-ink">{t("programmeByDay")}</h2>
+        <SectionHeading title={t("programmeByDay")} caption={t("programmeByDay", "en")} />
         <div className="mt-8">
           <ScheduleBoard events={getEvents()} />
         </div>

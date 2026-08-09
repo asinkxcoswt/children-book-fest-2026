@@ -118,14 +118,24 @@ export default function OrderStatus({ orderId, token }: { orderId?: string; toke
     const event = order?.event;
     return (
       <div role="status">
-        <p className="text-lg text-meadow">{t("orderPaid")}</p>
+        <p className="flex items-center gap-3 font-display text-2xl text-ink">
+          <span
+            aria-hidden
+            className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-meadow text-base text-paper"
+          >
+            ✓
+          </span>
+          {t("orderPaid")}
+        </p>
         {order?.orderNo && (
-          <p className="mt-2 font-display text-ink">
-            {t("orderNumber")} {order.orderNo}
+          <p className="mt-4">
+            <span className="inline-block rounded-lg border-2 border-dashed border-ink/30 px-3 py-1 font-display tracking-widest text-ink">
+              {t("orderNumber")} {order.orderNo}
+            </span>
           </p>
         )}
         {order?.email && (
-          <p className="mt-1 text-sm text-ink/60">
+          <p className="mt-2 text-sm text-ink/60">
             {t("ticketsEmailedTo")} {order.email}
           </p>
         )}

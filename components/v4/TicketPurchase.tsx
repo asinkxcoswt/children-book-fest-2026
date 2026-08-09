@@ -239,7 +239,7 @@ export default function TicketPurchase({
         type="button"
         disabled={count === 0}
         onClick={() => setModalOpen(true)}
-        className={`mt-4 w-full rounded-full px-7 py-3 text-lg ${c.bg} ${c.on} transition-all hover:scale-[1.02] disabled:opacity-40 disabled:hover:scale-100`}
+        className={`mt-4 w-full rounded-full px-7 py-3 text-lg ${c.bg} ${c.on} transition-all hover:scale-[1.02] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ink focus-visible:ring-offset-2 disabled:opacity-40 disabled:hover:scale-100`}
       >
         {t("getTickets")}
       </button>

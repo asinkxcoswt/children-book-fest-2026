@@ -33,11 +33,28 @@ export default function AttendeeFormModal({
   const [form, setForm] = useState<AttendeeForm>({ name: "", childName: "", email: "", phone: "" });
   const [error, setError] = useState<string | null>(null);
   const firstFieldRef = useRef<HTMLInputElement>(null);
+  const dialogRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     firstFieldRef.current?.focus();
     const onKey = (e: KeyboardEvent) => {
       if (e.key === "Escape") onClose();
+      // Focus trap: keep Tab cycling inside the dialog.
+      if (e.key === "Tab" && dialogRef.current) {
+        const focusables = dialogRef.current.querySelectorAll<HTMLElement>(
+          "input, button:not(:disabled)",
+        );
+        if (focusables.length === 0) return;
+        const first = focusables[0];
+        const last = focusables[focusables.length - 1];
+        if (e.shiftKey && document.activeElement === first) {
+          e.preventDefault();
+          last.focus();
+        } else if (!e.shiftKey && document.activeElement === last) {
+          e.preventDefault();
+          first.focus();
+        }
+      }
     };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
@@ -61,6 +78,7 @@ export default function AttendeeFormModal({
     label: string,
     type: string,
     required: boolean,
+    autoComplete: string,
     ref?: React.Ref<HTMLInputElement>,
   ) => (
     <div>
@@ -72,6 +90,8 @@ export default function AttendeeFormModal({
         id={`af-${key}`}
         type={type}
         required={required}
+        autoComplete={autoComplete}
+        aria-describedby={error ? "af-error" : undefined}
         value={form[key]}
         onChange={(e) => setForm((f) => ({ ...f, [key]: e.target.value }))}
         className="mt-1 w-full rounded-xl border-2 border-ink/15 bg-paper px-3 py-2 text-base focus:border-ink/40 focus:outline-none"
@@ -87,25 +107,27 @@ export default function AttendeeFormModal({
       }}
     >
       <div
+        ref={dialogRef}
         role="dialog"
         aria-modal="true"
         aria-labelledby="af-title"
-        className="w-full max-w-md rounded-3xl bg-paper p-6 shadow-xl"
+        className="relative w-full max-w-md overflow-hidden rounded-3xl bg-paper p-6 pl-8 shadow-xl"
       >
-        <div className={`-mx-6 -mt-6 mb-5 rounded-t-3xl px-6 py-4 ${c.bg}`}>
-          <h2 id="af-title" className={`font-display text-2xl ${c.on}`}>
-            {t("attendeeDetails")}
-          </h2>
-        </div>
+        {/* Ticket-stub spine, echoing the purchase cards. */}
+        <span aria-hidden className={`absolute inset-y-0 left-0 w-3 ${c.bg}`} />
+        <h2 id="af-title" className="font-display text-2xl text-ink">
+          {t("attendeeDetails")}
+        </h2>
+        <div className="mb-5 mt-3 border-t-2 border-dashed border-ink/10" />
 
         <form onSubmit={submit} className="space-y-4">
-          {field("name", t("parentName"), "text", true, firstFieldRef)}
-          {field("childName", t("childName"), "text", true)}
-          {field("email", t("buyerEmail"), "email", true)}
-          {field("phone", t("phoneOptional"), "tel", false)}
+          {field("name", t("parentName"), "text", true, "name", firstFieldRef)}
+          {field("childName", t("childName"), "text", true, "off")}
+          {field("email", t("buyerEmail"), "email", true, "email")}
+          {field("phone", t("phoneOptional"), "tel", false, "tel")}
 
           {error && (
-            <p className="text-sm text-tomato" role="alert">
+            <p id="af-error" className="text-sm text-tomato" role="alert">
               {error}
             </p>
           )}
@@ -122,7 +144,7 @@ export default function AttendeeFormModal({
             <button
               type="submit"
               disabled={!valid || submitting}
-              className={`flex-1 rounded-full px-5 py-2.5 ${c.bg} ${c.on} transition-opacity disabled:opacity-40`}
+              className={`flex-1 rounded-full px-5 py-2.5 ${c.bg} ${c.on} transition-opacity focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ink focus-visible:ring-offset-2 disabled:opacity-40`}
             >
               {submitting ? t("processingOrder") : t("confirm")}
             </button>

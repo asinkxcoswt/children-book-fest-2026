@@ -72,13 +72,13 @@ export default function ScheduleBoardGrid({ days, bands, legend }: Props) {
         key={`${b.slug}${b.start}`}
         href={`/v4/event/${b.slug}`}
         {...hoverHandlers(b.slug)}
-        className={`block min-w-0 ${c.bg} ${c.on} transition-[transform,opacity] hover:-translate-y-0.5 ${
+        className={`block min-w-0 ${c.bg} ${c.on} transition-[transform,opacity] hover:-translate-y-0.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ink focus-visible:ring-offset-2 ${
           compact ? "rounded-md p-1" : "rounded-lg p-2"
         } ${faded ? "opacity-25" : ""}`}
       >
         <span
           className={`block font-bold leading-tight tabular-nums ${
-            compact ? "text-[9px]" : "text-[11px] tracking-wide"
+            compact ? "text-[10px]" : "text-[11px] tracking-wide"
           }`}
         >
           {compact ? b.start : `${b.start}–${b.end}`}
@@ -86,7 +86,7 @@ export default function ScheduleBoardGrid({ days, bands, legend }: Props) {
         <span
           className={
             compact
-              ? "line-clamp-3 break-words text-[10px] leading-tight"
+              ? "line-clamp-3 break-words text-[11px] leading-tight"
               : "font-display text-sm leading-snug"
           }
         >
@@ -197,7 +197,7 @@ export default function ScheduleBoardGrid({ days, bands, legend }: Props) {
                 type="button"
                 aria-label={t("earlierDays")}
                 onClick={() => scrollByColumn(-1)}
-                className="pointer-events-auto flex h-10 w-10 items-center justify-center rounded-full border-2 border-ink/15 bg-paper text-lg text-ink shadow-sm transition-transform hover:scale-110"
+                className="pointer-events-auto flex h-10 w-10 items-center justify-center rounded-full border-2 border-ink/15 bg-paper text-lg text-ink shadow-sm transition-transform hover:scale-110 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ink focus-visible:ring-offset-2"
               >
                 ←
               </button>
@@ -209,7 +209,7 @@ export default function ScheduleBoardGrid({ days, bands, legend }: Props) {
                 type="button"
                 aria-label={t("laterDays")}
                 onClick={() => scrollByColumn(1)}
-                className="pointer-events-auto flex h-10 w-10 items-center justify-center rounded-full border-2 border-ink/15 bg-paper text-lg text-ink shadow-sm transition-transform hover:scale-110"
+                className="pointer-events-auto flex h-10 w-10 items-center justify-center rounded-full border-2 border-ink/15 bg-paper text-lg text-ink shadow-sm transition-transform hover:scale-110 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ink focus-visible:ring-offset-2"
               >
                 →
               </button>

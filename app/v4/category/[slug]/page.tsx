@@ -5,6 +5,7 @@ import { getCategories, getCategory, getEventsByCategory, getFestivalDates } fro
 import { tokenClasses } from "@/lib/colors";
 import { t, pick, formatWeekday } from "@/lib/i18n";
 import FestivalMap from "@/components/FestivalMap";
+import SectionHeading from "@/components/v4/SectionHeading";
 
 export function generateStaticParams() {
   return getCategories().map((c) => ({ slug: c.slug }));
@@ -38,13 +39,13 @@ export default async function V4Category({ params }: { params: Promise<{ slug: s
       </section>
 
       <section className="mx-auto max-w-5xl px-6 py-12">
-        <h2 className="font-display text-2xl text-ink">{t("eventsInZone")}</h2>
+        <SectionHeading title={t("eventsInZone")} caption={t("eventsInZone", "en")} />
         <ul className="mt-6 space-y-5">
           {events.map((ev) => (
             <li key={ev.slug}>
               <Link
                 href={`/v4/event/${ev.slug}`}
-                className="flex flex-col gap-4 rounded-2xl border-2 border-ink/10 p-4 transition-colors hover:border-ink/30 sm:flex-row sm:items-center"
+                className="flex flex-col gap-4 rounded-2xl border-2 border-ink/10 p-4 transition-colors hover:border-ink/30 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ink focus-visible:ring-offset-2 sm:flex-row sm:items-center"
               >
                 <div aria-hidden className={`h-28 w-full shrink-0 rounded-xl ${c.bg} p-2 sm:w-44`}>
                   <Image
@@ -72,11 +73,11 @@ export default async function V4Category({ params }: { params: Promise<{ slug: s
                             active ? `${c.bg} ${c.border} ${c.on}` : "border-ink/10 text-ink/30"
                           }`}
                         >
-                          <span className="block text-[11px] leading-tight">{formatWeekday(date)}</span>
+                          <span className="block text-[10px] leading-tight opacity-75">{formatWeekday(date)}</span>
                           <span className="block font-display text-lg leading-tight">
                             {Number(date.slice(-2))}
                           </span>
-                          <span className="block text-[11px] leading-tight">
+                          <span className="block text-[11px] font-bold leading-tight tabular-nums">
                             {active
                               ? daySessions.length > 1
                                 ? `${daySessions[0].start} +${daySessions.length - 1}`
