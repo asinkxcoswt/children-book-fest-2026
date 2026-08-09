@@ -7,6 +7,7 @@ import { tokenClasses } from "@/lib/colors";
 import { t, pick, formatDate } from "@/lib/i18n";
 import RegisterCta from "@/components/RegisterCta";
 import TicketPurchase from "@/components/v4/TicketPurchase";
+import ShareButton from "@/components/v4/ShareButton";
 
 export function generateStaticParams() {
   return getEvents().map((e) => ({ slug: e.slug }));
@@ -20,7 +21,19 @@ export async function generateMetadata({
   const { slug } = await params;
   const event = getEvent(slug);
   if (!event) return {};
-  return { title: pick(event.title), description: pick(event.summary) };
+  const title = pick(event.title);
+  const description = pick(event.summary);
+  return {
+    title,
+    description,
+    openGraph: {
+      title,
+      description,
+      images: [{ url: event.thumbnail }],
+      type: "article",
+    },
+    twitter: { card: "summary_large_image", title, description, images: [event.thumbnail] },
+  };
 }
 
 export default async function V4Event({ params }: { params: Promise<{ slug: string }> }) {
@@ -90,16 +103,19 @@ export default async function V4Event({ params }: { params: Promise<{ slug: stri
         </div>
 
         <aside className="h-fit rounded-2xl border-2 border-ink/10 p-6">
-          {/* Zone chip — names the color coding and links back to the zone. */}
-          {category && (
-            <Link
-              href={`/v4/category/${category.slug}`}
-              className="mb-5 inline-flex items-center gap-2 rounded-full border-2 border-ink/10 bg-paper px-3 py-1 text-sm text-ink transition-colors hover:border-ink/30 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ink focus-visible:ring-offset-2"
-            >
-              <span aria-hidden className={`h-3 w-3 rounded border-2 border-ink ${c.bg}`} />
-              {pick(category.name)}
-            </Link>
-          )}
+          {/* Zone chip (names the color coding, links back to the zone) + share. */}
+          <div className="mb-5 flex flex-wrap items-center gap-2">
+            {category && (
+              <Link
+                href={`/v4/category/${category.slug}`}
+                className="inline-flex items-center gap-2 rounded-full border-2 border-ink/10 bg-paper px-3 py-1 text-sm text-ink transition-colors hover:border-ink/30 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ink focus-visible:ring-offset-2"
+              >
+                <span aria-hidden className={`h-3 w-3 rounded border-2 border-ink ${c.bg}`} />
+                {pick(category.name)}
+              </Link>
+            )}
+            <ShareButton title={pick(event.title)} text={pick(event.summary)} />
+          </div>
           <div>
             {event.ticketEventCode ? (
               <TicketPurchase

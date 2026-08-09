@@ -12,6 +12,20 @@ export function generateStaticParams() {
   return getCategories().map((c) => ({ slug: c.slug }));
 }
 
+export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }) {
+  const { slug } = await params;
+  const category = getCategory(slug);
+  if (!category) return {};
+  const title = pick(category.name);
+  const description = pick(category.description);
+  return {
+    title,
+    description,
+    openGraph: { title, description, images: [{ url: category.thumbnail }] },
+    twitter: { card: "summary_large_image", title, description, images: [category.thumbnail] },
+  };
+}
+
 export default async function V4Category({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
   const category = getCategory(slug);

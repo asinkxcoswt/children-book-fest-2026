@@ -74,5 +74,11 @@
   "saveAllTickets": { "th": "บันทึกบัตรทั้งหมด", "en": "Save all tickets" },
   "orderNumber": { "th": "หมายเลขคำสั่งซื้อ", "en": "Order" },
   "nextTicket": { "th": "แตะบัตรเพื่อดูใบถัดไป", "en": "Tap a ticket to see the next one" },
-  "ticketAlt": { "th": "บัตรเข้างานพร้อมคิวอาร์โค้ด", "en": "Event ticket with QR code" }
+  "ticketAlt": { "th": "บัตรเข้างานพร้อมคิวอาร์โค้ด", "en": "Event ticket with QR code" },
+  "share": { "th": "แชร์", "en": "Share" },
+  "copyLink": { "th": "คัดลอกลิงก์", "en": "Copy link" },
+  "copied": { "th": "คัดลอกแล้ว ✓", "en": "Copied ✓" },
+  "shareVia": { "th": "แชร์กิจกรรมนี้", "en": "Share this event" },
+  "lineApp": { "th": "LINE", "en": "LINE" },
+  "facebook": { "th": "Facebook", "en": "Facebook" }
 }
