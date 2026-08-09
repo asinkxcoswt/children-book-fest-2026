@@ -15,13 +15,30 @@
   },
   "category": "illustration",
   "schedule": {
-    "date": "2026-08-15",
-    "start": "10:00",
-    "end": "11:30",
     "venue": {
       "th": "ห้องเวิร์กชอปสีฟ้า",
       "en": "Blue workshop room"
-    }
+    },
+    "sessions": [
+      {
+        "date": "2026-08-15",
+        "start": "10:00",
+        "end": "11:30",
+        "ticketCodes": [
+          "sat-child",
+          "sat-adult"
+        ]
+      },
+      {
+        "date": "2026-08-16",
+        "start": "13:00",
+        "end": "14:30",
+        "ticketCodes": [
+          "sun-child",
+          "sun-adult"
+        ]
+      }
+    ]
   },
   "ageRange": "6–12",
   "capacity": 24,

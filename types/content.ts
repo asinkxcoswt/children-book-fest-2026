@@ -36,13 +36,23 @@ export interface GalleryImage {
   alt: Localized;
 }
 
-export interface EventSchedule {
+/** One occurrence of an event. With the session-as-ticket-type model, each
+ *  session lists the platform ticket codes that admit on that day so the
+ *  pass shows the right date. */
+export interface EventSession {
   /** ISO date, e.g. "2026-08-15". */
   date: string;
   /** Local time, e.g. "10:00". */
   start: string;
   end: string;
+  /** TicketConfig codes (from the ticket platform) belonging to this session. */
+  ticketCodes?: string[];
+}
+
+export interface EventSchedule {
   venue: Localized;
+  /** All occurrences, in chronological order. Single-day events have one. */
+  sessions: EventSession[];
 }
 
 export interface FestivalEvent {

@@ -2,7 +2,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
-import { getEvents, getEvent, getCategory } from "@/lib/content";
+import { getEvents, getEvent, getCategory, getSessionsByDate } from "@/lib/content";
 import { tokenClasses } from "@/lib/colors";
 import { t, pick, formatDate } from "@/lib/i18n";
 import RegisterCta from "@/components/RegisterCta";
@@ -68,9 +68,11 @@ export default async function V4Event({ params }: { params: Promise<{ slug: stri
           <dl className="space-y-4 text-sm">
             <div>
               <dt className="font-display text-ink/60">{t("when")}</dt>
-              <dd className="text-ink">
-                {formatDate(event.schedule.date)} · {event.schedule.start}–{event.schedule.end}
-              </dd>
+              {getSessionsByDate(event).map(({ date, sessions }) => (
+                <dd key={date} className="text-ink">
+                  {formatDate(date)} · {sessions.map((s) => `${s.start}–${s.end}`).join(", ")}
+                </dd>
+              ))}
             </div>
             <div>
               <dt className="font-display text-ink/60">{t("where")}</dt>

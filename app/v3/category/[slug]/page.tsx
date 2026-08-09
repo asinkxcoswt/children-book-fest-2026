@@ -14,9 +14,10 @@ export function generateStaticParams() {
 function groupByDate(events: FestivalEvent[]): [string, FestivalEvent[]][] {
   const map = new Map<string, FestivalEvent[]>();
   for (const ev of events) {
-    const list = map.get(ev.schedule.date) ?? [];
+    const date = ev.schedule.sessions[0].date;
+    const list = map.get(date) ?? [];
     list.push(ev);
-    map.set(ev.schedule.date, list);
+    map.set(date, list);
   }
   return [...map.entries()].sort(([a], [b]) => a.localeCompare(b));
 }
@@ -62,7 +63,7 @@ export default async function V3Category({ params }: { params: Promise<{ slug: s
                     className="flex items-center gap-4 py-4 transition-colors hover:bg-ink/[0.03]"
                   >
                     <span className="w-20 shrink-0 font-display text-ink/70">
-                      {ev.schedule.start}
+                      {ev.schedule.sessions[0].start}
                     </span>
                     <span className="flex-1">
                       <span className="block font-display text-lg text-ink">{pick(ev.title)}</span>

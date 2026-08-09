@@ -66,9 +66,11 @@ export default async function V2Event({ params }: { params: Promise<{ slug: stri
             <dl className="space-y-4 text-sm">
               <div>
                 <dt className="font-display text-ink/60">{t("when")}</dt>
-                <dd className="text-ink">
-                  {formatDate(event.schedule.date)} · {event.schedule.start}–{event.schedule.end}
-                </dd>
+                {event.schedule.sessions.map((s) => (
+                  <dd key={`${s.date}${s.start}`} className="text-ink">
+                    {formatDate(s.date)} · {s.start}–{s.end}
+                  </dd>
+                ))}
               </div>
               <div>
                 <dt className="font-display text-ink/60">{t("where")}</dt>

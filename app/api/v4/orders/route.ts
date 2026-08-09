@@ -44,12 +44,17 @@ export async function POST(request: NextRequest) {
   }
 
   // Wallet-pass display text comes from our content data (the platform doesn't
-  // know the event's date or venue).
-  const passDisplay = {
-    main: pick(event.title),
-    date: `${event.schedule.date}T${event.schedule.start}:00+07:00`,
-    dateDisplay: `${formatDate(event.schedule.date)} ${event.schedule.start} · ${pick(event.schedule.venue)}`,
-    principal: name,
+  // know the event's date or venue). Multi-day events map each ticket code to
+  // its session via `ticketCodes`; unmapped codes fall back to the first session.
+  const { venue, sessions } = event.schedule;
+  const passDisplayFor = (code: string) => {
+    const s = sessions.find((sess) => sess.ticketCodes?.includes(code)) ?? sessions[0];
+    return {
+      main: pick(event.title),
+      date: `${s.date}T${s.start}:00+07:00`,
+      dateDisplay: `${formatDate(s.date)} ${s.start} · ${pick(venue)}`,
+      principal: name,
+    };
   };
 
   const origin = request.nextUrl.origin;
@@ -58,7 +63,7 @@ export async function POST(request: NextRequest) {
     const order = await createOrder({
       eventCode: event.ticketEventCode,
       email,
-      items: items.map((i) => ({ ...i, passDisplay })),
+      items: items.map((i) => ({ ...i, passDisplay: passDisplayFor(i.code) })),
       // Purchase-form data for the merchant (flat scalars only — see guide §4.4).
       metadata: { parentName: name, childName, ...(phone && { phone }) },
       successUrl: `${origin}/v4/checkout/success?orderId={ORDER_ID}&token=${token}`,

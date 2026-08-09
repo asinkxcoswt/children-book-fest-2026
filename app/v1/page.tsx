@@ -81,7 +81,7 @@ export default function V1Home() {
                     <span className="block font-display text-2xl text-ink">{pick(ev.title)}</span>
                     <span className="block text-ink/70">{pick(ev.summary)}</span>
                     <span className="mt-1 block text-sm text-ink/60">
-                      {formatDate(ev.schedule.date)} · {ev.schedule.start} · {pick(ev.schedule.venue)}
+                      {formatDate(ev.schedule.sessions[0].date)} · {ev.schedule.sessions[0].start} · {pick(ev.schedule.venue)}
                     </span>
                   </span>
                 </Link>

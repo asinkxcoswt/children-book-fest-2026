@@ -65,9 +65,11 @@ export default async function V3Event({ params }: { params: Promise<{ slug: stri
         <dl className="mt-4 grid gap-4 text-sm sm:grid-cols-2">
           <div>
             <dt className="text-ink/60">{t("when")}</dt>
-            <dd className="text-ink">
-              {formatDate(event.schedule.date)} · {event.schedule.start}–{event.schedule.end}
-            </dd>
+            {event.schedule.sessions.map((s) => (
+              <dd key={`${s.date}${s.start}`} className="text-ink">
+                {formatDate(s.date)} · {s.start}–{s.end}
+              </dd>
+            ))}
           </div>
           <div>
             <dt className="text-ink/60">{t("where")}</dt>

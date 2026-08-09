@@ -45,7 +45,7 @@ export default async function V2Category({ params }: { params: Promise<{ slug: s
                 <span className="font-display text-xl text-ink">{pick(ev.title)}</span>
                 <span className="text-sm text-ink/70">{pick(ev.summary)}</span>
                 <span className="mt-2 text-xs text-ink/60">
-                  {formatDate(ev.schedule.date)} · {ev.schedule.start}–{ev.schedule.end}
+                  {formatDate(ev.schedule.sessions[0].date)} · {ev.schedule.sessions[0].start}–{ev.schedule.sessions[0].end}
                 </span>
               </span>
             </Link>

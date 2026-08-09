@@ -15,13 +15,17 @@
   },
   "category": "illustration",
   "schedule": {
-    "date": "2026-08-16",
-    "start": "14:00",
-    "end": "15:00",
     "venue": {
       "th": "ห้องเวิร์กชอปสีฟ้า",
       "en": "Blue workshop room"
-    }
+    },
+    "sessions": [
+      {
+        "date": "2026-08-16",
+        "start": "14:00",
+        "end": "15:00"
+      }
+    ]
   },
   "ageRange": "7–12",
   "capacity": 24,

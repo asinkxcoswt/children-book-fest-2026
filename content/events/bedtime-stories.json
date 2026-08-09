@@ -15,13 +15,17 @@
   },
   "category": "storytelling",
   "schedule": {
-    "date": "2026-08-15",
-    "start": "18:30",
-    "end": "19:30",
     "venue": {
       "th": "เวทีกลางแจ้งสีชมพู",
       "en": "Pink outdoor stage"
-    }
+    },
+    "sessions": [
+      {
+        "date": "2026-08-15",
+        "start": "18:30",
+        "end": "19:30"
+      }
+    ]
   },
   "ageRange": "3–8",
   "capacity": 120,

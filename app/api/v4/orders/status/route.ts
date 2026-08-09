@@ -36,7 +36,9 @@ export async function GET(request: NextRequest) {
       event: event
         ? {
           title: pick(event.title),
-          dateDisplay: `${formatDate(event.schedule.date)} · ${event.schedule.start}–${event.schedule.end}`,
+          dateDisplay: event.schedule.sessions
+            .map((s) => `${formatDate(s.date)} · ${s.start}–${s.end}`)
+            .join(" / "),
           venue: pick(event.schedule.venue),
           color: category?.color ?? "bubblegum",
           festivalName: `${t("festivalName")} ${t("festivalYear")}`,
