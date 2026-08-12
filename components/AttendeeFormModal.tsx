@@ -10,10 +10,13 @@ export interface AttendeeForm {
   name: string;
   childName: string;
   email: string;
-  phone: string;
+  /** Free-form: phone, LINE ID, Facebook — whatever the buyer prefers. */
+  contact: string;
 }
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+type FieldErrors = Partial<Record<keyof AttendeeForm, string>>;
 
 /** Confirmation dialog collecting attendee details before the order is created.
  *  `onConfirm` resolves to an error message to display, or null on success
@@ -30,8 +33,9 @@ export default function AttendeeFormModal({
   onClose: () => void;
 }) {
   const c = tokenClasses(color);
-  const [form, setForm] = useState<AttendeeForm>({ name: "", childName: "", email: "", phone: "" });
+  const [form, setForm] = useState<AttendeeForm>({ name: "", childName: "", email: "", contact: "" });
   const [error, setError] = useState<string | null>(null);
+  const [fieldErrors, setFieldErrors] = useState<FieldErrors>({});
   const firstFieldRef = useRef<HTMLInputElement>(null);
   const dialogRef = useRef<HTMLDivElement>(null);
 
@@ -65,45 +69,96 @@ export default function AttendeeFormModal({
     return () => window.removeEventListener("keydown", onKey);
   }, [onClose]);
 
-  const valid =
-    form.name.trim().length > 0 &&
-    form.childName.trim().length > 0 &&
-    EMAIL_RE.test(form.email.trim());
+  /** Per-field messages. Every field is required; email also needs a shape. */
+  function validate(f: AttendeeForm): FieldErrors {
+    const found: FieldErrors = {};
+    if (!f.name.trim()) found.name = t("errRequired");
+    if (!f.childName.trim()) found.childName = t("errRequired");
+    if (!f.email.trim()) found.email = t("errRequired");
+    else if (!EMAIL_RE.test(f.email.trim())) found.email = t("errEmail");
+    if (!f.contact.trim()) found.contact = t("errRequired");
+    return found;
+  }
 
   async function submit(e: React.FormEvent) {
     e.preventDefault();
-    if (!valid || submitting) return;
+    if (submitting) return;
+    // Never block on a disabled button — say what's wrong and focus it instead.
+    const found = validate(form);
+    setFieldErrors(found);
+    const firstBad = (Object.keys(found) as (keyof AttendeeForm)[])[0];
+    if (firstBad) {
+      setError(t("errFixFields"));
+      document.getElementById(`af-${firstBad}`)?.focus();
+      return;
+    }
     setError(null);
     const message = await onConfirm(form);
     if (message) setError(message);
   }
 
-  const field = (
-    key: keyof AttendeeForm,
-    label: string,
-    type: string,
-    required: boolean,
-    autoComplete: string,
-    ref?: React.Ref<HTMLInputElement>,
-  ) => (
-    <div>
-      <label htmlFor={`af-${key}`} className="block text-sm text-ink/70">
-        {label}
-      </label>
-      <input
-        ref={ref}
-        id={`af-${key}`}
-        type={type}
-        required={required}
-        autoComplete={autoComplete}
-        aria-describedby={error ? "af-error" : undefined}
-        readOnly={submitting}
-        value={form[key]}
-        onChange={(e) => setForm((f) => ({ ...f, [key]: e.target.value }))}
-        className="mt-1 w-full rounded-xl border-2 border-ink/15 bg-paper px-3 py-2 text-base focus:border-ink/40 focus:outline-none"
-      />
-    </div>
-  );
+  const field = ({
+    key,
+    label,
+    type,
+    autoComplete,
+    ref,
+    hint,
+  }: {
+    key: keyof AttendeeForm;
+    label: string;
+    type: string;
+    autoComplete: string;
+    ref?: React.Ref<HTMLInputElement>;
+    hint?: string;
+  }) => {
+    const fieldError = fieldErrors[key];
+    return (
+      <div>
+        <label htmlFor={`af-${key}`} className="block text-sm text-ink/70">
+          {label}
+        </label>
+        {hint && (
+          <p id={`af-${key}-hint`} className="mt-0.5 text-xs text-ink/60">
+            {hint}
+          </p>
+        )}
+        <input
+          ref={ref}
+          id={`af-${key}`}
+          type={type}
+          required
+          autoComplete={autoComplete}
+          aria-invalid={fieldError ? true : undefined}
+          aria-describedby={
+            [hint ? `af-${key}-hint` : null, fieldError ? `af-${key}-error` : null]
+              .filter(Boolean)
+              .join(" ") || undefined
+          }
+          readOnly={submitting}
+          value={form[key]}
+          // Clear this field's message as soon as the buyer starts fixing it.
+          onChange={(e) => {
+            const { value } = e.target;
+            setForm((f) => ({ ...f, [key]: value }));
+            setFieldErrors((prev) => (prev[key] ? { ...prev, [key]: undefined } : prev));
+          }}
+          onBlur={() => {
+            const message = validate(form)[key];
+            if (message) setFieldErrors((prev) => ({ ...prev, [key]: message }));
+          }}
+          className={`mt-1 w-full rounded-xl border-2 bg-paper px-3 py-2 text-base focus:outline-none ${
+            fieldError ? "border-tomato focus:border-tomato" : "border-ink/15 focus:border-ink/40"
+          }`}
+        />
+        {fieldError && (
+          <p id={`af-${key}-error`} className="mt-1 text-xs text-tomato">
+            {fieldError}
+          </p>
+        )}
+      </div>
+    );
+  };
 
   return (
     <div
@@ -126,11 +181,19 @@ export default function AttendeeFormModal({
         </h2>
         <div className="mb-5 mt-3 border-t-2 border-dashed border-ink/10" />
 
-        <form onSubmit={submit} aria-busy={submitting} className="space-y-4">
-          {field("name", t("parentName"), "text", true, "name", firstFieldRef)}
-          {field("childName", t("childName"), "text", true, "off")}
-          {field("email", t("buyerEmail"), "email", true, "email")}
-          {field("phone", t("phoneOptional"), "tel", false, "tel")}
+        {/* noValidate: our bilingual messages replace the browser's own bubbles. */}
+        <form onSubmit={submit} noValidate aria-busy={submitting} className="space-y-4">
+          {field({ key: "name", label: t("parentName"), type: "text", autoComplete: "name", ref: firstFieldRef })}
+          {field({ key: "childName", label: t("childName"), type: "text", autoComplete: "off" })}
+          {field({ key: "email", label: t("buyerEmail"), type: "email", autoComplete: "email" })}
+          {/* Free-form, so no `tel` type/autofill — a LINE ID is not a phone number. */}
+          {field({
+            key: "contact",
+            label: t("contact"),
+            type: "text",
+            autoComplete: "off",
+            hint: t("contactHint"),
+          })}
 
           {error && (
             <p id="af-error" className="text-sm text-tomato" role="alert">
@@ -147,14 +210,12 @@ export default function AttendeeFormModal({
             >
               {t("cancel")}
             </button>
-            {/* While submitting the button stays enabled (submit() guards
-                re-entry) so it keeps focus — disabling would drop focus and
-                read as a dead control mid-loading. */}
+            {/* Always enabled: an incomplete form gets an explanation on submit,
+                not a dead control. submit() guards re-entry while busy. */}
             <button
               type="submit"
-              disabled={!valid}
-              aria-disabled={!valid || submitting}
-              className={`flex-1 rounded-full px-5 py-2.5 ${c.bg} ${c.on} transition-opacity focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ink focus-visible:ring-offset-2 disabled:opacity-40 ${
+              aria-disabled={submitting}
+              className={`flex-1 rounded-full px-5 py-2.5 ${c.bg} ${c.on} transition-opacity focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ink focus-visible:ring-offset-2 ${
                 submitting ? "cursor-wait opacity-70" : ""
               }`}
             >

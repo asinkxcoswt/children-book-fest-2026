@@ -45,8 +45,18 @@
   "attendeeDetails": { "th": "ข้อมูลผู้ลงทะเบียน", "en": "Attendee details" },
   "parentName": { "th": "ชื่อ-นามสกุล", "en": "Name and surname" },
   "childName": { "th": "ชื่อเด็ก", "en": "Child's name" },
-  "phoneOptional": { "th": "เบอร์โทรศัพท์ (ไม่บังคับ)", "en": "Phone (optional)" },
+  "contact": { "th": "ข้อมูลติดต่อ", "en": "Contact" },
+  "contactHint": {
+    "th": "เช่น เบอร์โทร ไลน์ไอดี เฟซบุ๊ก ฯลฯ",
+    "en": "e.g. phone, LINE ID, Facebook, etc." },
   "confirm": { "th": "ยืนยัน", "en": "Confirm" },
+  "errRequired": { "th": "กรุณากรอกข้อมูลนี้", "en": "Please fill in this field." },
+  "errEmail": {
+    "th": "รูปแบบอีเมลไม่ถูกต้อง เช่น name@example.com",
+    "en": "Please enter a valid email, e.g. name@example.com" },
+  "errFixFields": {
+    "th": "กรุณาตรวจสอบข้อมูลที่ยังไม่ครบถ้วน",
+    "en": "Please check the highlighted fields." },
   "cancel": { "th": "ยกเลิก", "en": "Cancel" },
   "perOrderLimit": { "th": "สูงสุดต่อคำสั่งซื้อ", "en": "max per order" },
   "processingOrder": { "th": "กำลังดำเนินการ…", "en": "Processing…" },
@@ -68,6 +78,10 @@
   "orderNotFound": {
     "th": "ไม่พบคำสั่งซื้อ",
     "en": "Order not found." },
+  "orderRefunded": {
+    "th": "คำสั่งซื้อนี้ได้รับการคืนเงินแล้ว บัตรจึงใช้เข้างานไม่ได้",
+    "en": "This order has been refunded — its tickets are no longer valid for entry." },
+  "refundPolicy": { "th": "นโยบายการคืนเงิน", "en": "Refund policy" },
   "ticketsEmailedTo": { "th": "บัตรจะถูกส่งไปที่", "en": "Tickets will be sent to" },
   "yourTickets": { "th": "บัตรของคุณ", "en": "Your tickets" },
   "saveTicket": { "th": "บันทึกบัตร", "en": "Save ticket" },

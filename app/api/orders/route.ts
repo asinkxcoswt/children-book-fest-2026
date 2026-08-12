@@ -11,7 +11,8 @@ interface OrderRequestBody {
   name?: string;
   childName?: string;
   email?: string;
-  phone?: string;
+  /** Free-form contact: phone, LINE ID, Facebook — required. */
+  contact?: string;
   items?: { code?: string; quantity?: number }[];
 }
 
@@ -34,12 +35,12 @@ export async function POST(request: NextRequest) {
   const email = body.email?.trim() ?? "";
   const name = body.name?.trim() ?? "";
   const childName = body.childName?.trim() ?? "";
-  const phone = body.phone?.trim() ?? "";
+  const contact = body.contact?.trim() ?? "";
   const items = (body.items ?? []).filter(
     (i): i is { code: string; quantity: number } =>
       typeof i.code === "string" && Number.isInteger(i.quantity) && (i.quantity as number) > 0,
   );
-  if (!EMAIL_RE.test(email) || !name || !childName || items.length === 0) {
+  if (!EMAIL_RE.test(email) || !name || !childName || !contact || items.length === 0) {
     return NextResponse.json({ error: "invalid form data" }, { status: 400 });
   }
 
@@ -65,7 +66,7 @@ export async function POST(request: NextRequest) {
       email,
       items: items.map((i) => ({ ...i, passDisplay: passDisplayFor(i.code) })),
       // Purchase-form data for the merchant (flat scalars only — see guide §4.4).
-      metadata: { parentName: name, childName, ...(phone && { phone }) },
+      metadata: { parentName: name, childName, contact },
       successUrl: `${origin}/checkout/success?orderId={ORDER_ID}&token=${token}`,
       cancelUrl: `${origin}/event/${event.slug}`,
     });

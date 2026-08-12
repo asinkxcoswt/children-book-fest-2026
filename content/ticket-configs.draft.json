@@ -1,0 +1,326 @@
+{
+  "_note": "Draft hand-off for the CowTicket CRUD API — NOT read by the site. One ticket config per session; code is <yyyymmdd>-<hhmm> and matches schedule.sessions[].ticketCodes in content/events/*.json. Prices are in satang (1000 = 10 THB). Selling dates are null so everything is on sale. Once real per-event codes exist in CowTicket, set ticketEventCode in each event JSON to proposedEventCode and delete this file.",
+  "totalTicketConfigs": 24,
+  "events": [
+    {
+      "slug": "bedtime-stories",
+      "title": "นิทานก่อนนอนสำหรับครอบครัว",
+      "currentEventCode": "test-event",
+      "proposedEventCode": "cbf2026-bedtime-stories",
+      "ticketConfigs": [
+        {
+          "code": "20261207-1830",
+          "name": "18:30–19:30",
+          "group": "รอบ 7 ธ.ค.",
+          "price": 1000,
+          "currency": "thb",
+          "limitPerOrder": 4,
+          "startSellingDate": null,
+          "endSellingDate": null
+        },
+        {
+          "code": "20261209-1830",
+          "name": "18:30–19:30",
+          "group": "รอบ 9 ธ.ค.",
+          "price": 1000,
+          "currency": "thb",
+          "limitPerOrder": 4,
+          "startSellingDate": null,
+          "endSellingDate": null
+        },
+        {
+          "code": "20261211-1830",
+          "name": "18:30–19:30",
+          "group": "รอบ 11 ธ.ค.",
+          "price": 1000,
+          "currency": "thb",
+          "limitPerOrder": 4,
+          "startSellingDate": null,
+          "endSellingDate": null
+        }
+      ]
+    },
+    {
+      "slug": "book-swap-market",
+      "title": "ตลาดนัดแลกหนังสือ",
+      "currentEventCode": "test-event",
+      "proposedEventCode": "cbf2026-book-swap-market",
+      "ticketConfigs": [
+        {
+          "code": "20261205-1300",
+          "name": "13:00–15:00",
+          "group": "รอบ 5 ธ.ค.",
+          "price": 1000,
+          "currency": "thb",
+          "limitPerOrder": 4,
+          "startSellingDate": null,
+          "endSellingDate": null
+        },
+        {
+          "code": "20261206-1300",
+          "name": "13:00–15:00",
+          "group": "รอบ 6 ธ.ค.",
+          "price": 1000,
+          "currency": "thb",
+          "limitPerOrder": 4,
+          "startSellingDate": null,
+          "endSellingDate": null
+        }
+      ]
+    },
+    {
+      "slug": "how-stories-grow",
+      "title": "เสวนา: เรื่องเล่าเติบโตอย่างไร",
+      "currentEventCode": "test-event",
+      "proposedEventCode": "cbf2026-how-stories-grow",
+      "ticketConfigs": [
+        {
+          "code": "20261205-1600",
+          "name": "16:00–17:00",
+          "group": "รอบ 5 ธ.ค.",
+          "price": 1000,
+          "currency": "thb",
+          "limitPerOrder": 4,
+          "startSellingDate": null,
+          "endSellingDate": null
+        }
+      ]
+    },
+    {
+      "slug": "live-drawing-demo",
+      "title": "วาดสด: จากคำเป็นภาพ",
+      "currentEventCode": "test-event",
+      "proposedEventCode": "cbf2026-live-drawing-demo",
+      "ticketConfigs": [
+        {
+          "code": "20261208-1700",
+          "name": "17:00–18:00",
+          "group": "รอบ 8 ธ.ค.",
+          "price": 1000,
+          "currency": "thb",
+          "limitPerOrder": 4,
+          "startSellingDate": null,
+          "endSellingDate": null
+        },
+        {
+          "code": "20261210-1700",
+          "name": "17:00–18:00",
+          "group": "รอบ 10 ธ.ค.",
+          "price": 1000,
+          "currency": "thb",
+          "limitPerOrder": 4,
+          "startSellingDate": null,
+          "endSellingDate": null
+        }
+      ]
+    },
+    {
+      "slug": "make-a-mini-book",
+      "title": "ทำหนังสือเล่มจิ๋วของฉัน",
+      "currentEventCode": "test-event",
+      "proposedEventCode": "cbf2026-make-a-mini-book",
+      "ticketConfigs": [
+        {
+          "code": "20261206-1000",
+          "name": "10:00–12:00",
+          "group": "รอบ 6 ธ.ค.",
+          "price": 1000,
+          "currency": "thb",
+          "limitPerOrder": 4,
+          "startSellingDate": null,
+          "endSellingDate": null
+        },
+        {
+          "code": "20261210-1300",
+          "name": "13:00–15:00",
+          "group": "รอบ 10 ธ.ค.",
+          "price": 1000,
+          "currency": "thb",
+          "limitPerOrder": 4,
+          "startSellingDate": null,
+          "endSellingDate": null
+        }
+      ]
+    },
+    {
+      "slug": "meet-the-illustrator",
+      "title": "เปิดสตูดิโอ: พบนักวาดภาพประกอบ",
+      "currentEventCode": "test-event",
+      "proposedEventCode": "cbf2026-meet-the-illustrator",
+      "ticketConfigs": [
+        {
+          "code": "20261206-1530",
+          "name": "15:30–16:30",
+          "group": "รอบ 6 ธ.ค.",
+          "price": 1000,
+          "currency": "thb",
+          "limitPerOrder": 4,
+          "startSellingDate": null,
+          "endSellingDate": null
+        },
+        {
+          "code": "20261210-1530",
+          "name": "15:30–16:30",
+          "group": "รอบ 10 ธ.ค.",
+          "price": 1000,
+          "currency": "thb",
+          "limitPerOrder": 4,
+          "startSellingDate": null,
+          "endSellingDate": null
+        }
+      ]
+    },
+    {
+      "slug": "shadow-puppet-tales",
+      "title": "นิทานหนังตะลุงเงา",
+      "currentEventCode": "test-event",
+      "proposedEventCode": "cbf2026-shadow-puppet-tales",
+      "ticketConfigs": [
+        {
+          "code": "20261205-1400",
+          "name": "14:00–15:00",
+          "group": "รอบ 5 ธ.ค.",
+          "price": 1000,
+          "currency": "thb",
+          "limitPerOrder": 4,
+          "startSellingDate": null,
+          "endSellingDate": null
+        },
+        {
+          "code": "20261209-1700",
+          "name": "17:00–18:00",
+          "group": "รอบ 9 ธ.ค.",
+          "price": 1000,
+          "currency": "thb",
+          "limitPerOrder": 4,
+          "startSellingDate": null,
+          "endSellingDate": null
+        },
+        {
+          "code": "20261211-1400",
+          "name": "14:00–15:00",
+          "group": "รอบ 11 ธ.ค.",
+          "price": 1000,
+          "currency": "thb",
+          "limitPerOrder": 4,
+          "startSellingDate": null,
+          "endSellingDate": null
+        }
+      ]
+    },
+    {
+      "slug": "story-time-toddlers",
+      "title": "นิทานเช้าสำหรับเด็กเล็ก",
+      "currentEventCode": "test-event",
+      "proposedEventCode": "cbf2026-story-time-toddlers",
+      "ticketConfigs": [
+        {
+          "code": "20261207-1000",
+          "name": "10:00–10:30",
+          "group": "รอบ 7 ธ.ค.",
+          "price": 1000,
+          "currency": "thb",
+          "limitPerOrder": 4,
+          "startSellingDate": null,
+          "endSellingDate": null
+        },
+        {
+          "code": "20261208-1000",
+          "name": "10:00–10:30",
+          "group": "รอบ 8 ธ.ค.",
+          "price": 1000,
+          "currency": "thb",
+          "limitPerOrder": 4,
+          "startSellingDate": null,
+          "endSellingDate": null
+        },
+        {
+          "code": "20261209-1000",
+          "name": "10:00–10:30",
+          "group": "รอบ 9 ธ.ค.",
+          "price": 1000,
+          "currency": "thb",
+          "limitPerOrder": 4,
+          "startSellingDate": null,
+          "endSellingDate": null
+        }
+      ]
+    },
+    {
+      "slug": "story-treasure-hunt",
+      "title": "ล่าสมบัติในโลกนิทาน",
+      "currentEventCode": "test-event",
+      "proposedEventCode": "cbf2026-story-treasure-hunt",
+      "ticketConfigs": [
+        {
+          "code": "20261205-1000",
+          "name": "10:00–12:00",
+          "group": "รอบ 5 ธ.ค.",
+          "price": 1000,
+          "currency": "thb",
+          "limitPerOrder": 4,
+          "startSellingDate": null,
+          "endSellingDate": null
+        },
+        {
+          "code": "20261208-1600",
+          "name": "16:00–18:00",
+          "group": "รอบ 8 ธ.ค.",
+          "price": 1000,
+          "currency": "thb",
+          "limitPerOrder": 4,
+          "startSellingDate": null,
+          "endSellingDate": null
+        },
+        {
+          "code": "20261211-1000",
+          "name": "10:00–12:00",
+          "group": "รอบ 11 ธ.ค.",
+          "price": 1000,
+          "currency": "thb",
+          "limitPerOrder": 4,
+          "startSellingDate": null,
+          "endSellingDate": null
+        }
+      ]
+    },
+    {
+      "slug": "watercolor-creatures",
+      "title": "เวิร์กชอปสีน้ำ: สัตว์ในจินตนาการ",
+      "currentEventCode": "test-event",
+      "proposedEventCode": "cbf2026-watercolor-creatures",
+      "ticketConfigs": [
+        {
+          "code": "20261205-1000",
+          "name": "10:00–12:00",
+          "group": "รอบ 5 ธ.ค.",
+          "price": 1000,
+          "currency": "thb",
+          "limitPerOrder": 4,
+          "startSellingDate": null,
+          "endSellingDate": null
+        },
+        {
+          "code": "20261206-1300",
+          "name": "13:00–15:00",
+          "group": "รอบ 6 ธ.ค.",
+          "price": 1000,
+          "currency": "thb",
+          "limitPerOrder": 4,
+          "startSellingDate": null,
+          "endSellingDate": null
+        },
+        {
+          "code": "20261210-1000",
+          "name": "10:00–12:00",
+          "group": "รอบ 10 ธ.ค.",
+          "price": 1000,
+          "currency": "thb",
+          "limitPerOrder": 4,
+          "startSellingDate": null,
+          "endSellingDate": null
+        }
+      ]
+    }
+  ]
+}

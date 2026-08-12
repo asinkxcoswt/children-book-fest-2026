@@ -1,0 +1,45 @@
+{
+  "slug": "live-drawing-demo",
+  "thumbnail": "/content/categories/illustration.png",
+  "title": {
+    "th": "วาดสด: จากคำเป็นภาพ",
+    "en": "Live drawing: from words to pictures"
+  },
+  "summary": {
+    "th": "ดูนักวาดภาพประกอบวาดตัวละครขึ้นมาสด ๆ จากคำใบ้ของเด็ก ๆ",
+    "en": "Watch an illustrator build a character live, from the audience's ideas."
+  },
+  "description": {
+    "th": "หนึ่งชั่วโมงบนลานกลางแจ้ง นักวาดภาพประกอบวาดบนกระดาษแผ่นใหญ่ให้ทุกคนเห็น เด็ก ๆ ช่วยกันเสนอว่าตัวละครควรมีหู มีปีก หรือมีหางแบบไหน แล้วดูภาพค่อย ๆ เกิดขึ้นตรงหน้า ปิดท้ายด้วยช่วงถาม-ตอบ ไม่ต้องเตรียมอุปกรณ์มา แค่มานั่งดู",
+    "en": "An hour on the outdoor lawn. An illustrator draws on a large sheet everyone can see, while the children call out whether the character should have ears, wings, or a tail — and the picture appears in front of them. Ends with questions. Nothing to bring; just come and watch."
+  },
+  "category": "illustration",
+  "schedule": {
+    "venue": {
+      "th": "ลานกลางแจ้ง",
+      "en": "Outdoor lawn"
+    },
+    "sessions": [
+      {
+        "date": "2026-12-08",
+        "start": "17:00",
+        "end": "18:00",
+        "ticketCodes": [
+          "20261208-1700"
+        ]
+      },
+      {
+        "date": "2026-12-10",
+        "start": "17:00",
+        "end": "18:00",
+        "ticketCodes": [
+          "20261210-1700"
+        ]
+      }
+    ]
+  },
+  "ageRange": "ทุกวัย / all ages",
+  "gallery": [],
+  "registrationUrl": "https://www.ticketmelon.com/littlepawcraft/live-drawing-demo",
+  "ticketEventCode": "test-event"
+}

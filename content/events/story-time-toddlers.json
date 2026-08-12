@@ -1,0 +1,54 @@
+{
+  "slug": "story-time-toddlers",
+  "thumbnail": "/content/categories/storytelling.png",
+  "title": {
+    "th": "นิทานเช้าสำหรับเด็กเล็ก",
+    "en": "Morning stories for toddlers"
+  },
+  "summary": {
+    "th": "นิทานสั้น เพลง และการเล่นนิ้วมือ สำหรับเด็กวัย 2–4 ขวบ",
+    "en": "Short stories, songs, and finger play for ages 2–4."
+  },
+  "description": {
+    "th": "ครึ่งชั่วโมงสบาย ๆ ในมุมนิทานเด็กเล็ก พี่ ๆ นักเล่านิทานอ่านหนังสือภาพเล่มโปรด ร้องเพลงประกอบท่าทาง และชวนเด็ก ๆ เล่นนิ้วมือไปด้วยกัน ผู้ปกครองนั่งกับลูกได้ตลอดรอบ เหมาะกับเด็กที่เพิ่งเริ่มรู้จักหนังสือ",
+    "en": "A gentle half hour in the toddler story corner. Our storytellers read favourite picture books, sing action songs, and lead simple finger play. Parents stay alongside their child for the whole session — ideal for children just discovering books."
+  },
+  "category": "storytelling",
+  "schedule": {
+    "venue": {
+      "th": "มุมนิทานเด็กเล็ก",
+      "en": "Toddler story corner"
+    },
+    "sessions": [
+      {
+        "date": "2026-12-07",
+        "start": "10:00",
+        "end": "10:30",
+        "ticketCodes": [
+          "20261207-1000"
+        ]
+      },
+      {
+        "date": "2026-12-08",
+        "start": "10:00",
+        "end": "10:30",
+        "ticketCodes": [
+          "20261208-1000"
+        ]
+      },
+      {
+        "date": "2026-12-09",
+        "start": "10:00",
+        "end": "10:30",
+        "ticketCodes": [
+          "20261209-1000"
+        ]
+      }
+    ]
+  },
+  "ageRange": "2–4",
+  "capacity": 20,
+  "gallery": [],
+  "registrationUrl": "https://www.ticketmelon.com/littlepawcraft/story-time-toddlers",
+  "ticketEventCode": "test-event"
+}

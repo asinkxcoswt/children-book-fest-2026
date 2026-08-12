@@ -5,8 +5,6 @@ import crypto from "crypto";
  * key and JWT must never reach the browser. (Consider adding the `server-only`
  * package for a build-time guarantee.) */
 
-const CUSTOMER_ID = "storefront";
-
 function env(name: "TICKET_API_URL" | "TICKET_API_KEY" | "TICKET_ACCOUNT_ID"): string {
   const value = process.env[name];
   if (!value) throw new TicketApiError(503, `Ticket API not configured (missing ${name})`);
@@ -33,7 +31,6 @@ async function getToken(): Promise<string> {
     body: JSON.stringify({
       accountId: env("TICKET_ACCOUNT_ID"),
       type: "customer",
-      customerId: CUSTOMER_ID,
     }),
     cache: "no-store",
   });
@@ -57,9 +54,10 @@ async function ticketApi(path: string, init?: RequestInit, retried = false): Pro
   return res;
 }
 
-/** Echo rule: accountId + customerId must accompany every request. */
-function echoParams(): string {
-  return `accountId=${encodeURIComponent(env("TICKET_ACCOUNT_ID"))}&customerId=${CUSTOMER_ID}`;
+/** The JWT is account-scoped: any request naming an accountId must name the same
+ *  one as the token, or it 401s. /orders/detail additionally 400s without it. */
+function accountParam(): string {
+  return `accountId=${encodeURIComponent(env("TICKET_ACCOUNT_ID"))}`;
 }
 
 export interface TicketConfig {
@@ -67,6 +65,9 @@ export interface TicketConfig {
   eventCode: string;
   code: string;
   name: string;
+  /** Optional section label chosen by the organizer (e.g. a day or session);
+   *  null means ungrouped. Display text only — no shared behaviour. */
+  group: string | null;
   /** Satang (THB minor units); 0 = free. */
   price: number;
   currency: string;
@@ -77,13 +78,26 @@ export interface TicketConfig {
   available: number;
 }
 
-export async function getTicketConfigs(eventCode: string): Promise<TicketConfig[]> {
+/** Organizer's refund terms — must be shown near the checkout button. */
+export interface RefundPolicy {
+  allowed: boolean;
+  termEn: string;
+  termTh: string;
+}
+
+export interface TicketConfigsResult {
+  /** In the organizer's display order — render as-is, never re-sort. */
+  tickets: TicketConfig[];
+  refundPolicy: RefundPolicy | null;
+}
+
+export async function getTicketConfigs(eventCode: string): Promise<TicketConfigsResult> {
   const res = await ticketApi(
-    `/events/ticketConfigs?eventCode=${encodeURIComponent(eventCode)}&${echoParams()}`,
+    `/events/ticketConfigs?eventCode=${encodeURIComponent(eventCode)}&${accountParam()}`,
   );
   if (!res.ok) throw new TicketApiError(res.status, await res.text());
-  const data = (await res.json()) as { data: TicketConfig[] };
-  return data.data;
+  const data = (await res.json()) as { data: TicketConfig[]; refundPolicy?: RefundPolicy };
+  return { tickets: data.data, refundPolicy: data.refundPolicy ?? null };
 }
 
 export interface PassDisplay {
@@ -117,7 +131,6 @@ export async function createOrder(input: {
     method: "POST",
     body: JSON.stringify({
       accountId: env("TICKET_ACCOUNT_ID"),
-      customerId: CUSTOMER_ID,
       ...input,
     }),
   });
@@ -151,16 +164,19 @@ export interface OrderDetail {
 
 export async function getOrderDetail(orderId: string): Promise<OrderDetail> {
   const res = await ticketApi(
-    `/orders/detail?orderId=${encodeURIComponent(orderId)}&${echoParams()}`,
+    `/orders/detail?orderId=${encodeURIComponent(orderId)}&${accountParam()}`,
   );
   if (!res.ok) throw new TicketApiError(res.status, await res.text());
   return (await res.json()) as OrderDetail;
 }
 
+/** Unguessable key for the ticket-page URL. CowTicket has no per-buyer identity —
+ *  tickets are bearer instruments — so the link itself is the secret and must stay
+ *  stable: buyers reopen it from the confirmation email weeks later, at the gate.
+ *  Set ORDER_SECURITY_SECRET. Falling back to TICKET_API_KEY ties every issued
+ *  link to the payment credential, so rotating that key breaks them all. */
 export function generateOrderToken(email: string, eventCode: string): string {
-  // Use TICKET_API_KEY as the secret key since it's already a server-only environment variable.
-  // We can also allow ORDER_SECURITY_SECRET if specified.
-  const secret = process.env.ORDER_SECURITY_SECRET || env("TICKET_API_KEY") || "dev-fallback-secret-key";
+  const secret = process.env.ORDER_SECURITY_SECRET || env("TICKET_API_KEY");
   return crypto
     .createHmac("sha256", secret)
     .update(`${email.trim().toLowerCase()}:${eventCode}`)

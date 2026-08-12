@@ -11,16 +11,18 @@ export async function GET(request: NextRequest) {
   }
 
   try {
-    const configs = await getTicketConfigs(event.ticketEventCode);
-    // Only the fields the purchase UI needs.
+    const { tickets, refundPolicy } = await getTicketConfigs(event.ticketEventCode);
+    // Only the fields the purchase UI needs, in the organizer's display order.
     return NextResponse.json({
-      tickets: configs.map((c) => ({
+      tickets: tickets.map((c) => ({
         code: c.code,
         name: c.name,
+        group: c.group ?? null,
         price: c.price,
         limitPerOrder: c.limitPerOrder,
         available: c.available,
       })),
+      refundPolicy,
     });
   } catch (err) {
     const status = err instanceof TicketApiError ? err.status : 502;

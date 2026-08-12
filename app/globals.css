@@ -32,6 +32,15 @@ body {
   line-height: 1.65;
 }
 
+/* Tailwind v4's reset sets buttons to `cursor: default`; restore the pointer.
+ * In @layer base so per-element cursor utilities (e.g. cursor-wait) still win. */
+@layer base {
+  button:not(:disabled),
+  [role="button"]:not(:disabled) {
+    cursor: pointer;
+  }
+}
+
 /* Respect users who prefer less motion. */
 @media (prefers-reduced-motion: reduce) {
   *,

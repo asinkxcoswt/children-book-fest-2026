@@ -21,30 +21,27 @@
     },
     "sessions": [
       {
-        "date": "2026-08-15",
+        "date": "2026-12-05",
         "start": "10:00",
-        "end": "11:30",
+        "end": "12:00",
         "ticketCodes": [
-          "sat-child",
-          "sat-adult"
+          "20261205-1000"
         ]
       },
       {
-        "date": "2026-08-16",
+        "date": "2026-12-06",
         "start": "13:00",
-        "end": "14:30",
+        "end": "15:00",
         "ticketCodes": [
-          "sun-child",
-          "sun-adult"
+          "20261206-1300"
         ]
       },
       {
-        "date": "2026-08-18",
-        "start": "13:00",
-        "end": "14:30",
+        "date": "2026-12-10",
+        "start": "10:00",
+        "end": "12:00",
         "ticketCodes": [
-          "sun-child",
-          "sun-adult"
+          "20261210-1000"
         ]
       }
     ]

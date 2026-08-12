@@ -5,7 +5,7 @@ import type { ColorToken } from "@/types/content";
 import { t } from "@/lib/i18n";
 import TicketPocket from "@/components/TicketPocket";
 
-type Phase = "checking" | "paid" | "pending" | "expired" | "notFound";
+type Phase = "checking" | "paid" | "pending" | "expired" | "refunded" | "notFound";
 
 interface StatusResponse {
   status: string;
@@ -57,6 +57,11 @@ export default function OrderStatus({ orderId, token }: { orderId?: string; toke
           }
           if (data.status === "EXPIRED" || data.status === "CANCELED") {
             setPhase("expired");
+            return;
+          }
+          if (data.status === "REFUNDED") {
+            // Terminal too — the tickets are void, so stop polling.
+            setPhase("refunded");
             return;
           }
         }
@@ -166,6 +171,9 @@ export default function OrderStatus({ orderId, token }: { orderId?: string; toke
   }
   if (phase === "expired") {
     return <p className="text-lg text-tomato" role="alert">{t("orderExpired")}</p>;
+  }
+  if (phase === "refunded") {
+    return <p className="text-lg text-tomato" role="alert">{t("orderRefunded")}</p>;
   }
   return <p className="text-lg text-ink/70">{t("orderNotFound")}</p>;
 }

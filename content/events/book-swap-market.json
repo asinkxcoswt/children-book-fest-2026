@@ -1,0 +1,45 @@
+{
+  "slug": "book-swap-market",
+  "thumbnail": "/content/categories/family-play.png",
+  "title": {
+    "th": "ตลาดนัดแลกหนังสือ",
+    "en": "Book swap market"
+  },
+  "summary": {
+    "th": "เอาหนังสือที่อ่านจบแล้วมาแลกเล่มใหม่ที่ยังไม่เคยอ่าน",
+    "en": "Bring a book you've finished and swap it for one you haven't read."
+  },
+  "description": {
+    "th": "สองชั่วโมงบนลานกลางแจ้ง เอาหนังสือภาพที่บ้านอ่านจบแล้วมาคนละ 1–3 เล่ม แลกเป็นเหรียญกระดาษ แล้วเดินเลือกเล่มใหม่จากโต๊ะแลกได้ตามจำนวนเหรียญ มีพี่ ๆ อาสาสมัครช่วยแนะนำเล่มที่เหมาะกับวัย หนังสือที่เหลือท้ายงานส่งต่อให้ห้องสมุดโรงเรียนในเครือข่าย",
+    "en": "Two hours on the outdoor lawn. Bring one to three picture books your family has finished, trade them for paper tokens, then browse the swap tables and pick new ones. Volunteers are on hand to suggest titles by age. Whatever is left at the end goes to partner school libraries."
+  },
+  "category": "family-play",
+  "schedule": {
+    "venue": {
+      "th": "ลานกลางแจ้ง",
+      "en": "Outdoor lawn"
+    },
+    "sessions": [
+      {
+        "date": "2026-12-05",
+        "start": "13:00",
+        "end": "15:00",
+        "ticketCodes": [
+          "20261205-1300"
+        ]
+      },
+      {
+        "date": "2026-12-06",
+        "start": "13:00",
+        "end": "15:00",
+        "ticketCodes": [
+          "20261206-1300"
+        ]
+      }
+    ]
+  },
+  "ageRange": "ทุกวัย / all ages",
+  "gallery": [],
+  "registrationUrl": "https://www.ticketmelon.com/littlepawcraft/book-swap-market",
+  "ticketEventCode": "test-event"
+}
