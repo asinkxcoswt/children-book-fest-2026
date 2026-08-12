@@ -147,6 +147,14 @@ export interface IssuedTicket {
   ticketNo: string;
   status: string;
   principal: string;
+  /** Joins the ticket to its order item, and so to the session it admits to. */
+  ticketConfigId: string;
+}
+
+export interface OrderItem {
+  quantity: number;
+  ticketConfigId: string;
+  ticketConfig: { code: string; name: string };
 }
 
 export interface OrderDetail {
@@ -158,6 +166,8 @@ export interface OrderDetail {
   eventCode: string;
   expiresAt: string;
   paidAt: string | null;
+  /** One row per ticket type ordered, with its quantity. */
+  items?: OrderItem[];
   /** Populated once the order is PAID. */
   tickets?: IssuedTicket[];
 }

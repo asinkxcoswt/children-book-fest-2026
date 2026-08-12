@@ -14,12 +14,12 @@ interface StatusResponse {
   email: string;
   event: {
     title: string;
-    dateDisplay: string;
     venue: string;
     color: ColorToken;
     festivalName: string;
   } | null;
-  tickets: { ticketNo: string; principal: string }[];
+  /** dateDisplay is per ticket — each admits to one session. */
+  tickets: { ticketNo: string; principal: string; dateDisplay: string }[];
 }
 
 const POLL_MS = 2000;
@@ -154,7 +154,7 @@ export default function OrderStatus({ orderId, token }: { orderId?: string; toke
                   ticketNo: tk.ticketNo,
                   principal: tk.principal,
                   eventTitle: event.title,
-                  dateDisplay: event.dateDisplay,
+                  dateDisplay: tk.dateDisplay,
                   venue: event.venue,
                   festivalName: event.festivalName,
                   color: event.color,

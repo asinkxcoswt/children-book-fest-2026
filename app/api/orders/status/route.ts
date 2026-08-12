@@ -29,6 +29,23 @@ export async function GET(request: NextRequest) {
     const event = getEvents().find((e) => e.ticketEventCode === order.eventCode);
     const category = event ? getCategory(event.category) : undefined;
 
+    // A ticket admits to ONE session, so its date line must be that session's —
+    // not the event's whole schedule. Both tickets and order items carry
+    // ticketConfigId, so join on that: ticket → item → code → session.
+    const sessionByCode = new Map(
+      event?.schedule.sessions.flatMap((s) => (s.ticketCodes ?? []).map((code) => [code, s])) ?? [],
+    );
+    const sessionByConfigId = new Map(
+      (order.items ?? []).flatMap((i) => {
+        const session = sessionByCode.get(i.ticketConfig.code);
+        return session ? [[i.ticketConfigId, session] as const] : [];
+      }),
+    );
+    const tickets = order.tickets ?? [];
+    const allSessions = event
+      ? event.schedule.sessions.map((s) => `${formatDate(s.date)} · ${s.start}–${s.end}`).join(" / ")
+      : "";
+
     return NextResponse.json({
       status: order.status,
       orderNo: order.orderNo,
@@ -36,18 +53,26 @@ export async function GET(request: NextRequest) {
       event: event
         ? {
           title: pick(event.title),
-          dateDisplay: event.schedule.sessions
-            .map((s) => `${formatDate(s.date)} · ${s.start}–${s.end}`)
-            .join(" / "),
           venue: pick(event.schedule.venue),
           color: category?.color ?? "bubblegum",
           festivalName: `${t("festivalName")} ${t("festivalYear")}`,
         }
         : null,
-      tickets: (order.tickets ?? []).map((tk) => ({
-        ticketNo: tk.ticketNo,
-        principal: tk.principal,
-      })),
+      tickets: tickets.map((tk) => {
+        const session = sessionByConfigId.get(tk.ticketConfigId);
+        if (!session) {
+          // Ticket code retired from content, or an unmapped session — show the
+          // whole schedule rather than a confidently wrong date.
+          console.warn(`order ${order.orderNo}: no session for ticketConfigId ${tk.ticketConfigId}`);
+        }
+        return {
+          ticketNo: tk.ticketNo,
+          principal: tk.principal,
+          dateDisplay: session
+            ? `${formatDate(session.date)} · ${session.start}–${session.end}`
+            : allSessions,
+        };
+      }),
     });
   } catch (err) {
     const status = err instanceof TicketApiError ? err.status : 502;
