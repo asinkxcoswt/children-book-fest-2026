@@ -6,7 +6,11 @@ import SectionHeading from "@/components/SectionHeading";
 /* Buyers land here from Stripe (or directly for free orders). The actual
  * confirmation comes from polling the platform, not from the redirect. */
 
-export const metadata = { title: t("checkoutSuccessTitle") };
+/* noindex: the order id in the URL is the only thing guarding these tickets. */
+export const metadata = {
+  title: t("checkoutSuccessTitle"),
+  robots: { index: false, follow: false },
+};
 
 interface PageProps {
   searchParams: Promise<{

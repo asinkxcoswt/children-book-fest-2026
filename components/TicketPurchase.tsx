@@ -183,6 +183,17 @@ export default function TicketPurchase({
     );
   }
 
+  if (tickets.length === 0) {
+    // Empty ticketConfigs is a state, not a failure: outside the selling window,
+    // or the organizer archived the event. Never render this as an error.
+    return (
+      <div>
+        <h2 className="font-display text-lg text-ink">{t("tickets")}</h2>
+        <p className="mt-3 text-sm text-ink/60">{t("notOnSale")}</p>
+      </div>
+    );
+  }
+
   return (
     <div>
       <h2 className="font-display text-lg text-ink">{t("tickets")}</h2>
