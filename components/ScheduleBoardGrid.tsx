@@ -5,10 +5,13 @@ import Link from "next/link";
 import type { ColorToken } from "@/types/content";
 import { tokenClasses } from "@/lib/colors";
 import { t } from "@/lib/i18n";
+import ScheduleEventDrawer, { type BoardEventDetail } from "@/components/ScheduleEventDrawer";
 
 export interface BoardBlock {
   slug: string;
   title: string;
+  /** ISO date of this session — with `start`, identifies the session uniquely. */
+  date: string;
   start: string;
   end: string;
   color: ColorToken;
@@ -22,6 +25,8 @@ interface Props {
   bands: { label: string; cells: BoardBlock[][] }[];
   /** Category legend for the color-coded blocks. */
   legend: { label: string; color: ColorToken }[];
+  /** Brief details per event slug, for the mobile drawer. */
+  details: Record<string, BoardEventDetail>;
 }
 
 /** Presentational half of the schedule board: a printed-programme outline
@@ -30,10 +35,16 @@ interface Props {
  *  - ≥sm: day-column grid; when it overflows, edge fades + prev/next buttons
  *    make the hidden days obvious. Hovering/focusing a block fades every other
  *    event so all sessions of the same event stand out.
- *  - <sm: the same grid compressed to fit the viewport, mini blocks. */
-export default function ScheduleBoardGrid({ days, bands, legend }: Props) {
+ *  - <sm: the same grid compressed to fit the viewport, mini blocks. Touch has
+ *    no hover, so tapping a block selects it instead of navigating: it applies
+ *    the same cross-highlight and opens a brief-detail drawer, keeping the
+ *    visitor on the board while they compare events. */
+export default function ScheduleBoardGrid({ days, bands, legend, details }: Props) {
   const [hovered, setHovered] = useState<string | null>(null);
+  const [selected, setSelected] = useState<{ slug: string; session: string } | null>(null);
   const scrollerRef = useRef<HTMLDivElement>(null);
+  // The block that opened the drawer, so closing can hand focus back to it.
+  const triggerRef = useRef<HTMLButtonElement | null>(null);
   const [canScroll, setCanScroll] = useState({ left: false, right: false });
 
   const updateScrollState = useCallback(() => {
@@ -64,18 +75,21 @@ export default function ScheduleBoardGrid({ days, bands, legend }: Props) {
     onBlur: () => setHovered(null),
   });
 
+  const closeDrawer = useCallback(() => {
+    setSelected(null);
+    triggerRef.current?.focus({ preventScroll: true });
+  }, []);
+
   const ticket = (b: BoardBlock, compact: boolean) => {
     const c = tokenClasses(b.color);
-    const faded = hovered !== null && hovered !== b.slug;
-    return (
-      <Link
-        key={`${b.slug}${b.start}`}
-        href={`/event/${b.slug}`}
-        {...hoverHandlers(b.slug)}
-        className={`block min-w-0 ${c.bg} ${c.on} transition-[transform,opacity] hover:-translate-y-0.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ink focus-visible:ring-offset-2 ${
-          compact ? "rounded-md p-1" : "rounded-lg p-2"
-        } ${faded ? "opacity-25" : ""}`}
-      >
+    // Desktop highlights on hover; touch highlights on the selected block.
+    const active = compact ? (selected?.slug ?? null) : hovered;
+    const faded = active !== null && active !== b.slug;
+    const session = `${b.date}${b.start}`;
+    const isSelected = compact && selected?.session === session;
+
+    const body = (
+      <>
         <span
           className={`block font-bold leading-tight tabular-nums ${
             compact ? "text-[10px]" : "text-[11px] tracking-wide"
@@ -92,6 +106,48 @@ export default function ScheduleBoardGrid({ days, bands, legend }: Props) {
         >
           {b.title}
         </span>
+      </>
+    );
+
+    const shared = `block w-full min-w-0 text-left ${c.bg} ${c.on} transition-[transform,opacity] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ink focus-visible:ring-offset-2 ${
+      faded ? "opacity-25" : ""
+    }`;
+
+    // Compact blocks are far too small to read, so a tap opens the drawer
+    // rather than committing the visitor to a page they can't preview.
+    if (compact) {
+      return (
+        <button
+          key={`${b.slug}${b.start}`}
+          type="button"
+          // Marks this as a sheet trigger: tapping one while the drawer is open
+          // swaps its contents instead of counting as a tap-outside dismiss.
+          data-board-ticket=""
+          aria-haspopup="dialog"
+          aria-expanded={isSelected}
+          onClick={(e) => {
+            triggerRef.current = e.currentTarget;
+            setSelected((prev) =>
+              prev?.session === session ? null : { slug: b.slug, session },
+            );
+          }}
+          className={`${shared} rounded-md p-1 ${
+            isSelected ? "ring-2 ring-ink ring-offset-1" : ""
+          }`}
+        >
+          {body}
+        </button>
+      );
+    }
+
+    return (
+      <Link
+        key={`${b.slug}${b.start}`}
+        href={`/event/${b.slug}`}
+        {...hoverHandlers(b.slug)}
+        className={`${shared} rounded-lg p-2 hover:-translate-y-0.5`}
+      >
+        {body}
       </Link>
     );
   };
@@ -111,6 +167,7 @@ export default function ScheduleBoardGrid({ days, bands, legend }: Props) {
     <>
       {/* Mobile: the grid squeezed to the viewport — all days visible, mini tickets. */}
       <div className="sm:hidden">
+        <p className="mb-2 text-xs text-ink/50">{t("tapEventHint")}</p>
         <div
           className="grid gap-x-1.5"
           style={{ gridTemplateColumns: `1.75rem repeat(${days.length}, minmax(0, 1fr))` }}
@@ -146,6 +203,18 @@ export default function ScheduleBoardGrid({ days, bands, legend }: Props) {
           ))}
         </div>
         {legendRow}
+
+        {selected && details[selected.slug] && (
+          <>
+            {/* Keeps the lower rows reachable above the open sheet. */}
+            <div aria-hidden className="h-[45svh]" />
+            <ScheduleEventDrawer
+              detail={details[selected.slug]}
+              currentSession={selected.session}
+              onClose={closeDrawer}
+            />
+          </>
+        )}
       </div>
 
       {/* ≥sm: day × time-band grid with overflow affordances. */}

@@ -2,6 +2,7 @@ import type { FestivalEvent } from "@/types/content";
 import { getCategories, getCategory, getFestivalDates } from "@/lib/content";
 import { t, pick, formatDate, formatWeekday, formatMonth } from "@/lib/i18n";
 import ScheduleBoardGrid, { type BoardBlock } from "@/components/ScheduleBoardGrid";
+import type { BoardEventDetail } from "@/components/ScheduleEventDrawer";
 
 /** Day × time-of-day schedule board (home page). Every session of every event
  *  appears as a colored block in its day column, so visitors see the whole
@@ -32,6 +33,7 @@ export default function ScheduleBoard({ events }: { events: FestivalEvent[] }) {
       list.push({
         slug: event.slug,
         title: pick(event.title),
+        date: s.date,
         start: s.start,
         end: s.end,
         color: getCategory(event.category)?.color ?? "peach",
@@ -44,8 +46,29 @@ export default function ScheduleBoard({ events }: { events: FestivalEvent[] }) {
     for (const list of byBand.values()) list.sort((a, b) => a.start.localeCompare(b.start));
   }
 
+  // Brief-detail lookup for the mobile drawer, keyed by slug. Resolved here so
+  // the client component never touches the content layer.
+  const details: Record<string, BoardEventDetail> = {};
+  for (const event of events) {
+    details[event.slug] = {
+      slug: event.slug,
+      title: pick(event.title),
+      summary: pick(event.summary),
+      category: pick(getCategory(event.category)?.name ?? { th: "", en: "" }),
+      color: getCategory(event.category)?.color ?? "peach",
+      venue: pick(event.schedule.venue),
+      ageRange: event.ageRange,
+      sessions: event.schedule.sessions.map((s) => ({
+        key: `${s.date}${s.start}`,
+        label: formatDate(s.date),
+        time: `${s.start}–${s.end}`,
+      })),
+    };
+  }
+
   return (
     <ScheduleBoardGrid
+      details={details}
       days={dates.map((date) => ({
         date,
         label: formatDate(date),
