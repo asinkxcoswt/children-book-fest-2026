@@ -1,4 +1,4 @@
-/* Browser-only: draws an issued ticket to a PNG data URL (canvas + QR).
+/* Browser-only: draws an issued ticket to a PNG blob (canvas + QR).
  * Colors and fonts are read from the CSS design tokens at draw time —
  * the token layer in globals.css stays the single source of truth. */
 
@@ -45,7 +45,7 @@ function wrapText(ctx: CanvasRenderingContext2D, text: string, maxWidth: number)
   return lines;
 }
 
-export async function drawTicket(ticket: TicketDisplay): Promise<string> {
+export async function drawTicket(ticket: TicketDisplay): Promise<Blob> {
   const paper = cssVar("--color-paper");
   const ink = cssVar("--color-ink");
   const accent = cssVar(`--color-${ticket.color}`);
@@ -131,5 +131,13 @@ export async function drawTicket(ticket: TicketDisplay): Promise<string> {
   ctx.fillText(ticket.ticketNo, W / 2, perfY + 56);
   ctx.textAlign = "start";
 
-  return canvas.toDataURL("image/png");
+  // A blob, not a data URL: the PNG is a couple of megabytes, and the caller
+  // needs File objects for the share sheet — base64 in between only adds a
+  // decode step that can fail.
+  return new Promise<Blob>((resolve, reject) => {
+    canvas.toBlob(
+      (blob) => (blob ? resolve(blob) : reject(new Error("ticket render failed"))),
+      "image/png",
+    );
+  });
 }

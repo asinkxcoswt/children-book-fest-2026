@@ -20,24 +20,25 @@ export default function TicketPocket({ tickets }: { tickets: TicketDisplay[] }) 
 
   useEffect(() => {
     let alive = true;
+    let objectUrls: string[] = [];
     // Wait for the web fonts so the canvas text uses the real typefaces.
     document.fonts.ready
       .then(() => Promise.all(tickets.map((tk) => drawTicket(tk))))
-      .then(async (urls) => {
-        if (!alive) return;
-        setImages(urls);
-        const blobs = await Promise.all(urls.map((url) => fetch(url).then((r) => r.blob())));
+      .then((blobs) => {
         if (!alive) return;
         const asFiles = blobs.map(
           (blob, i) =>
             new File([blob], `ticket-${tickets[i].ticketNo}.png`, { type: "image/png" }),
         );
+        objectUrls = blobs.map((blob) => URL.createObjectURL(blob));
+        setImages(objectUrls);
         setFiles(asFiles);
         setCanShareFiles(navigator.canShare?.({ files: asFiles }) ?? false);
       })
       .catch(() => {});
     return () => {
       alive = false;
+      objectUrls.forEach(URL.revokeObjectURL);
     };
   }, [tickets]);
 
