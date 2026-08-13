@@ -92,6 +92,7 @@
   "yourTickets": { "th": "บัตรของคุณ", "en": "Your tickets" },
   "saveTicket": { "th": "บันทึกบัตร", "en": "Save ticket" },
   "saveAllTickets": { "th": "บันทึกบัตรทั้งหมด", "en": "Save all tickets" },
+  "saveTicketHint": { "th": "เลือก “บันทึกรูปภาพ” เพื่อเก็บบัตรไว้ในคลังรูปภาพ", "en": "Choose “Save Image” to keep your tickets in Photos" },
   "orderNumber": { "th": "หมายเลขคำสั่งซื้อ", "en": "Order" },
   "nextTicket": { "th": "แตะบัตรเพื่อดูใบถัดไป", "en": "Tap a ticket to see the next one" },
   "ticketAlt": { "th": "บัตรเข้างานพร้อมคิวอาร์โค้ด", "en": "Event ticket with QR code" },

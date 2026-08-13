@@ -13,6 +13,9 @@ export default function TicketPocket({ tickets }: { tickets: TicketDisplay[] }) 
   const c = tokenClasses(color);
 
   const [images, setImages] = useState<string[] | null>(null);
+  /** The same PNGs as File objects, prepared up front — see saveAll(). */
+  const [files, setFiles] = useState<File[] | null>(null);
+  const [canShareFiles, setCanShareFiles] = useState(false);
   const [front, setFront] = useState(0);
 
   useEffect(() => {
@@ -20,8 +23,17 @@ export default function TicketPocket({ tickets }: { tickets: TicketDisplay[] }) 
     // Wait for the web fonts so the canvas text uses the real typefaces.
     document.fonts.ready
       .then(() => Promise.all(tickets.map((tk) => drawTicket(tk))))
-      .then((urls) => {
-        if (alive) setImages(urls);
+      .then(async (urls) => {
+        if (!alive) return;
+        setImages(urls);
+        const blobs = await Promise.all(urls.map((url) => fetch(url).then((r) => r.blob())));
+        if (!alive) return;
+        const asFiles = blobs.map(
+          (blob, i) =>
+            new File([blob], `ticket-${tickets[i].ticketNo}.png`, { type: "image/png" }),
+        );
+        setFiles(asFiles);
+        setCanShareFiles(navigator.canShare?.({ files: asFiles }) ?? false);
       })
       .catch(() => {});
     return () => {
@@ -29,7 +41,22 @@ export default function TicketPocket({ tickets }: { tickets: TicketDisplay[] }) 
     };
   }, [tickets]);
 
-  function saveAll() {
+  /** iOS has no API for writing to the photo library: an <a download> always
+   *  lands in Files behind a confirmation prompt. The share sheet does offer
+   *  "Save Image", so prefer it and keep the download as the fallback.
+   *  The Files are built ahead of time because Safari only honours share()
+   *  when it is reached synchronously from the tap — an await first loses the
+   *  user gesture and throws NotAllowedError. */
+  async function saveAll() {
+    if (files && canShareFiles) {
+      try {
+        await navigator.share({ files });
+        return;
+      } catch (err) {
+        // Dismissing the sheet is a choice, not a failure — don't then download.
+        if (err instanceof Error && err.name === "AbortError") return;
+      }
+    }
     images?.forEach((url, i) => {
       // Staggered clicks so the browser accepts every download.
       setTimeout(() => {
@@ -116,6 +143,10 @@ export default function TicketPocket({ tickets }: { tickets: TicketDisplay[] }) 
         >
           {many ? t("saveAllTickets") : t("saveTicket")} ↓
         </button>
+        {/* "Save Image" sits among Messages/AirDrop in the sheet — point at it. */}
+        {canShareFiles && (
+          <p className="max-w-xs text-center text-xs text-ink/60">{t("saveTicketHint")}</p>
+        )}
       </div>
     </div>
   );
