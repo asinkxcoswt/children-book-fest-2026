@@ -30,7 +30,9 @@ const EXIT_MS = 200;
  *  leaving the page. The detail page is one explicit tap away.
  *  Mounted only while a session is selected; switching sessions updates the
  *  content in place rather than remounting, so the slide-in plays once.
- *  Dismissible four ways: swipe down, tap outside, the close button, Escape. */
+ *  Dismissed by swipe-down, the close button, or Escape — deliberately NOT by
+ *  tapping outside: the board is a dense grid of small targets, so a stray tap
+ *  while comparing events kept shutting the sheet mid-browse. */
 export default function ScheduleEventDrawer({
   detail,
   currentSession,
@@ -78,19 +80,6 @@ export default function ScheduleEventDrawer({
     };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
-  }, [dismiss]);
-
-  // Tap outside to dismiss — except on another schedule block, which should
-  // swap the sheet's contents rather than close and reopen it.
-  useEffect(() => {
-    const onPointerDown = (e: PointerEvent) => {
-      const target = e.target as Element | null;
-      if (!target || panelRef.current?.contains(target)) return;
-      if (target.closest("[data-board-ticket]")) return;
-      dismiss();
-    };
-    document.addEventListener("pointerdown", onPointerDown);
-    return () => document.removeEventListener("pointerdown", onPointerDown);
   }, [dismiss]);
 
   /** Swipe down to dismiss. Only starts when the sheet is scrolled to the top,

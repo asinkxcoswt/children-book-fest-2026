@@ -120,9 +120,6 @@ export default function ScheduleBoardGrid({ days, bands, legend, details }: Prop
         <button
           key={`${b.slug}${b.start}`}
           type="button"
-          // Marks this as a sheet trigger: tapping one while the drawer is open
-          // swaps its contents instead of counting as a tap-outside dismiss.
-          data-board-ticket=""
           aria-haspopup="dialog"
           aria-expanded={isSelected}
           onClick={(e) => {
