@@ -21,9 +21,8 @@ export default function TicketPocket({ tickets }: { tickets: TicketDisplay[] }) 
   useEffect(() => {
     let alive = true;
     let objectUrls: string[] = [];
-    // Wait for the web fonts so the canvas text uses the real typefaces.
-    document.fonts.ready
-      .then(() => Promise.all(tickets.map((tk) => drawTicket(tk))))
+    // drawTicket waits for the typefaces it needs before it measures anything.
+    Promise.all(tickets.map((tk) => drawTicket(tk)))
       .then((blobs) => {
         if (!alive) return;
         const asFiles = blobs.map(

@@ -26,6 +26,35 @@ function cssVar(name: string): string {
   return getComputedStyle(document.documentElement).getPropertyValue(name).trim();
 }
 
+/** Canvas draws with a system fallback for any face it does not consider loaded,
+ *  while still centring on the *requested* face's metrics — Thai then paints
+ *  wider than the box it was positioned in and drifts off-centre. iOS Safari hits
+ *  this constantly: document.fonts.ready only settles pending loads, and a
+ *  subsetted Thai face nothing has painted yet was never pending. Asking for the
+ *  exact size/family *and* the glyphs is what actually pulls the subset in. */
+async function loadFonts(specs: string[], text: string): Promise<void> {
+  await Promise.all(specs.map((spec) => document.fonts.load(spec, text).catch(() => [])));
+  await document.fonts.ready;
+}
+
+/** Sets the largest font size at or below `size` that keeps `text` within
+ *  `maxWidth` — a wider-than-expected face shrinks instead of running off the card. */
+function fitFont(
+  ctx: CanvasRenderingContext2D,
+  text: string,
+  maxWidth: number,
+  size: number,
+  /** Full family list, fallback included — e.g. `${displayFont}, monospace`. */
+  family: string,
+): void {
+  let px = size;
+  ctx.font = `${px}px ${family}`;
+  while (px > 12 && ctx.measureText(text).width > maxWidth) {
+    px -= 1;
+    ctx.font = `${px}px ${family}`;
+  }
+}
+
 /** Wraps text for canvas. Thai has no spaces, so fall back to per-character wrapping. */
 function wrapText(ctx: CanvasRenderingContext2D, text: string, maxWidth: number): string[] {
   const units = text.includes(" ") ? text.split(" ") : [...text];
@@ -54,6 +83,22 @@ export async function drawTicket(ticket: TicketDisplay): Promise<Blob> {
   const bodyFont = cssVar("--font-plex-thai");
   const W = TICKET_W;
   const H = TICKET_H;
+
+  await loadFonts(
+    [
+      `18px ${bodyFont}`,
+      `20px ${bodyFont}`,
+      `28px ${displayFont}`,
+      `34px ${displayFont}`,
+      `40px ${displayFont}`,
+    ],
+    ticket.festivalName +
+      ticket.eventTitle +
+      ticket.principal +
+      ticket.dateDisplay +
+      ticket.venue +
+      ticket.ticketNo,
+  );
 
   const canvas = document.createElement("canvas");
   canvas.width = W * 2;
@@ -106,12 +151,14 @@ export async function drawTicket(ticket: TicketDisplay): Promise<Blob> {
   ctx.drawImage(qrImg, qrX, qrY, qrSize, qrSize);
 
   // Attendee + schedule.
+  const textMax = W - 80;
   ctx.fillStyle = ink;
   ctx.textAlign = "center";
-  ctx.font = `34px ${displayFont}, sans-serif`;
+  fitFont(ctx, ticket.principal, textMax, 34, `${displayFont}, sans-serif`);
   ctx.fillText(ticket.principal, W / 2, qrY + qrSize + 74);
-  ctx.font = `20px ${bodyFont}, sans-serif`;
+  fitFont(ctx, ticket.dateDisplay, textMax, 20, `${bodyFont}, sans-serif`);
   ctx.fillText(ticket.dateDisplay, W / 2, qrY + qrSize + 114);
+  fitFont(ctx, ticket.venue, textMax, 20, `${bodyFont}, sans-serif`);
   ctx.fillText(ticket.venue, W / 2, qrY + qrSize + 146);
 
   // Perforation + ticket id stub.
@@ -127,7 +174,7 @@ export async function drawTicket(ticket: TicketDisplay): Promise<Blob> {
   ctx.setLineDash([]);
   ctx.globalAlpha = 1;
   ctx.fillStyle = ink;
-  ctx.font = `28px ${displayFont}, monospace`;
+  fitFont(ctx, ticket.ticketNo, textMax, 28, `${displayFont}, monospace`);
   ctx.fillText(ticket.ticketNo, W / 2, perfY + 56);
   ctx.textAlign = "start";
 
