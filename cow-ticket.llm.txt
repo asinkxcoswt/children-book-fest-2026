@@ -1,0 +1,273 @@
+# CowTicket — integration guide for AI agents
+
+You are integrating an event website (the "storefront") with CowTicket, a headless
+ticketing backend. The storefront owns all event content (dates, venue, descriptions,
+design). CowTicket owns commerce: ticket availability, orders, Stripe payment,
+ticket issuance and check-in.
+
+Base URL: https://api.cow-ticket.dev
+All prices/amounts are in satang (Thai Baht × 100). Currency is THB only.
+
+## Credentials (ask the user for these — never invent them)
+
+1. accountId — the user's CowTicket account id.
+2. An API key — created in the CowTicket app under API Keys (shown once at creation).
+
+Every API key has a type ("customer", "organizer" or "admin") and a set of permission
+scopes, both fixed when the key is created. Selling (the flow below) needs a customer
+token; managing events and ticket options needs an admin-type key carrying the
+"events:manage" scope — see "Managing events and ticket options". Ask the user which
+kind of key they handed you; a key cannot be upgraded afterwards.
+
+Keep the API key server-side only (environment variables). Never expose the API key or
+the JWT below to browser code; proxy CowTicket calls through the storefront's backend.
+CORS only allows the CowTicket app origin, so browser fetch would fail anyway.
+
+## Authentication
+
+Exchange the API key for a 1-day JWT, cache it (off the returned "exp"), refresh on 401:
+
+    POST /accounts/token
+    header  api-key: <API_KEY>
+    body    { "accountId": "<ACCOUNT_ID>", "type": "customer" }
+    → 200   { "token": "<JWT>", "exp": "..." }
+
+"type" must match the key's own type, with one exception: an admin-type key may ask for
+"admin", "customer" or "organizer" tokens, so a single admin key can both sell and manage.
+Asking for a type the key doesn't cover returns 401.
+
+Send the JWT on every other request:  authorization: Bearer <JWT>
+
+The token is account-scoped: every request that names an accountId must name the same
+one as the token, or it returns 401. There is no per-buyer identity anywhere in the API.
+
+## Endpoint reference
+
+### List what's on sale
+    GET /events/ticketConfigs?accountId=<ACCOUNT_ID>&eventCode=<eventCode>
+    → { "data": [ { "id", "eventCode", "code", "name", "group", "price", "currency",
+                    "available", "limitPerOrder", "startSellingDate", "endSellingDate" } ],
+        "total": n,
+        "refundPolicy": { "allowed": bool, "termEn": str, "termTh": str } }
+eventCode is unique inside your account, not across the platform, so this call needs
+accountId too — omit it and the account behind your token is used. Only ACTIVE ticket
+types inside their selling window are returned. "available" is a
+live count. Show refundPolicy.termEn / termTh near the checkout button (pick by the
+storefront's language; show both if bilingual). An empty "data" means nothing is on sale
+right now — before the selling window, after it, or the organizer archived the event — so
+render a "not on sale" state, never an error.
+
+"data" arrives in the organizer's chosen display order — render it in this order,
+do not re-sort. "group" is an optional section label (string or null) the organizer
+uses to split ticket options into sections, e.g. sessions or days of the event
+("Day 1 (Sat 14 Mar)"). Rendering rule: iterate in order and start a new titled
+section whenever "group" changes; items with group null are ungrouped — render them
+flat, before any grouped section, with no heading. If every item's group is null,
+render one flat list (most events). The label is display text only — items in the
+same group have no shared behavior, and buyers can still mix items across groups in
+one order.
+
+### Create an order
+    POST /orders
+    { "accountId": "<ACCOUNT_ID>",
+      "eventCode": "<eventCode>",
+      "email": "<buyer email>",
+      "items": [ { "code": "<ticketConfig code>", "quantity": n,
+                   "passDisplay": { ... } } ],                         // 1–20 items
+      "metadata": { ...any buyer form answers... },                    // optional
+      "successUrl": "<absolute URL on the storefront, may contain {ORDER_ID}>",
+      "cancelUrl": "<absolute URL on the storefront, may contain {ORDER_ID}>" }
+    → { "orderId", "orderNo", "status", "expiresAt", "checkoutUrl" }
+
+- status PENDING + checkoutUrl → redirect the buyer to checkoutUrl (Stripe Checkout).
+- Free orders return status PAID and checkoutUrl null → go straight to the success page.
+- Inventory is reserved atomically; unpaid orders expire after 1 hour and release seats.
+- metadata keys/values appear in the organizer's participant exports — put attendee
+  form answers (phone, shirt size, ...) here. Keep it a flat object of scalars.
+- The success page needs the orderId, and CowTicket generates it. Put the literal token
+  {ORDER_ID} in successUrl (e.g. "https://site.com/orders?orderId={ORDER_ID}") and the
+  platform substitutes the real id before creating the Stripe session. The token is
+  case-sensitive and exactly {ORDER_ID} — no other spelling is substituted, and an
+  unsubstituted URL sends every paying buyer to a broken success page.
+- passDisplay (optional, per item) carries display text onto each issued ticket:
+  { "main", "description", "head", "date", "dateDisplay", "principal", "zone", "seat" }.
+  Always send "principal" (the attendee name) — it is what gate staff search by when a
+  QR won't scan, and it comes back on each ticket in /orders/detail. Omitted fields fall
+  back to defaults (event name, ticket type name, order date, buyer email).
+
+### Check an order / fetch tickets
+    GET /orders/detail?orderId=<orderId>&accountId=<ACCOUNT_ID>
+    → { "id", "orderNo", "status": "PENDING|PAID|REFUNDED|EXPIRED|CANCELED",
+        "email", "eventCode", "event", "expiresAt", "paidAt", "items", "payment",
+        "tickets": [ { "id", "ticketNo", "status": "ISSUED|REDEEMED|VOIDED",
+                       "principal", "ownerEmail" } ],
+        "refundPolicy", ... }
+accountId is required here — a request without it returns 400.
+
+This is the only ticket-read endpoint a storefront needs; it returns the full list. Do not
+build on the other /tickets/* endpoints — they are merchant/admin surface, not part of the
+storefront contract.
+
+Per-ticket "status" is ISSUED (valid), REDEEMED (already scanned) or VOIDED (cancelled by
+the organizer). Render a scannable QR ONLY for ISSUED. REDEEMED is normal — it is what the
+buyer sees after entering the venue — so show the ticket marked as used, without a QR.
+Likewise when the ORDER status is REFUNDED: the gate rejects every ticket on a refunded
+order, so never leave live QRs on that page.
+
+### Check-in (only if building a scanner/gate feature)
+    POST /tickets/redeem   { "accountId": "<ACCOUNT_ID>", "ticketId": "<id or ticketNo>",
+                             "location": "<gate label>" }
+Requires an organizer-type JWT (exchange an API key of type "organizer" — a second
+credential, separate from the customer key). ticketId accepts either the ticket uuid or
+the ticketNo. Tickets are bearer instruments: presenting a valid one is the only
+requirement, there is no holder identity to verify. A ticket redeems once; REDEEMED,
+VOIDED and refunded-order tickets are rejected. Most storefronts do not need this —
+the organizer's own app handles scanning.
+
+## The flow to implement on the storefront
+
+1. Ticket page: GET /events/ticketConfigs → render the ticket options in the given
+   order (sectioned by "group" when present), prices (satang → ฿ divide by 100),
+   availability, and the refund policy text. Respect limitPerOrder.
+2. Checkout: collect buyer email (+ any extra fields into metadata), POST /orders,
+   redirect to checkoutUrl.
+3. Success page (successUrl): read orderId from the query string, poll
+   GET /orders/detail (e.g. every 2s, up to ~1 min) until status is PAID, then render
+   the tickets: one QR code per ISSUED ticket encoding its ticketNo, with the ticketNo
+   also as visible text under the QR (manual-entry fallback) and the ticket type name.
+   Tickets that are REDEEMED or VOIDED, and every ticket on a REFUNDED order, render
+   without a QR and marked with their state — see the status rules above. Scanners
+   accept the ticket uuid too, but ticketNo is the one a human can read out. Show the
+   orderNo on the page. This page is also the buyer's permanent ticket wallet — the
+   confirmation email links back to it, so it must work on revisit (fetch by orderId
+   again, no cookies or session state). Render QRs black-on-white, >=200px. There are no
+   Apple/Google Wallet passes — do not render "Add to Wallet" buttons.
+4. Cancel page (cancelUrl): offer to try again; the reservation frees itself after 1h.
+
+## Managing events and ticket options (content sync)
+
+The endpoints above are all a pure storefront needs. CowTicket also exposes the
+event/ticket-option management API over the same REST channel, so a project that already
+owns event content can push it into CowTicket instead of the user re-typing it in the app.
+
+Requirements: an **admin-type** API key whose scopes include "events:manage", exchanged
+for an **admin** token (POST /accounts/token with "type": "admin"). Anything less fails:
+a customer token is rejected outright, an organizer token may read but never write, and a
+key without "events:manage" gets 403 on every write. Send the token as
+authorization: Bearer <JWT>, and put the same accountId in every request body — a
+mismatch with the token's account is 401. These are server-side calls only.
+
+Error shape in this section: 400 = malformed request or unknown event/ticket option,
+401 = token/account problem, 403 = missing scope, and a rejected *state change*
+(duplicate code, quantity below sold, archived event) currently comes back as HTTP 500
+with the real reason in the plain-text body. Read the body, not just the status.
+
+    POST /events
+    { "accountId", "eventCode", "name",
+      "tags": ["..."],                       // optional, portal filtering/bulk export
+      "reportEmails": ["..."],               // optional, organizer report recipients
+      "refundAllowed": true,                 // optional, default true
+      "refundTermEn": "...", "refundTermTh": "..." }   // optional, defaults filled in
+    → the created event
+eventCode is the permanent handle you address the event by everywhere else. It is unique
+within your account — another account may use the same code, so always pair it with your
+accountId — and can never be changed. Reusing one in your own account is refused with
+"Event code already exists". Pick something stable and slug-like from your own content id.
+
+    PUT /events
+    { "accountId", "eventCode", ...any of: name, tags, reportEmails,
+                                 refundAllowed, refundTermEn, refundTermTh }
+    → the updated event
+Only the fields you send change. An unknown eventCode is 400 "Event not found".
+
+    POST /events/archive
+    { "accountId", "eventCode", "archived": true }    // false = unarchive
+    → the updated event ("archivedAt" is set, or null once unarchived)
+There is no delete: an event carries orders, tickets and payment history, so retiring one
+means archiving it. An archived event stops selling — GET /events/ticketConfigs returns an
+empty list and POST /orders is refused with "This event is archived and is not selling
+tickets" — while orders, tickets, check-in, stats and reports stay exactly as they were.
+The call is idempotent and reversible; unarchive puts the event straight back on sale
+under the same eventCode.
+
+    GET /events?accountId=<ACCOUNT_ID>
+        &archived=true|false   // optional, default false = active events only
+        &keyword=&tag=&take=&skip=
+    → { "data": [ { "id", "eventCode", "name", "tags", "reportEmails", "archivedAt",
+                    "refundAllowed", "refundTermEn", "refundTermTh", ... } ], "total": n }
+Ask for archived=true to find an archived event — the default view never lists them.
+This is how you reconcile: read what exists, then create/update/archive to match.
+
+    GET /ticketConfigs?accountId=<ACCOUNT_ID>&eventCode=<eventCode>
+    → { "data": [ { "id", "code", "name", "group", "price", "currency", "quantity",
+                    "sold", "reserved", "limitPerOrder", "status",
+                    "startSellingDate", "endSellingDate", "sortOrder" } ], "total": n }
+The merchant view of ticket options — unlike GET /events/ticketConfigs it includes HIDDEN
+ones, raw counters and the "id" you need to update a row. Match your own ticket types to
+these by "code" and keep the returned "id".
+
+    POST /ticketConfigs
+    { "accountId", "eventCode", "code", "name",
+      "price": 50000,                        // satang; 0 = free ticket
+      "quantity": 100, "limitPerOrder": 4,
+      "startSellingDate": "2026-03-01T00:00:00Z",   // optional, ISO 8601, open-ended if null
+      "endSellingDate": "2026-03-14T17:00:00Z",     // optional
+      "status": "ACTIVE",                    // or "HIDDEN"; default ACTIVE
+      "group": "Day 1 (Sat 14 Mar)" }        // optional section label
+    → the created ticket option
+"code" is unique within the event (refused if reused) and is what POST /orders references.
+
+    PUT /ticketConfigs
+    { "accountId", "id": "<ticketConfig id>",       // the id, NOT the code
+      ...any of: name, price, quantity, limitPerOrder,
+                 startSellingDate, endSellingDate, status, group }
+    → the updated ticket option
+"code" and "eventCode" are immutable — a ticket option cannot move between events. Lowering
+"quantity" below sold + reserved is refused: sold tickets can never be un-sold. Ticket
+options are never deleted either; set "status": "HIDDEN" to take one off sale while keeping
+its orders intact.
+
+Sync rules:
+- CowTicket is the source of truth for price, inventory counters and everything money.
+  Push your content in, then read availability back — never mirror "sold" into your own
+  store and never re-create an event to "reset" it.
+- Sync is a reconcile, not a replay: list first (GET /events, GET /ticketConfigs), then
+  create what's missing, update what differs, archive what you retired. Re-running it must
+  be safe.
+- Display order comes from the organizer's arrangement in the CowTicket app; the API has no
+  order field, so new ticket options land at the end in creation order. Create them in the
+  order you want them shown.
+- Editing a live event is allowed and takes effect immediately — price changes never touch
+  orders already placed (each order snapshots its unit price).
+- A refusal always carries a plain-text reason (duplicate code, quantity below sold, event
+  not found). Surface it; do not retry blindly.
+
+## Rules and gotchas
+
+- Poll for payment state; there is no storefront-facing webhook. The order may already
+  be PAID on first poll (Stripe webhooks usually finish before the redirect). Never
+  treat the Stripe redirect itself as proof of payment.
+- Still PENDING after the poll timeout is not an error — show "payment processing,
+  you'll receive an email". EXPIRED means the buyer took over an hour; send them back.
+- Don't cache availability for more than a few seconds during an on-sale.
+- Handle 401 by re-exchanging the API key for a fresh JWT once, then retrying. A 401
+  that survives the retry usually means a missing or mismatched accountId, not an
+  expired token.
+- A ticket is a bearer instrument owned by the organizer's account. It is not bound to a
+  buyer identity: whoever presents a valid QR gets in, there is no claim/transfer/holder
+  check anywhere in the API, and "principal" is a printed label the gate does not verify.
+  The order id is an unguessable uuid, so the success-page URL is the only thing guarding
+  those tickets — mark the page noindex, and keep the order id out of analytics payloads,
+  client-side error reporting, and cross-origin Referer headers. Do not build a
+  "transfer to a friend" feature; there is no API for it and it would only resend the URL.
+- Errors are plain-text messages with meaningful status codes (400 validation / sold out
+  / outside selling period, 401 auth). Show the message to the buyer for sold-out and
+  per-order-limit failures.
+- Handle order-create failures (sold out between render and checkout) by re-fetching
+  availability and telling the buyer what's left.
+- Do not build your own inventory, order state, or payment handling — CowTicket is
+  the source of truth for all commerce state. The storefront is the source of truth
+  for event content only.
+- Questions from the human: support@cow-ticket.dev
+
+Human-readable docs: http://localhost:3000/docs
