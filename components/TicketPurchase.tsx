@@ -19,7 +19,9 @@ interface TicketOption {
   limitPerOrder: number;
   available: number;
   /** Calendar day the ticket admits on (YYYY-MM-DD, resolved by the platform
-   *  in Asia/Bangkok), or null for an event with no sessions. */
+   *  in Asia/Bangkok), or null for an event with no sessions. Label the card
+   *  from this, not from the raw `sessionStartAt` instant — a late session
+   *  formatted in a browser outside Bangkok can land on the previous day. */
   sessionDate: string | null;
   /** When the ticket admits you (ISO instants). The card leads with this
    *  rather than repeating it in `name`, so the time has one source and can't
@@ -61,14 +63,6 @@ function toSections(tickets: TicketOption[]): TicketSection[] {
     else sections.push({ group: tk.group, items: [tk] });
   }
   return sections;
-}
-
-/** The API deliberately sends no human-readable session label — only we know
- *  the reader's language. Built from `sessionDate` rather than the raw instant
- *  so a late session can't land on the previous day in a browser outside
- *  Bangkok. */
-function dayLabel(sessionDate: string): string {
-  return `${t("sessionOn")} ${formatDate(sessionDate)}`;
 }
 
 /** In-app ticket purchase. Buyers pick quantities on ticket-stub cards,
@@ -239,7 +233,7 @@ export default function TicketPurchase({
                 : "";
               // Screen readers get the whole ticket, not just its name: "รอบที่ 1"
               // alone gives no way to tell which day's ticket is being stepped.
-              const spoken = [tk.sessionDate && dayLabel(tk.sessionDate), time, tk.name]
+              const spoken = [tk.sessionDate && formatDate(tk.sessionDate), time, tk.name]
                 .filter(Boolean)
                 .join(" ");
               return (
@@ -259,7 +253,7 @@ export default function TicketPurchase({
                     {/* The day this ticket admits on — never only the time, or a
                         buyer can turn up on the wrong day. */}
                     {tk.sessionDate && (
-                      <p className={`font-display text-xs ${c.text}`}>{dayLabel(tk.sessionDate)}</p>
+                      <p className={`font-display text-xs ${c.text}`}>{formatDate(tk.sessionDate)}</p>
                     )}
                     <div className="flex items-baseline justify-between gap-2">
                       {/* Tickets with no session fall back to their name, which
