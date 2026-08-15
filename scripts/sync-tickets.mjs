@@ -25,6 +25,11 @@ const DRY_RUN = process.argv.includes("--dry-run");
  *  <yyyymmdd>-<hhmm> and matches schedule.sessions[].ticketCodes in
  *  content/events/*.json. Prices are in satang (1000 = ฿10). */
 const TAG = "children-book-fest-2026";
+/** Every event sells one ticket type, and the session it admits to now lives in
+ *  sessionStartAt — so the name no longer carries the time. Its real audience is
+ *  the organizer's portal, the participant export, the Stripe line item and the
+ *  issued ticket, where it is read with no event page around it. */
+const TICKET_NAME = "บัตรเข้าร่วม 1 ที่นั่ง";
 const PRICE = 1000; // satang = ฿10
 const LIMIT_PER_ORDER = 4;
 const DEFAULT_QUANTITY = 200;
@@ -97,7 +102,7 @@ function desiredConfigs(event) {
   // Chronological: the API has no sort field, so creation order IS display order.
   return event.schedule.sessions.map((s) => ({
     code: s.ticketCodes[0],
-    name: `${s.start}–${s.end}`,
+    name: TICKET_NAME,
     // The session is what admits you, and the platform now models it directly.
     // Do NOT put the date back into `group` — that field is for non-time
     // sections (zone, tier, package) and the storefront renders it as a

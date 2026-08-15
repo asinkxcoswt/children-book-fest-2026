@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import type { ColorToken } from "@/types/content";
 import { tokenClasses } from "@/lib/colors";
-import { t, formatDate } from "@/lib/i18n";
+import { t, formatDate, formatTimeRange } from "@/lib/i18n";
 import AttendeeFormModal, { type AttendeeForm } from "@/components/AttendeeFormModal";
 
 interface TicketOption {
@@ -20,6 +20,11 @@ interface TicketOption {
   /** Calendar day the ticket admits on (YYYY-MM-DD, resolved by the platform
    *  in Asia/Bangkok), or null for an event with no sessions. */
   sessionDate: string | null;
+  /** When the ticket admits you (ISO instants). The card leads with this
+   *  rather than repeating it in `name`, so the time has one source and can't
+   *  drift out of sync with what the gate honours. */
+  sessionStartAt: string | null;
+  sessionEndAt: string | null;
 }
 
 interface RefundPolicy {
@@ -257,7 +262,14 @@ export default function TicketPurchase({
                   <span aria-hidden className={`absolute inset-y-0 left-0 w-2 ${c.bg}`} />
     
                   <div className="flex items-baseline justify-between gap-2 p-3 pb-2">
-                    <span className="font-display text-base text-ink">{tk.name}</span>
+                    {/* The session time leads: within a day it is what tells two
+                        tickets apart. Tickets with no session fall back to their
+                        name, which is then the only label they have. */}
+                    <span className="font-display text-base text-ink">
+                      {tk.sessionStartAt
+                        ? formatTimeRange(tk.sessionStartAt, tk.sessionEndAt)
+                        : tk.name}
+                    </span>
                     <span
                       className={`shrink-0 rounded-full px-3 py-0.5 font-display text-sm ${soldOut ? "bg-ink/10 text-ink/60" : `${c.bg} ${c.on}`
                         }`}
@@ -265,7 +277,11 @@ export default function TicketPurchase({
                       {tk.price === 0 ? t("free") : baht(tk.price)}
                     </span>
                   </div>
-    
+
+                  {tk.sessionStartAt && (
+                    <p className="px-3 pb-2 text-xs text-ink/60">{tk.name}</p>
+                  )}
+
                   <div className="mx-3 border-t-2 border-dashed border-ink/10" />
     
                   {soldOut ? (

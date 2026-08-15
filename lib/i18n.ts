@@ -29,6 +29,28 @@ export function formatMonth(isoDate: string, locale: Locale = DEFAULT_LOCALE): s
   return new Date(`${isoDate}T00:00:00`).toLocaleDateString(intlLocale, { month: "short" });
 }
 
+/** The festival's timezone. Session fields from the ticket platform are
+ *  instants, so they must be formatted pinned to this — a reader in another
+ *  zone would otherwise see a 10:00 session as 03:00. */
+const FESTIVAL_TZ = "Asia/Bangkok";
+
+/** Session time range, e.g. "10:00–10:30". `endAt` may be null (open-ended). */
+export function formatTimeRange(
+  startAt: string,
+  endAt: string | null,
+  locale: Locale = DEFAULT_LOCALE,
+): string {
+  const intlLocale = locale === "th" ? "th-TH" : "en-GB";
+  const time = (iso: string) =>
+    new Date(iso).toLocaleTimeString(intlLocale, {
+      hour: "2-digit",
+      minute: "2-digit",
+      hour12: false,
+      timeZone: FESTIVAL_TZ,
+    });
+  return endAt ? `${time(startAt)}–${time(endAt)}` : time(startAt);
+}
+
 /** Locale-aware date formatting for schedules. */
 export function formatDate(isoDate: string, locale: Locale = DEFAULT_LOCALE): string {
   const intlLocale = locale === "th" ? "th-TH" : "en-GB";
