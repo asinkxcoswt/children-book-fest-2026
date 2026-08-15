@@ -25,14 +25,11 @@ const DRY_RUN = process.argv.includes("--dry-run");
  *  <yyyymmdd>-<hhmm> and matches schedule.sessions[].ticketCodes in
  *  content/events/*.json. Prices are in satang (1000 = ฿10). */
 const TAG = "children-book-fest-2026";
-/** Blank on purpose. Every event sells one ticket type and the session already
- *  identifies it, so any name would just repeat the day and time on the card.
- *
- *  REQUIRES CowTicket to have shipped optional ticket names — POST/PUT
- *  /ticketConfigs rejects a blank one until then, and because the reconcile
- *  stops at the first refusal per config, running early would also block the
- *  session fields on that row. Confirm the platform is ready, then sync. */
-const TICKET_NAME = "";
+/** Sessions are stored chronologically, so a session's index is the round
+ *  number a buyer counts in. CowTicket requires a name, and this is the one
+ *  thing that identifies a ticket without restating the day and time the
+ *  session fields already carry. */
+const ticketNameFor = (index) => `รอบที่ ${index + 1}`;
 const PRICE = 1000; // satang = ฿10
 const LIMIT_PER_ORDER = 4;
 const DEFAULT_QUANTITY = 200;
@@ -121,9 +118,9 @@ const firstKey = (e) => `${e.schedule.sessions[0].date}${e.schedule.sessions[0].
 
 function desiredConfigs(event) {
   // Chronological: the API has no sort field, so creation order IS display order.
-  return event.schedule.sessions.map((s) => ({
+  return event.schedule.sessions.map((s, i) => ({
     code: s.ticketCodes[0],
-    name: TICKET_NAME,
+    name: ticketNameFor(i),
     // The session is what admits you, and the platform now models it directly.
     // Do NOT put the date back into `group` — that field is for non-time
     // sections (zone, tier, package), which the storefront renders as the
@@ -150,11 +147,11 @@ const CONFIG_FIELDS = ["name", "group", "price", "quantity", "limitPerOrder", "s
 const INSTANT_FIELDS = new Set(["startSellingDate", "endSellingDate",
                                 "sessionStartAt", "sessionEndAt"]);
 
-/** Fields we deliberately blank. We send "" for the name and null for the
- *  group; the platform may echo either back as the other. Treat absent and
- *  empty as the same value, or the reconcile re-PUTs the same emptiness on
- *  every run — the string-compare trap again, one field over. */
-const BLANKABLE_FIELDS = new Set(["name", "group"]);
+/** Fields we deliberately blank. We send null for the group and the platform
+ *  may echo it back as "". Treat absent and empty as the same value, or the
+ *  reconcile re-PUTs the same emptiness on every run — the string-compare trap
+ *  again, one field over. */
+const BLANKABLE_FIELDS = new Set(["group"]);
 
 function same(field, a, b) {
   if (BLANKABLE_FIELDS.has(field)) return (a ?? "") === (b ?? "");

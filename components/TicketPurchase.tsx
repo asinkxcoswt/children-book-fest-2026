@@ -9,8 +9,8 @@ import AttendeeFormModal, { type AttendeeForm } from "@/components/AttendeeFormM
 
 interface TicketOption {
   code: string;
-  /** Optional: the session identifies the ticket, so most carry no name. */
-  name: string | null;
+  /** The round number ("รอบที่ 1"); the day and time come from the session. */
+  name: string;
   /** Organizer's section label for anything that is NOT time — zone, tier,
    *  package. null = ungrouped. The session lives in sessionDate. */
   group: string | null;
@@ -234,17 +234,14 @@ export default function TicketPurchase({
               const max = Math.min(tk.limitPerOrder, tk.available);
               const selected = (qty[tk.code] ?? 0) > 0;
               const soldOut = tk.available === 0;
-              const label = tk.name?.trim() ?? "";
               const time = tk.sessionStartAt
                 ? formatTimeRange(tk.sessionStartAt, tk.sessionEndAt)
                 : "";
-              // Screen readers get the whole ticket, not just its name: with the
-              // name blank the stepper buttons would otherwise all announce
-              // identically, leaving no way to tell one day's ticket from another.
-              const spoken =
-                [tk.sessionDate && dayLabel(tk.sessionDate), time, label]
-                  .filter(Boolean)
-                  .join(" ") || t("tickets");
+              // Screen readers get the whole ticket, not just its name: "รอบที่ 1"
+              // alone gives no way to tell which day's ticket is being stepped.
+              const spoken = [tk.sessionDate && dayLabel(tk.sessionDate), time, tk.name]
+                .filter(Boolean)
+                .join(" ");
               return (
                 <li
                   key={tk.code}
@@ -265,11 +262,10 @@ export default function TicketPurchase({
                       <p className={`font-display text-xs ${c.text}`}>{dayLabel(tk.sessionDate)}</p>
                     )}
                     <div className="flex items-baseline justify-between gap-2">
-                      {/* The name is optional. A ticket with no session falls
-                          back to it, and one with neither still needs a title
-                          line rather than a card that looks broken. */}
+                      {/* Tickets with no session fall back to their name, which
+                          is then the only label they have. */}
                       <span className="font-display text-base text-ink">
-                        {time || label || t("tickets")}
+                        {time || tk.name}
                       </span>
                       <span
                         className={`shrink-0 rounded-full px-3 py-0.5 font-display text-sm ${soldOut ? "bg-ink/10 text-ink/60" : `${c.bg} ${c.on}`
@@ -278,8 +274,8 @@ export default function TicketPurchase({
                         {tk.price === 0 ? t("free") : baht(tk.price)}
                       </span>
                     </div>
-                    {time && label && (
-                      <p className="text-xs text-ink/60">{label}</p>
+                    {time && (
+                      <p className="text-xs text-ink/60">{tk.name}</p>
                     )}
                   </div>
 

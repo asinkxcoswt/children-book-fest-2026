@@ -52,9 +52,8 @@ export async function POST(request: NextRequest) {
     const s = sessions.find((sess) => sess.ticketCodes?.includes(code)) ?? sessions[0];
     return {
       main: pick(event.title),
-      // Sent explicitly: this defaults to the ticket type name, which is now
-      // blank, so leaving it out puts an empty line on the issued ticket.
-      description: `${s.start}–${s.end}`,
+      // description is left to default to the ticket type name ("รอบที่ 1") —
+      // dateDisplay below already carries the date and time.
       date: `${s.date}T${s.start}:00+07:00`,
       dateDisplay: `${formatDate(s.date)} ${s.start} · ${pick(venue)}`,
       principal: name,
