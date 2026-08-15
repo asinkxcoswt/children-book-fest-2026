@@ -34,7 +34,15 @@ export function formatMonth(isoDate: string, locale: Locale = DEFAULT_LOCALE): s
  *  zone would otherwise see a 10:00 session as 03:00. */
 const FESTIVAL_TZ = "Asia/Bangkok";
 
-/** Session time range, e.g. "10:00–10:30". `endAt` may be null (open-ended). */
+/** The calendar day an instant falls on in Bangkok, as YYYY-MM-DD. */
+function festivalDay(iso: string): string {
+  return new Date(iso).toLocaleDateString("en-CA", { timeZone: FESTIVAL_TZ });
+}
+
+/** Session time range, e.g. "10:00–10:30". `endAt` may be null (open-ended).
+ *  A session that ends on a later day carries that day inline — "23:00 – อ. 8
+ *  ธ.ค. 01:00" — because a bare "23:00–01:00" reads as ending the same evening
+ *  and sends the buyer to the gate on the wrong day. */
 export function formatTimeRange(
   startAt: string,
   endAt: string | null,
@@ -48,7 +56,10 @@ export function formatTimeRange(
       hour12: false,
       timeZone: FESTIVAL_TZ,
     });
-  return endAt ? `${time(startAt)}–${time(endAt)}` : time(startAt);
+  if (!endAt) return time(startAt);
+  const endDay = festivalDay(endAt);
+  if (endDay === festivalDay(startAt)) return `${time(startAt)}–${time(endAt)}`;
+  return `${time(startAt)} – ${formatDate(endDay, locale)} ${time(endAt)}`;
 }
 
 /** Locale-aware date formatting for schedules. */

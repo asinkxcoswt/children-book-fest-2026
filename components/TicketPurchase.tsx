@@ -34,10 +34,7 @@ interface RefundPolicy {
 }
 
 interface TicketSection {
-  sessionDate: string | null;
   group: string | null;
-  /** Rendered day label, or null when the section continues the day above. */
-  heading: string | null;
   items: TicketOption[];
 }
 
@@ -45,30 +42,22 @@ function baht(satang: number): string {
   return `฿${(satang / 100).toLocaleString("th-TH")}`;
 }
 
-/** The platform sections tickets on two independent axes: `sessionDate` (when
- *  the ticket admits you) is the outer one, `group` (zone / tier / package) the
- *  inner one. Options with neither render flat and first, with no heading.
- *  Everything else keeps the platform's order — never re-sort — and opens a new
- *  section whenever either axis changes. */
+/** Sections come from `group` alone — the organizer's own label for zone, tier
+ *  or package. The other axis, the day a ticket admits on, is printed on each
+ *  ticket instead of heading a section: every event here sells one ticket per
+ *  day, so a heading per card would be one line of chrome for one line of
+ *  content, and a date on the card can't be scrolled past.
+ *
+ *  Ungrouped options render flat and first, with no heading. Platform order is
+ *  preserved throughout — never re-sort. */
 function toSections(tickets: TicketOption[]): TicketSection[] {
-  const ungrouped = tickets.filter((tk) => !tk.sessionDate && !tk.group);
-  const sections: TicketSection[] = ungrouped.length
-    ? [{ sessionDate: null, group: null, heading: null, items: ungrouped }]
-    : [];
+  const ungrouped = tickets.filter((tk) => !tk.group);
+  const sections: TicketSection[] = ungrouped.length ? [{ group: null, items: ungrouped }] : [];
   for (const tk of tickets) {
-    if (!tk.sessionDate && !tk.group) continue;
+    if (!tk.group) continue;
     const last = sections[sections.length - 1];
-    if (last && last.sessionDate === tk.sessionDate && last.group === tk.group) {
-      last.items.push(tk);
-    } else {
-      sections.push({
-        sessionDate: tk.sessionDate,
-        group: tk.group,
-        // Only the first section of a day is titled; later zones sit under it.
-        heading: tk.sessionDate && tk.sessionDate !== last?.sessionDate ? dayLabel(tk.sessionDate) : null,
-        items: [tk],
-      });
-    }
+    if (last && last.group === tk.group) last.items.push(tk);
+    else sections.push({ group: tk.group, items: [tk] });
   }
   return sections;
 }
@@ -234,14 +223,10 @@ export default function TicketPurchase({
       <h2 className="font-display text-lg text-ink">{t("tickets")}</h2>
 
       {toSections(tickets).map((section, i) => (
-        <section key={`${i}-${section.sessionDate ?? ""}-${section.group ?? ""}`} className="mt-3">
-          {/* Outer axis: the day this ticket admits on. */}
-          {section.heading && (
-            <h3 className={`mb-2 font-display text-sm ${c.text}`}>{section.heading}</h3>
-          )}
-          {/* Inner axis: the organizer's own label (zone, tier, package). */}
+        <section key={`${i}-${section.group ?? ""}`} className="mt-3">
+          {/* The organizer's own label — zone, tier, package. */}
           {section.group && (
-            <h4 className="mb-2 text-xs text-ink/60">{section.group}</h4>
+            <h3 className={`mb-2 font-display text-sm ${c.text}`}>{section.group}</h3>
           )}
           <ul className="space-y-3">
             {section.items.map((tk) => {
@@ -261,26 +246,31 @@ export default function TicketPurchase({
                   {/* Ticket-stub spine. */}
                   <span aria-hidden className={`absolute inset-y-0 left-0 w-2 ${c.bg}`} />
     
-                  <div className="flex items-baseline justify-between gap-2 p-3 pb-2">
-                    {/* The session time leads: within a day it is what tells two
-                        tickets apart. Tickets with no session fall back to their
-                        name, which is then the only label they have. */}
-                    <span className="font-display text-base text-ink">
-                      {tk.sessionStartAt
-                        ? formatTimeRange(tk.sessionStartAt, tk.sessionEndAt)
-                        : tk.name}
-                    </span>
-                    <span
-                      className={`shrink-0 rounded-full px-3 py-0.5 font-display text-sm ${soldOut ? "bg-ink/10 text-ink/60" : `${c.bg} ${c.on}`
-                        }`}
-                    >
-                      {tk.price === 0 ? t("free") : baht(tk.price)}
-                    </span>
+                  <div className="p-3 pb-2">
+                    {/* The day this ticket admits on — never only the time, or a
+                        buyer can turn up on the wrong day. */}
+                    {tk.sessionDate && (
+                      <p className={`font-display text-xs ${c.text}`}>{dayLabel(tk.sessionDate)}</p>
+                    )}
+                    <div className="flex items-baseline justify-between gap-2">
+                      {/* Tickets with no session fall back to their name, which
+                          is then the only label they have. */}
+                      <span className="font-display text-base text-ink">
+                        {tk.sessionStartAt
+                          ? formatTimeRange(tk.sessionStartAt, tk.sessionEndAt)
+                          : tk.name}
+                      </span>
+                      <span
+                        className={`shrink-0 rounded-full px-3 py-0.5 font-display text-sm ${soldOut ? "bg-ink/10 text-ink/60" : `${c.bg} ${c.on}`
+                          }`}
+                      >
+                        {tk.price === 0 ? t("free") : baht(tk.price)}
+                      </span>
+                    </div>
+                    {tk.sessionStartAt && (
+                      <p className="text-xs text-ink/60">{tk.name}</p>
+                    )}
                   </div>
-
-                  {tk.sessionStartAt && (
-                    <p className="px-3 pb-2 text-xs text-ink/60">{tk.name}</p>
-                  )}
 
                   <div className="mx-3 border-t-2 border-dashed border-ink/10" />
     

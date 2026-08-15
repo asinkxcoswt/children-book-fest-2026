@@ -47,6 +47,24 @@ const eventCodeFor = (slug) => `cbf2026-${slug}`;
 /** Session times in content are Thailand local wall-clock. */
 const TH_OFFSET = "+07:00";
 
+const nextDay = (isoDate) => {
+  const d = new Date(`${isoDate}T00:00:00Z`);
+  d.setUTCDate(d.getUTCDate() + 1);
+  return d.toISOString().slice(0, 10);
+};
+
+/** Content models a session as ONE date plus wall-clock start/end, so it cannot
+ *  express an overnight session directly: an end that sorts before its start
+ *  can only mean the session runs past midnight. Roll the end onto the next day
+ *  rather than pushing an end that precedes its own start. */
+function sessionRange(s) {
+  const endDate = s.end < s.start ? nextDay(s.date) : s.date;
+  return {
+    sessionStartAt: `${s.date}T${s.start}:00${TH_OFFSET}`,
+    sessionEndAt: `${endDate}T${s.end}:00${TH_OFFSET}`,
+  };
+}
+
 function requireEnv(name) {
   const value = process.env[name];
   if (!value) {
@@ -105,10 +123,9 @@ function desiredConfigs(event) {
     name: TICKET_NAME,
     // The session is what admits you, and the platform now models it directly.
     // Do NOT put the date back into `group` — that field is for non-time
-    // sections (zone, tier, package) and the storefront renders it as a
-    // second axis inside each day.
-    sessionStartAt: `${s.date}T${s.start}:00${TH_OFFSET}`,
-    sessionEndAt: `${s.date}T${s.end}:00${TH_OFFSET}`,
+    // sections (zone, tier, package), which the storefront renders as the
+    // section heading now that the day sits on the ticket itself.
+    ...sessionRange(s),
     group: null,
     price: PRICE,
     quantity: QUANTITY_BY_SLUG[event.slug] ?? DEFAULT_QUANTITY,
