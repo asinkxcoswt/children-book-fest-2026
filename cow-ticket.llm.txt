@@ -46,7 +46,8 @@ one as the token, or it returns 401. There is no per-buyer identity anywhere in 
 ### List what's on sale
     GET /events/ticketConfigs?accountId=<ACCOUNT_ID>&eventCode=<eventCode>
     → { "data": [ { "id", "eventCode", "code", "name", "group", "price", "currency",
-                    "available", "limitPerOrder", "startSellingDate", "endSellingDate" } ],
+                    "available", "limitPerOrder", "startSellingDate", "endSellingDate",
+                    "sessionStartAt", "sessionEndAt", "sessionDate" } ],
         "total": n,
         "refundPolicy": { "allowed": bool, "termEn": str, "termTh": str } }
 eventCode is unique inside your account, not across the platform, so this call needs
@@ -58,14 +59,34 @@ right now — before the selling window, after it, or the organizer archived the
 render a "not on sale" state, never an error.
 
 "data" arrives in the organizer's chosen display order — render it in this order,
-do not re-sort. "group" is an optional section label (string or null) the organizer
-uses to split ticket options into sections, e.g. sessions or days of the event
-("Day 1 (Sat 14 Mar)"). Rendering rule: iterate in order and start a new titled
-section whenever "group" changes; items with group null are ungrouped — render them
-flat, before any grouped section, with no heading. If every item's group is null,
-render one flat list (most events). The label is display text only — items in the
-same group have no shared behavior, and buyers can still mix items across groups in
-one order.
+do not re-sort. Two optional fields section that list, on independent axes:
+
+  "sessionDate"  the calendar day (YYYY-MM-DD, Asia/Bangkok) this ticket admits you
+                 on, or null. Derived from "sessionStartAt" — use this rather than
+                 your own timezone maths, so your sections match the organizer's
+                 portal exactly.
+  "group"        a free-text section label the organizer typed, or null. Used for
+                 anything that is not time: zone, tier, add-ons, packages.
+
+Rendering rule: iterate in order; start a new outer section whenever "sessionDate"
+changes, and a new inner section whenever "group" changes. Items with both null are
+ungrouped — render them flat, before any section, with no heading. If every item has
+both null, render one flat list (most events).
+
+Headings: for a "group" section, use the text verbatim. For a "sessionDate" section,
+format "sessionStartAt" yourself in your storefront's language ("รอบ 7 ธ.ค." /
+"Round 7 Dec") — the API deliberately sends no human-readable session label, because
+only you know your reader's locale.
+
+Sections are display structure only: items in the same section share no behavior, and
+buyers can still mix items across sections in one order.
+
+"sessionStartAt"/"sessionEndAt" (ISO 8601, or null) are when the ticket ADMITS you —
+not when it is on sale, which is "startSellingDate"/"endSellingDate". Show the session
+on the ticket and in your order confirmation whenever it is set. For a multi-round
+event it is the only thing telling two otherwise identical tickets apart, and a buyer
+who reads "10:00–10:30" with no date can arrive on the wrong day and be turned away
+at the gate.
 
 ### Create an order
     POST /orders
@@ -201,7 +222,8 @@ This is how you reconcile: read what exists, then create/update/archive to match
     GET /ticketConfigs?accountId=<ACCOUNT_ID>&eventCode=<eventCode>
     → { "data": [ { "id", "code", "name", "group", "price", "currency", "quantity",
                     "sold", "reserved", "limitPerOrder", "status",
-                    "startSellingDate", "endSellingDate", "sortOrder" } ], "total": n }
+                    "startSellingDate", "endSellingDate",
+                    "sessionStartAt", "sessionEndAt", "sessionDate", "sortOrder" } ], "total": n }
 The merchant view of ticket options — unlike GET /events/ticketConfigs it includes HIDDEN
 ones, raw counters and the "id" you need to update a row. Match your own ticket types to
 these by "code" and keep the returned "id".
@@ -212,15 +234,18 @@ these by "code" and keep the returned "id".
       "quantity": 100, "limitPerOrder": 4,
       "startSellingDate": "2026-03-01T00:00:00Z",   // optional, ISO 8601, open-ended if null
       "endSellingDate": "2026-03-14T17:00:00Z",     // optional
+      "sessionStartAt": "2026-03-14T10:00:00Z",     // optional — when it ADMITS you
+      "sessionEndAt": "2026-03-14T10:30:00Z",       // optional; needs sessionStartAt
       "status": "ACTIVE",                    // or "HIDDEN"; default ACTIVE
-      "group": "Day 1 (Sat 14 Mar)" }        // optional section label
+      "group": "Ringside" }                  // optional section label (not time)
     → the created ticket option
 "code" is unique within the event (refused if reused) and is what POST /orders references.
 
     PUT /ticketConfigs
     { "accountId", "id": "<ticketConfig id>",       // the id, NOT the code
       ...any of: name, price, quantity, limitPerOrder,
-                 startSellingDate, endSellingDate, status, group }
+                 startSellingDate, endSellingDate,
+                 sessionStartAt, sessionEndAt, status, group }
     → the updated ticket option
 "code" and "eventCode" are immutable — a ticket option cannot move between events. Lowering
 "quantity" below sold + reserved is refused: sold tickets can never be un-sold. Ticket
@@ -270,4 +295,4 @@ Sync rules:
   for event content only.
 - Questions from the human: support@cow-ticket.dev
 
-Human-readable docs: http://localhost:3000/docs
+Human-readable docs: https://cow-ticket.dev/docs

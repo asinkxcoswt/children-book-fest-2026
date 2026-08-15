@@ -4,18 +4,22 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import type { ColorToken } from "@/types/content";
 import { tokenClasses } from "@/lib/colors";
-import { t } from "@/lib/i18n";
+import { t, formatDate } from "@/lib/i18n";
 import AttendeeFormModal, { type AttendeeForm } from "@/components/AttendeeFormModal";
 
 interface TicketOption {
   code: string;
   name: string;
-  /** Organizer's section label (a day or session); null = ungrouped. */
+  /** Organizer's section label for anything that is NOT time — zone, tier,
+   *  package. null = ungrouped. The session lives in sessionDate. */
   group: string | null;
   /** Satang; 0 = free. */
   price: number;
   limitPerOrder: number;
   available: number;
+  /** Calendar day the ticket admits on (YYYY-MM-DD, resolved by the platform
+   *  in Asia/Bangkok), or null for an event with no sessions. */
+  sessionDate: string | null;
 }
 
 interface RefundPolicy {
@@ -25,7 +29,10 @@ interface RefundPolicy {
 }
 
 interface TicketSection {
+  sessionDate: string | null;
   group: string | null;
+  /** Rendered day label, or null when the section continues the day above. */
+  heading: string | null;
   items: TicketOption[];
 }
 
@@ -33,17 +40,40 @@ function baht(satang: number): string {
   return `฿${(satang / 100).toLocaleString("th-TH")}`;
 }
 
-/** Ungrouped options render flat and first with no heading; grouped ones keep the
- *  platform's order and open a new titled section whenever the label changes. */
+/** The platform sections tickets on two independent axes: `sessionDate` (when
+ *  the ticket admits you) is the outer one, `group` (zone / tier / package) the
+ *  inner one. Options with neither render flat and first, with no heading.
+ *  Everything else keeps the platform's order — never re-sort — and opens a new
+ *  section whenever either axis changes. */
 function toSections(tickets: TicketOption[]): TicketSection[] {
-  const ungrouped = tickets.filter((tk) => !tk.group);
-  const sections: TicketSection[] = ungrouped.length ? [{ group: null, items: ungrouped }] : [];
-  for (const tk of tickets.filter((tk) => tk.group)) {
+  const ungrouped = tickets.filter((tk) => !tk.sessionDate && !tk.group);
+  const sections: TicketSection[] = ungrouped.length
+    ? [{ sessionDate: null, group: null, heading: null, items: ungrouped }]
+    : [];
+  for (const tk of tickets) {
+    if (!tk.sessionDate && !tk.group) continue;
     const last = sections[sections.length - 1];
-    if (last && last.group === tk.group) last.items.push(tk);
-    else sections.push({ group: tk.group, items: [tk] });
+    if (last && last.sessionDate === tk.sessionDate && last.group === tk.group) {
+      last.items.push(tk);
+    } else {
+      sections.push({
+        sessionDate: tk.sessionDate,
+        group: tk.group,
+        // Only the first section of a day is titled; later zones sit under it.
+        heading: tk.sessionDate && tk.sessionDate !== last?.sessionDate ? dayLabel(tk.sessionDate) : null,
+        items: [tk],
+      });
+    }
   }
   return sections;
+}
+
+/** The API deliberately sends no human-readable session label — only we know
+ *  the reader's language. Built from `sessionDate` rather than the raw instant
+ *  so a late session can't land on the previous day in a browser outside
+ *  Bangkok. */
+function dayLabel(sessionDate: string): string {
+  return `${t("sessionOn")} ${formatDate(sessionDate)}`;
 }
 
 /** In-app ticket purchase. Buyers pick quantities on ticket-stub cards,
@@ -199,9 +229,14 @@ export default function TicketPurchase({
       <h2 className="font-display text-lg text-ink">{t("tickets")}</h2>
 
       {toSections(tickets).map((section, i) => (
-        <section key={`${i}-${section.group ?? ""}`} className="mt-3">
+        <section key={`${i}-${section.sessionDate ?? ""}-${section.group ?? ""}`} className="mt-3">
+          {/* Outer axis: the day this ticket admits on. */}
+          {section.heading && (
+            <h3 className={`mb-2 font-display text-sm ${c.text}`}>{section.heading}</h3>
+          )}
+          {/* Inner axis: the organizer's own label (zone, tier, package). */}
           {section.group && (
-            <h3 className={`mb-2 font-display text-sm ${c.text}`}>{section.group}</h3>
+            <h4 className="mb-2 text-xs text-ink/60">{section.group}</h4>
           )}
           <ul className="space-y-3">
             {section.items.map((tk) => {

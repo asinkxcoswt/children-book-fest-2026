@@ -38,6 +38,7 @@
   "festivalMap": { "th": "แผนที่เทศกาล", "en": "Festival map" },
   "events": { "th": "กิจกรรม", "en": "events" },
   "tickets": { "th": "บัตรเข้าร่วม", "en": "Tickets" },
+  "sessionOn": { "th": "รอบ", "en": "Round" },
   "soldOut": { "th": "บัตรหมด", "en": "Sold out" },
   "ticketsLeft": { "th": "คงเหลือ", "en": "left" },
   "quantity": { "th": "จำนวน", "en": "Quantity" },

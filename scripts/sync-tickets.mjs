@@ -21,7 +21,9 @@ const ADMIN_KEY = requireEnv("TICKET_ADMIN_API_KEY");
 
 const DRY_RUN = process.argv.includes("--dry-run");
 
-/** Content-side conventions — see content/ticket-configs.draft.json. */
+/** Content-side conventions. One ticket config per session; its code is
+ *  <yyyymmdd>-<hhmm> and matches schedule.sessions[].ticketCodes in
+ *  content/events/*.json. Prices are in satang (1000 = ฿10). */
 const TAG = "children-book-fest-2026";
 const PRICE = 1000; // satang = ฿10
 const LIMIT_PER_ORDER = 4;
@@ -37,8 +39,8 @@ const REFUND = {
  *  edition must not collide with this one on the same account. */
 const eventCodeFor = (slug) => `cbf2026-${slug}`;
 
-const TH_MONTH = ["ม.ค.", "ก.พ.", "มี.ค.", "เม.ย.", "พ.ค.", "มิ.ย.",
-                  "ก.ค.", "ส.ค.", "ก.ย.", "ต.ค.", "พ.ย.", "ธ.ค."];
+/** Session times in content are Thailand local wall-clock. */
+const TH_OFFSET = "+07:00";
 
 function requireEnv(name) {
   const value = process.env[name];
@@ -93,33 +95,48 @@ const firstKey = (e) => `${e.schedule.sessions[0].date}${e.schedule.sessions[0].
 
 function desiredConfigs(event) {
   // Chronological: the API has no sort field, so creation order IS display order.
-  return event.schedule.sessions.map((s) => {
-    const [, month, day] = s.date.split("-").map(Number);
-    return {
-      code: s.ticketCodes[0],
-      name: `${s.start}–${s.end}`,
-      group: `รอบ ${day} ${TH_MONTH[month - 1]}`,
-      price: PRICE,
-      quantity: QUANTITY_BY_SLUG[event.slug] ?? DEFAULT_QUANTITY,
-      limitPerOrder: LIMIT_PER_ORDER,
-      startSellingDate: null,
-      endSellingDate: null,
-      status: "ACTIVE",
-    };
-  });
+  return event.schedule.sessions.map((s) => ({
+    code: s.ticketCodes[0],
+    name: `${s.start}–${s.end}`,
+    // The session is what admits you, and the platform now models it directly.
+    // Do NOT put the date back into `group` — that field is for non-time
+    // sections (zone, tier, package) and the storefront renders it as a
+    // second axis inside each day.
+    sessionStartAt: `${s.date}T${s.start}:00${TH_OFFSET}`,
+    sessionEndAt: `${s.date}T${s.end}:00${TH_OFFSET}`,
+    group: null,
+    price: PRICE,
+    quantity: QUANTITY_BY_SLUG[event.slug] ?? DEFAULT_QUANTITY,
+    limitPerOrder: LIMIT_PER_ORDER,
+    startSellingDate: null,
+    endSellingDate: null,
+    status: "ACTIVE",
+  }));
 }
 
 /** Fields we own. Anything not listed here is left to the organizer's app. */
 const EVENT_FIELDS = ["name", "refundAllowed", "refundTermTh", "refundTermEn"];
 const CONFIG_FIELDS = ["name", "group", "price", "quantity", "limitPerOrder", "status",
-                       "startSellingDate", "endSellingDate"];
+                       "startSellingDate", "endSellingDate", "sessionStartAt", "sessionEndAt"];
+
+/** Timestamps: compared as instants, never as strings. We send +07:00 and the
+ *  platform echoes UTC, so a string compare would report a diff on every run
+ *  and re-PUT the same value forever. */
+const INSTANT_FIELDS = new Set(["startSellingDate", "endSellingDate",
+                                "sessionStartAt", "sessionEndAt"]);
+
+function same(field, a, b) {
+  if (a === null || b === null) return a === b;
+  if (INSTANT_FIELDS.has(field)) return Date.parse(a) === Date.parse(b);
+  return JSON.stringify(a) === JSON.stringify(b);
+}
 
 function diff(current, desired, fields) {
   const changed = {};
   for (const f of fields) {
     const a = current[f] ?? null;
     const b = desired[f] ?? null;
-    if (JSON.stringify(a) !== JSON.stringify(b)) changed[f] = b;
+    if (!same(f, a, b)) changed[f] = b;
   }
   return changed;
 }
@@ -180,7 +197,7 @@ async function syncEvent(event, existingEvents) {
     const have = existing.get(want.code);
     try {
       if (!have) {
-        plan("create", `ticket ${want.code}  ${want.group} ${want.name}  qty ${want.quantity}`);
+        plan("create", `ticket ${want.code}  ${want.sessionStartAt} ${want.name}  qty ${want.quantity}`);
         if (!DRY_RUN) await api("/ticketConfigs", { method: "POST", body: { eventCode, ...want } });
       } else {
         const changed = diff(have, want, CONFIG_FIELDS);

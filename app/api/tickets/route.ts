@@ -21,6 +21,11 @@ export async function GET(request: NextRequest) {
         price: c.price,
         limitPerOrder: c.limitPerOrder,
         available: c.available,
+        // Session = when the ticket admits you. Drives the outer section
+        // headings on the purchase card; group is the inner axis.
+        sessionStartAt: c.sessionStartAt ?? null,
+        sessionEndAt: c.sessionEndAt ?? null,
+        sessionDate: c.sessionDate ?? null,
       })),
       refundPolicy,
     });

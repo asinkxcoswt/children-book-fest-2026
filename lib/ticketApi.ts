@@ -65,15 +65,27 @@ export interface TicketConfig {
   eventCode: string;
   code: string;
   name: string;
-  /** Optional section label chosen by the organizer (e.g. a day or session);
-   *  null means ungrouped. Display text only — no shared behaviour. */
+  /** Optional section label chosen by the organizer, for anything that is NOT
+   *  time — zone, tier, add-on, package. Null means ungrouped. Display text
+   *  only: same-group items share no behaviour, and a buyer may mix groups in
+   *  one order. Sessions live in the session* fields below, not here. */
   group: string | null;
   /** Satang (THB minor units); 0 = free. */
   price: number;
   currency: string;
   limitPerOrder: number;
+  /** When the ticket is ON SALE — not when it admits you. */
   startSellingDate: string | null;
   endSellingDate: string | null;
+  /** When the ticket ADMITS you (ISO 8601), or null. Distinct from the selling
+   *  window above: for a multi-round event this is the only thing telling two
+   *  otherwise identical tickets apart. */
+  sessionStartAt: string | null;
+  sessionEndAt: string | null;
+  /** Calendar day of sessionStartAt (YYYY-MM-DD), resolved by the platform in
+   *  Asia/Bangkok. Prefer this over local timezone maths so our sections match
+   *  the organizer's portal exactly. */
+  sessionDate: string | null;
   /** Live availability: quota − sold − reserved. */
   available: number;
 }
