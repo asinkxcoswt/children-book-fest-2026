@@ -25,11 +25,14 @@ const DRY_RUN = process.argv.includes("--dry-run");
  *  <yyyymmdd>-<hhmm> and matches schedule.sessions[].ticketCodes in
  *  content/events/*.json. Prices are in satang (1000 = ฿10). */
 const TAG = "children-book-fest-2026";
-/** Every event sells one ticket type, and the session it admits to now lives in
- *  sessionStartAt — so the name no longer carries the time. Its real audience is
- *  the organizer's portal, the participant export, the Stripe line item and the
- *  issued ticket, where it is read with no event page around it. */
-const TICKET_NAME = "บัตรเข้าร่วม 1 ที่นั่ง";
+/** Blank on purpose. Every event sells one ticket type and the session already
+ *  identifies it, so any name would just repeat the day and time on the card.
+ *
+ *  REQUIRES CowTicket to have shipped optional ticket names — POST/PUT
+ *  /ticketConfigs rejects a blank one until then, and because the reconcile
+ *  stops at the first refusal per config, running early would also block the
+ *  session fields on that row. Confirm the platform is ready, then sync. */
+const TICKET_NAME = "";
 const PRICE = 1000; // satang = ฿10
 const LIMIT_PER_ORDER = 4;
 const DEFAULT_QUANTITY = 200;
@@ -147,7 +150,14 @@ const CONFIG_FIELDS = ["name", "group", "price", "quantity", "limitPerOrder", "s
 const INSTANT_FIELDS = new Set(["startSellingDate", "endSellingDate",
                                 "sessionStartAt", "sessionEndAt"]);
 
+/** Fields we deliberately blank. We send "" for the name and null for the
+ *  group; the platform may echo either back as the other. Treat absent and
+ *  empty as the same value, or the reconcile re-PUTs the same emptiness on
+ *  every run — the string-compare trap again, one field over. */
+const BLANKABLE_FIELDS = new Set(["name", "group"]);
+
 function same(field, a, b) {
+  if (BLANKABLE_FIELDS.has(field)) return (a ?? "") === (b ?? "");
   if (a === null || b === null) return a === b;
   if (INSTANT_FIELDS.has(field)) return Date.parse(a) === Date.parse(b);
   return JSON.stringify(a) === JSON.stringify(b);
@@ -219,7 +229,7 @@ async function syncEvent(event, existingEvents) {
     const have = existing.get(want.code);
     try {
       if (!have) {
-        plan("create", `ticket ${want.code}  ${want.sessionStartAt} ${want.name}  qty ${want.quantity}`);
+        plan("create", `ticket ${want.code}  ${want.sessionStartAt}  qty ${want.quantity}`);
         if (!DRY_RUN) await api("/ticketConfigs", { method: "POST", body: { eventCode, ...want } });
       } else {
         const changed = diff(have, want, CONFIG_FIELDS);

@@ -64,7 +64,9 @@ export interface TicketConfig {
   id: string;
   eventCode: string;
   code: string;
-  name: string;
+  /** Optional. Blank on this festival's tickets: the session identifies them,
+   *  so a name would only repeat the day and time. May be null or "". */
+  name: string | null;
   /** Optional section label chosen by the organizer, for anything that is NOT
    *  time — zone, tier, add-on, package. Null means ungrouped. Display text
    *  only: same-group items share no behaviour, and a buyer may mix groups in

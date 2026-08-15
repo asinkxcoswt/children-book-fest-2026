@@ -9,7 +9,8 @@ import AttendeeFormModal, { type AttendeeForm } from "@/components/AttendeeFormM
 
 interface TicketOption {
   code: string;
-  name: string;
+  /** Optional: the session identifies the ticket, so most carry no name. */
+  name: string | null;
   /** Organizer's section label for anything that is NOT time — zone, tier,
    *  package. null = ungrouped. The session lives in sessionDate. */
   group: string | null;
@@ -233,6 +234,17 @@ export default function TicketPurchase({
               const max = Math.min(tk.limitPerOrder, tk.available);
               const selected = (qty[tk.code] ?? 0) > 0;
               const soldOut = tk.available === 0;
+              const label = tk.name?.trim() ?? "";
+              const time = tk.sessionStartAt
+                ? formatTimeRange(tk.sessionStartAt, tk.sessionEndAt)
+                : "";
+              // Screen readers get the whole ticket, not just its name: with the
+              // name blank the stepper buttons would otherwise all announce
+              // identically, leaving no way to tell one day's ticket from another.
+              const spoken =
+                [tk.sessionDate && dayLabel(tk.sessionDate), time, label]
+                  .filter(Boolean)
+                  .join(" ") || t("tickets");
               return (
                 <li
                   key={tk.code}
@@ -253,12 +265,11 @@ export default function TicketPurchase({
                       <p className={`font-display text-xs ${c.text}`}>{dayLabel(tk.sessionDate)}</p>
                     )}
                     <div className="flex items-baseline justify-between gap-2">
-                      {/* Tickets with no session fall back to their name, which
-                          is then the only label they have. */}
+                      {/* The name is optional. A ticket with no session falls
+                          back to it, and one with neither still needs a title
+                          line rather than a card that looks broken. */}
                       <span className="font-display text-base text-ink">
-                        {tk.sessionStartAt
-                          ? formatTimeRange(tk.sessionStartAt, tk.sessionEndAt)
-                          : tk.name}
+                        {time || label || t("tickets")}
                       </span>
                       <span
                         className={`shrink-0 rounded-full px-3 py-0.5 font-display text-sm ${soldOut ? "bg-ink/10 text-ink/60" : `${c.bg} ${c.on}`
@@ -267,8 +278,8 @@ export default function TicketPurchase({
                         {tk.price === 0 ? t("free") : baht(tk.price)}
                       </span>
                     </div>
-                    {tk.sessionStartAt && (
-                      <p className="text-xs text-ink/60">{tk.name}</p>
+                    {time && label && (
+                      <p className="text-xs text-ink/60">{label}</p>
                     )}
                   </div>
 
@@ -281,7 +292,7 @@ export default function TicketPurchase({
                       <div className="flex items-center gap-2">
                         <button
                           type="button"
-                          aria-label={`${t("quantity")} − ${tk.name}`}
+                          aria-label={`${t("quantity")} − ${spoken}`}
                           disabled={(qty[tk.code] ?? 0) === 0}
                           onClick={() => step(tk.code, -1, max)}
                           className="flex h-8 w-8 items-center justify-center rounded-full border-2 border-ink/15 font-display text-lg text-ink transition-colors hover:border-ink/40 disabled:opacity-30"
@@ -293,7 +304,7 @@ export default function TicketPurchase({
                         </span>
                         <button
                           type="button"
-                          aria-label={`${t("quantity")} + ${tk.name}`}
+                          aria-label={`${t("quantity")} + ${spoken}`}
                           disabled={(qty[tk.code] ?? 0) >= max}
                           onClick={() => step(tk.code, 1, max)}
                           className={`flex h-8 w-8 items-center justify-center rounded-full border-2 font-display text-lg transition-colors disabled:opacity-30 ${selected ? `${c.border} ${c.text}` : "border-ink/15 text-ink hover:border-ink/40"
