@@ -157,16 +157,32 @@ export async function getTicketConfigs(eventCode: string): Promise<TicketConfigs
   };
 }
 
-/** Where CowTicket hosts the buyer-facing ticket page. Deliberately NOT
- *  TICKET_API_URL: that host serves JSON, this one serves the page a buyer opens
- *  at the gate. The test stage has its own, so it is overridable. */
-const APP_URL = (process.env.TICKET_APP_URL || "https://cow-ticket.dev").replace(/\/+$/, "");
+/** Brand colours for CowTicket's hosted ticket page. Hex only ("#rgb" or
+ *  "#rrggbb") — anything else, or any key the platform doesn't know, is a 400
+ *  that fails the whole order, so validate before sending. Snapshotted onto the
+ *  order at creation, so tickets already sold keep the look they were bought
+ *  with. Text colours are computed from luminance; QR codes, status colours and
+ *  layout are deliberately not themeable. */
+export interface OrderTheme {
+  primaryColor?: string;
+  secondaryColor?: string;
+}
 
-/** The buyer's tickets, receipt and gate QR — hosted by CowTicket, never by us.
- *  Card buyers are sent here by Stripe and chat buyers get the link in LINE, so
- *  we only construct it for free orders, which skip both. */
-export function ticketPageUrl(orderId: string, accessToken: string): string {
-  return `${APP_URL}/tickets?orderId=${encodeURIComponent(orderId)}&token=${encodeURIComponent(accessToken)}`;
+/** The platform's accepted grammar, applied on our side too: a rejected theme
+ *  costs the buyer their order, so a bad colour is worth dropping rather than
+ *  sending. */
+const HEX_RE = /^#(?:[0-9a-f]{3}|[0-9a-f]{6})$/i;
+
+/** Keeps only well-formed hex values, and returns undefined if nothing is left —
+ *  the platform then uses its own defaults. */
+export function sanitizeTheme(theme: OrderTheme | undefined): OrderTheme | undefined {
+  if (!theme) return undefined;
+  const clean: OrderTheme = {};
+  if (theme.primaryColor && HEX_RE.test(theme.primaryColor)) clean.primaryColor = theme.primaryColor;
+  if (theme.secondaryColor && HEX_RE.test(theme.secondaryColor)) {
+    clean.secondaryColor = theme.secondaryColor;
+  }
+  return clean.primaryColor || clean.secondaryColor ? clean : undefined;
 }
 
 export interface PassDisplay {
@@ -188,8 +204,12 @@ export interface CreateOrderResult {
   accessToken: string;
   status: "PENDING" | "PAID";
   expiresAt: string;
-  /** null for free orders — skip the redirect. */
+  /** null for free orders — there is nothing to pay. */
   checkoutUrl: string | null;
+  /** CowTicket's hosted ticket page for this order. Take it from the response
+   *  rather than building it: the shape of the URL belongs to the platform.
+   *  Stripe returns paying buyers here itself; a free order goes straight here. */
+  ticketUrl: string;
 }
 
 export async function createOrder(input: {
@@ -201,6 +221,7 @@ export async function createOrder(input: {
    *  Stripe checkout returns to. Send the event page, not the home page — it is
    *  the last point where the buyer can carry on shopping. */
   returnUrl: string;
+  theme?: OrderTheme;
 }): Promise<CreateOrderResult> {
   const res = await ticketApi("/orders", {
     method: "POST",
@@ -230,6 +251,8 @@ export async function createOrderIntent(input: {
   metadata?: Record<string, string | number | boolean>;
   /** Carried from the intent onto every order the chat creates. */
   returnUrl: string;
+  /** Carried onto every order the chat creates, like returnUrl. */
+  theme?: OrderTheme;
 }): Promise<CreateOrderIntentResult> {
   const res = await ticketApi("/orders/intent", {
     method: "POST",

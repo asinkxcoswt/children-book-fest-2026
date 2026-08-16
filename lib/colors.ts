@@ -42,3 +42,11 @@ export function tokenClasses(token: ColorToken): TokenClasses {
 export function cssVar(name: string): string {
   return getComputedStyle(document.documentElement).getPropertyValue(name).trim();
 }
+
+/** A palette token's hex, for the one case that needs the value rather than a
+ *  class: handing our brand colour to another system. Read from the live
+ *  stylesheet on purpose — globals.css stays the only place these hexes are
+ *  written, so a palette change cannot leave a stale copy behind here. */
+export function tokenHex(token: ColorToken): string {
+  return cssVar(`--color-${token}`);
+}

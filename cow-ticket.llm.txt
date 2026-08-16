@@ -129,14 +129,20 @@ at the gate.
       "items": [ { "code": "<ticketConfig code>", "quantity": n,
                    "passDisplay": { ... } } ],                         // 1–20 items
       "metadata": { ...any buyer form answers... },                    // optional
-      "returnUrl": "<absolute URL back into your site>" }              // optional
-    → { "orderId", "orderNo", "accessToken", "status", "expiresAt", "checkoutUrl" }
+      "returnUrl": "<absolute URL back into your site>",               // optional
+      "theme": { "primaryColor": "#16a34a",                            // optional
+                 "secondaryColor": "#111827" } }
+    → { "orderId", "orderNo", "accessToken", "status", "expiresAt",
+        "checkoutUrl", "ticketUrl" }
 
-- status PENDING + checkoutUrl → redirect the buyer to checkoutUrl (Stripe Checkout).
-  Stripe returns them to the CowTicket ticket page. You do not build that page.
-- Free orders return status PAID and checkoutUrl null → send the buyer to the ticket
-  page yourself. It is always this URL, and needs no lookup to construct:
-      <CowTicket base>/tickets?orderId=<orderId>&token=<accessToken>
+- **Redirect to "checkoutUrl" if it is set, otherwise to "ticketUrl".** That one line
+  is the whole post-order step and handles both cases:
+  - Paid order → status PENDING, checkoutUrl set (Stripe Checkout). Stripe returns the
+    buyer to "ticketUrl" itself once they pay.
+  - Free order → status PAID, checkoutUrl **null**, and nothing to pay. "ticketUrl" is
+    where the buyer goes right now.
+- Do not assemble "ticketUrl" yourself from orderId and accessToken. Use the value in
+  the response; the shape of that URL is ours and may change.
 - Inventory is reserved atomically; unpaid orders expire after 1 hour and release seats.
 - metadata keys/values appear in the organizer's participant exports — put attendee
   form answers (phone, shirt size, ...) here. Keep it a flat object of scalars.
@@ -163,7 +169,9 @@ at the gate.
       "items": [ { "code": "<ticketConfig code>", "quantity": n,
                    "passDisplay": { ... } } ],                         // 1–20 items
       "metadata": { ...answers already collected on your form... },    // optional
-      "returnUrl": "<absolute URL back into your site>" }              // optional
+      "returnUrl": "<absolute URL back into your site>",               // optional
+      "theme": { "primaryColor": "#16a34a",                            // optional
+                 "secondaryColor": "#111827" } }
     → { "intentCode": "CTI-XXXXXX", "lineUrl": "https://line.me/R/oaMessage/..." }
 
 Called INSTEAD of POST /orders when the buyer taps the LINE button. Then simply send
@@ -180,6 +188,8 @@ delivery. Notes:
   (and "principal" also as passDisplay.principal) — the chat then skips those
   questions. Anything required and missing is asked once, in a small web form inside
   LINE, before any stock is held.
+- "theme" works exactly as in POST /orders and is carried onto every order the chat
+  creates.
 - "returnUrl" works exactly as in POST /orders: it is your link BACK into your site,
   rendered on the CowTicket ticket page, and it may contain {ORDER_ID}/{ORDER_TOKEN}.
   It is carried from the intent onto every order the chat creates.
@@ -196,9 +206,9 @@ delivery. Notes:
 
 ### After payment — you do not build a ticket page
 
-CowTicket hosts it. Every order lands on:
-
-    <CowTicket base>/tickets?orderId=<orderId>&token=<accessToken>
+CowTicket hosts it. Every order lands on the "ticketUrl" that POST /orders returned —
+take it from the response rather than building it, so the URL stays ours to change.
+Chat-checkout buyers get the same page as a link in LINE.
 
 That page is the buyer's tickets, their receipt, and their gate credential: the order
 QR they hold up, the ticket list with live check-in status, per-ticket codes, and the
@@ -221,6 +231,38 @@ GET /orders/detail still exists and still works, for order history and support
 lookups on your side. It is no longer part of the buying flow, and rendering tickets
 from it is out of contract.
 
+### Styling the ticket page
+
+    "theme": { "primaryColor": "#16a34a", "secondaryColor": "#111827" }
+
+Optional on both POST /orders and POST /orders/intent. Both keys are optional inside
+it; anything you omit uses the CowTicket default. Values must be hex — "#rgb" or
+"#rrggbb", nothing else. Named colours, rgb() and colour functions are rejected with a
+400, because the value ends up in CSS and the narrow grammar is what keeps that safe.
+An unrecognised key is also a 400 rather than being ignored, so a typo tells you
+immediately instead of silently doing nothing.
+
+- primaryColor paints the ticket header and the main "save the QR" button.
+- secondaryColor paints the quieter controls — the per-ticket buttons and the close
+  button on the full-screen QR.
+- Text on those surfaces is computed from your colour, not chosen by you: white,
+  unless white would fall below WCAG's 3:1 large-text ratio against it, in which case
+  near-black. Deep and mid-tone brand colours therefore take white type, as they do
+  everywhere else; only genuinely light surfaces (yellows, pastels, near-white) flip.
+  You cannot set text colours, and you do not need to.
+
+Three things are deliberately not themeable:
+
+- **The QR codes.** Always black on white. A tinted QR is a QR that fails at a gate.
+- **Status colours.** Green "checked in" and red "refunded" carry meaning. If your
+  brand is red, a themed status would make a valid ticket look refunded.
+- **Layout.** No CSS, no fonts, no logo, no custom HTML. The page is gate-critical and
+  its structure is ours; see the section above.
+
+The theme is snapshotted onto the order when it is created, like the unit price. A
+rebrand changes what new buyers see and leaves tickets already sold exactly as they
+were.
+
 ### Check-in (only if building a scanner/gate feature)
     POST /tickets/redeem   { "accountId": "<ACCOUNT_ID>", "ticketId": "<id or ticketNo>",
                              "location": "<gate label>" }
@@ -239,9 +281,10 @@ the organizer's own app handles scanning.
 2. Checkout: render "purchaseForm" and collect exactly those fields, send the answers as
    metadata (and "principal" also as passDisplay.principal), POST /orders, redirect to
    checkoutUrl.
-3. That is the end of your flow. Stripe returns the buyer to the CowTicket ticket
-   page; free orders you send there yourself (URL above). Pass "returnUrl" so the
-   buyer can walk back into your site from it.
+3. Redirect to "checkoutUrl" if set, otherwise to "ticketUrl". That is the end of your
+   flow — Stripe returns paying buyers to the ticket page itself, and a free order has
+   nothing to pay so it goes straight there. Pass "returnUrl" so the buyer can walk
+   back into your site from it.
 
 There is no step 4. No success page, no polling, no ticket rendering, no cancel page
 of your own — a cancelled checkout returns to your "returnUrl". If you find yourself

@@ -1,11 +1,18 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getEvent } from "@/lib/content";
-import { createOrderIntent, getTicketConfigs, TicketApiError } from "@/lib/ticketApi";
+import {
+  createOrderIntent,
+  getTicketConfigs,
+  sanitizeTheme,
+  TicketApiError,
+  type OrderTheme,
+} from "@/lib/ticketApi";
 import { pick, formatDate } from "@/lib/i18n";
 
 interface IntentRequestBody {
   slug?: string;
   items?: { code?: string; quantity?: number }[];
+  theme?: OrderTheme;
 }
 
 /** Starts a chat purchase. Unlike the card route this collects nothing from the
@@ -60,6 +67,7 @@ export async function POST(request: NextRequest) {
       // The buyer's tickets arrive in the LINE chat as a link to CowTicket's own
       // ticket page; this is only their way back into the festival site.
       returnUrl: `${origin}/event/${event.slug}`,
+      theme: sanitizeTheme(body.theme),
     });
 
     return NextResponse.json({ intentCode: intent.intentCode, lineUrl: intent.lineUrl });

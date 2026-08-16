@@ -3,8 +3,9 @@ import { getEvent } from "@/lib/content";
 import {
   createOrder,
   getTicketConfigs,
-  ticketPageUrl,
+  sanitizeTheme,
   TicketApiError,
+  type OrderTheme,
   type PurchaseFormField,
 } from "@/lib/ticketApi";
 import { pick, formatDate } from "@/lib/i18n";
@@ -16,6 +17,9 @@ interface OrderRequestBody {
   /** Answers keyed by the organizer's `purchaseForm` field keys. */
   answers?: Record<string, unknown>;
   items?: { code?: string; quantity?: number }[];
+  /** Read from our own stylesheet by the browser — see `tokenHex`. Sanitized
+   *  here regardless, since anything reaching a route handler is untrusted. */
+  theme?: OrderTheme;
 }
 
 /** Validates the buyer's answers against the organizer's own form definition.
@@ -115,14 +119,15 @@ export async function POST(request: NextRequest) {
       // Purchase-form answers for the organizer's exports — flat scalars only.
       metadata: values,
       returnUrl: `${origin}/event/${event.slug}`,
+      theme: sanitizeTheme(body.theme),
     });
 
     return NextResponse.json({
       status: order.status,
+      // The client redirects to checkoutUrl when set, otherwise ticketUrl —
+      // that one rule covers both the paid and the free case.
       checkoutUrl: order.checkoutUrl,
-      // Free orders skip Stripe, so they are the one case we hand the buyer the
-      // hosted ticket page ourselves.
-      ticketUrl: ticketPageUrl(order.orderId, order.accessToken),
+      ticketUrl: order.ticketUrl,
     });
   } catch (err) {
     if (err instanceof TicketApiError && err.status === 400) {

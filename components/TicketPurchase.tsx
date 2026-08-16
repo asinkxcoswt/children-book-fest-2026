@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import type { ColorToken } from "@/types/content";
-import { tokenClasses } from "@/lib/colors";
+import { tokenClasses, tokenHex, cssVar } from "@/lib/colors";
 import { t, formatDate, formatTimeRange } from "@/lib/i18n";
 import type { PaymentMethod, PurchaseFormField } from "@/lib/ticketApi";
 import AttendeeFormModal, { type PurchaseAnswers } from "@/components/AttendeeFormModal";
@@ -100,6 +100,18 @@ export default function TicketPurchase({
    *  after mount — false on the server keeps the mobile path flash-free, which
    *  is the one that matters most. */
   const [desktop, setDesktop] = useState(false);
+  /** Brand colours for CowTicket's hosted ticket page, read from our own
+   *  stylesheet so globals.css stays the only place these hexes are written.
+   *  The event's category colour heads the ticket; ink carries the quieter
+   *  controls. `ink` sits outside ColorToken — it is text, not a category
+   *  colour — so it is read directly rather than through tokenHex.
+   *
+   *  Read at click time, not during render: it touches the DOM, and the only
+   *  callers are handlers that cannot run before the browser has one. */
+  const readTheme = () => ({
+    primaryColor: tokenHex(color),
+    secondaryColor: cssVar("--color-ink"),
+  });
 
   useEffect(() => {
     const mq = window.matchMedia("(hover: hover) and (pointer: fine)");
@@ -164,7 +176,7 @@ export default function TicketPurchase({
       const res = await fetch("/api/orders/intent", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ slug, items: selection }),
+        body: JSON.stringify({ slug, items: selection, theme: readTheme() }),
       });
       const data = (await res.json()) as { lineUrl?: string };
       if (res.ok && data.lineUrl) {
@@ -205,7 +217,7 @@ export default function TicketPurchase({
       const res = await fetch("/api/orders", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ slug, answers, items: selection }),
+        body: JSON.stringify({ slug, answers, items: selection, theme: readTheme() }),
       });
       const data = (await res.json()) as {
         checkoutUrl?: string | null;
