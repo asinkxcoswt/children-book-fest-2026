@@ -3,6 +3,7 @@ import { getEvent } from "@/lib/content";
 import {
   createOrder,
   getTicketConfigs,
+  ticketPageUrl,
   TicketApiError,
   type PurchaseFormField,
 } from "@/lib/ticketApi";
@@ -45,8 +46,8 @@ function validateAnswers(
 }
 
 /** Creates a card order and returns the Stripe checkout URL (null for free
- *  orders). The buyer's ticket-page credential is the platform-issued
- *  accessToken, substituted into successUrl via the {ORDER_TOKEN} placeholder. */
+ *  orders). We host nothing after this point: Stripe returns the buyer to
+ *  CowTicket's ticket page, and `returnUrl` is only their way back to us. */
 export async function POST(request: NextRequest) {
   let body: OrderRequestBody;
   try {
@@ -113,15 +114,15 @@ export async function POST(request: NextRequest) {
       items: items.map((i) => ({ ...i, passDisplay: passDisplayFor(i.code) })),
       // Purchase-form answers for the organizer's exports — flat scalars only.
       metadata: values,
-      successUrl: `${origin}/checkout/success?orderId={ORDER_ID}&token={ORDER_TOKEN}`,
-      cancelUrl: `${origin}/event/${event.slug}`,
+      returnUrl: `${origin}/event/${event.slug}`,
     });
 
     return NextResponse.json({
       status: order.status,
       checkoutUrl: order.checkoutUrl,
-      orderId: order.orderId,
-      token: order.accessToken,
+      // Free orders skip Stripe, so they are the one case we hand the buyer the
+      // hosted ticket page ourselves.
+      ticketUrl: ticketPageUrl(order.orderId, order.accessToken),
     });
   } catch (err) {
     if (err instanceof TicketApiError && err.status === 400) {

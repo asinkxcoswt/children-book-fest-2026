@@ -57,7 +57,9 @@ export async function POST(request: NextRequest) {
     const intent = await createOrderIntent({
       eventCode: event.ticketEventCode,
       items: items.map((i) => ({ ...i, passDisplay: passDisplayFor(i.code) })),
-      successUrl: `${origin}/checkout/success?orderId={ORDER_ID}&token={ORDER_TOKEN}`,
+      // The buyer's tickets arrive in the LINE chat as a link to CowTicket's own
+      // ticket page; this is only their way back into the festival site.
+      returnUrl: `${origin}/event/${event.slug}`,
     });
 
     return NextResponse.json({ intentCode: intent.intentCode, lineUrl: intent.lineUrl });

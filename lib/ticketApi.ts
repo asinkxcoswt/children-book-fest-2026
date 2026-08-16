@@ -157,6 +157,18 @@ export async function getTicketConfigs(eventCode: string): Promise<TicketConfigs
   };
 }
 
+/** Where CowTicket hosts the buyer-facing ticket page. Deliberately NOT
+ *  TICKET_API_URL: that host serves JSON, this one serves the page a buyer opens
+ *  at the gate. The test stage has its own, so it is overridable. */
+const APP_URL = (process.env.TICKET_APP_URL || "https://cow-ticket.dev").replace(/\/+$/, "");
+
+/** The buyer's tickets, receipt and gate QR — hosted by CowTicket, never by us.
+ *  Card buyers are sent here by Stripe and chat buyers get the link in LINE, so
+ *  we only construct it for free orders, which skip both. */
+export function ticketPageUrl(orderId: string, accessToken: string): string {
+  return `${APP_URL}/tickets?orderId=${encodeURIComponent(orderId)}&token=${encodeURIComponent(accessToken)}`;
+}
+
 export interface PassDisplay {
   main?: string;
   description?: string;
@@ -185,8 +197,10 @@ export async function createOrder(input: {
   email: string;
   items: { code: string; quantity: number; passDisplay?: PassDisplay }[];
   metadata?: Record<string, string | number | boolean>;
-  successUrl: string;
-  cancelUrl: string;
+  /** Link BACK into our site from CowTicket's ticket page, and where a cancelled
+   *  Stripe checkout returns to. Send the event page, not the home page — it is
+   *  the last point where the buyer can carry on shopping. */
+  returnUrl: string;
 }): Promise<CreateOrderResult> {
   const res = await ticketApi("/orders", {
     method: "POST",
@@ -214,7 +228,8 @@ export async function createOrderIntent(input: {
   eventCode: string;
   items: { code: string; quantity: number; passDisplay?: PassDisplay }[];
   metadata?: Record<string, string | number | boolean>;
-  successUrl: string;
+  /** Carried from the intent onto every order the chat creates. */
+  returnUrl: string;
 }): Promise<CreateOrderIntentResult> {
   const res = await ticketApi("/orders/intent", {
     method: "POST",

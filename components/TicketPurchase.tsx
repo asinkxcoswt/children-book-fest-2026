@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
 import type { ColorToken } from "@/types/content";
 import { tokenClasses } from "@/lib/colors";
 import { t, formatDate, formatTimeRange } from "@/lib/i18n";
@@ -80,7 +79,6 @@ export default function TicketPurchase({
   color: ColorToken;
   fallbackUrl: string;
 }) {
-  const router = useRouter();
   const c = tokenClasses(color);
 
   const [tickets, setTickets] = useState<TicketOption[] | null>(null);
@@ -209,18 +207,23 @@ export default function TicketPurchase({
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ slug, answers, items: selection }),
       });
-      const data = (await res.json()) as { checkoutUrl?: string | null; error?: string; orderId?: string; token?: string };
+      const data = (await res.json()) as {
+        checkoutUrl?: string | null;
+        error?: string;
+        ticketUrl?: string;
+      };
       if (!res.ok) {
         setSubmitting(false);
         return data.error ?? t("ticketsUnavailable");
       }
-      if (data.checkoutUrl) {
-        window.location.assign(data.checkoutUrl); // paid order → Stripe Checkout
-      } else if (data.orderId && data.token) {
-        router.push(`/checkout/success?orderId=${encodeURIComponent(data.orderId)}&token=${encodeURIComponent(data.token)}`); // free order — already PAID
-      } else {
-        router.push("/checkout/success"); // fallback
+      // Both destinations are off-site — Stripe, or CowTicket's ticket page for a
+      // free order that skips it. Neither is a route of ours, so never router.push.
+      const next = data.checkoutUrl || data.ticketUrl;
+      if (!next) {
+        setSubmitting(false);
+        return t("ticketsUnavailable");
       }
+      window.location.assign(next);
       return null; // navigating away; keep the modal in its busy state
     } catch {
       setSubmitting(false);

@@ -85,6 +85,12 @@ An event may list both (render both buttons) or either alone. Treat an unrecogni
 value as a method you do not support yet and simply do not render a button for it,
 rather than failing.
 
+Read it fresh with the ticket options — do not cache it or bake buttons in at build
+time. The organizer can add AND remove a channel at any time from their settings page,
+so a method that was there yesterday may be gone today, and posting to a removed
+channel returns an error. Orders already placed on a removed channel are unaffected and
+still pay normally.
+
 "data" arrives in the organizer's chosen display order — render it in this order,
 do not re-sort. Two optional fields section that list, on independent axes:
 
@@ -123,27 +129,27 @@ at the gate.
       "items": [ { "code": "<ticketConfig code>", "quantity": n,
                    "passDisplay": { ... } } ],                         // 1–20 items
       "metadata": { ...any buyer form answers... },                    // optional
-      "successUrl": "<absolute URL, may contain {ORDER_ID} and {ORDER_TOKEN}>",
-      "cancelUrl": "<absolute URL, may contain {ORDER_ID} and {ORDER_TOKEN}>" }
+      "returnUrl": "<absolute URL back into your site>" }              // optional
     → { "orderId", "orderNo", "accessToken", "status", "expiresAt", "checkoutUrl" }
 
 - status PENDING + checkoutUrl → redirect the buyer to checkoutUrl (Stripe Checkout).
-- Free orders return status PAID and checkoutUrl null → go straight to the success page.
+  Stripe returns them to the CowTicket ticket page. You do not build that page.
+- Free orders return status PAID and checkoutUrl null → send the buyer to the ticket
+  page yourself. It is always this URL, and needs no lookup to construct:
+      <CowTicket base>/tickets?orderId=<orderId>&token=<accessToken>
 - Inventory is reserved atomically; unpaid orders expire after 1 hour and release seats.
 - metadata keys/values appear in the organizer's participant exports — put attendee
   form answers (phone, shirt size, ...) here. Keep it a flat object of scalars.
-- The success page needs the orderId, and CowTicket generates it. Put the literal
-  placeholders {ORDER_ID} and {ORDER_TOKEN} in successUrl — e.g.
-  "https://site.com/orders?orderId={ORDER_ID}&token={ORDER_TOKEN}" — and the platform
-  substitutes both before creating the Stripe session. They are case-sensitive and
-  exactly those spellings; no other spelling is substituted, and an unsubstituted URL
-  sends every paying buyer to a broken success page.
-- {ORDER_TOKEN} is a per-order secret. It is what lets your ticket page prove the visitor
-  is entitled to THIS order — pass it back on /orders/detail (below). Do not reuse it
-  across orders, do not derive your own token from the buyer's email (that authorises
-  every order they hold for the event, and is impossible for an order placed without an
-  email), and keep it out of analytics, client-side error reporting and cross-origin
-  Referer headers, exactly as you would the order id.
+- "returnUrl" is your link BACK from the ticket page — rendered as "กลับไปที่ร้าน" in
+  its top-left, and where a cancelled Stripe checkout returns to. Send the page the
+  buyer came from (the event page) rather than your home page: it is a shopping trip,
+  and this is the one place after checkout where you still get to continue it. It may
+  contain {ORDER_ID} and {ORDER_TOKEN}, though it rarely needs to.
+- "accessToken" is a per-order secret. Keep it out of analytics, client-side error
+  reporting and cross-origin Referer headers, exactly as you would the order id.
+- There is no "successUrl" or "cancelUrl". They were removed with the ticket-page
+  boundary: sending them is simply ignored. Buyers always land on the CowTicket ticket
+  page, and a cancelled checkout goes to your "returnUrl".
 - passDisplay (optional, per item) carries display text onto each issued ticket:
   { "main", "description", "head", "date", "dateDisplay", "principal", "zone", "seat" }.
   Always send "principal" (the attendee name) — it is what gate staff search by when a
@@ -157,7 +163,7 @@ at the gate.
       "items": [ { "code": "<ticketConfig code>", "quantity": n,
                    "passDisplay": { ... } } ],                         // 1–20 items
       "metadata": { ...answers already collected on your form... },    // optional
-      "successUrl": "<absolute URL, may contain {ORDER_ID} and {ORDER_TOKEN}>" }
+      "returnUrl": "<absolute URL back into your site>" }              // optional
     → { "intentCode": "CTI-XXXXXX", "lineUrl": "https://line.me/R/oaMessage/..." }
 
 Called INSTEAD of POST /orders when the buyer taps the LINE button. Then simply send
@@ -166,18 +172,21 @@ pre-filled; they press send and the rest of the purchase happens in the chat: an
 missing required purchaseForm answers, the PromptPay QR, the payment slip, and ticket
 delivery. Notes:
 
-- **No "email" and no "cancelUrl"** — the buyer fills in nothing on the web, and there
-  is no redirect to cancel from. That is the point of this flow.
+- **No "email" and no "successUrl"/"cancelUrl"** — the buyer fills in nothing on the
+  web, and there is no redirect to cancel from. That is the point of this flow.
 - **Nothing is reserved yet.** An intent holds no inventory and never expires; the
   1-hour hold starts only when the order is created in chat. Do not show a countdown.
 - If your checkout already collected purchaseForm answers, pass them in "metadata"
   (and "principal" also as passDisplay.principal) — the chat then skips those
   questions. Anything required and missing is asked once, in a small web form inside
   LINE, before any stock is held.
-- "successUrl" works exactly as in POST /orders — {ORDER_ID} and {ORDER_TOKEN} are
-  substituted when the order is created in chat, and the confirmation the buyer gets
-  in LINE links to it. It must render tickets by accessToken like your normal success
-  page; a buyer may open it days later from the chat history.
+- "returnUrl" works exactly as in POST /orders: it is your link BACK into your site,
+  rendered on the CowTicket ticket page, and it may contain {ORDER_ID}/{ORDER_TOKEN}.
+  It is carried from the intent onto every order the chat creates.
+- **You do not host a page in this flow either.** The ticket link the buyer receives
+  in LINE is the CowTicket ticket page — the same one card buyers land on — and it is
+  what they reopen days later from their chat history. Chat checkout never had a
+  storefront page; the rest of the platform simply caught up with it.
 - Requires the organizer to have PROMPTPAY in the event's paymentMethods; calling it
   for a card-only event returns an error. One intent per tap is fine — codes are
   single-buyer (the first LINE account to send one owns it) and creating another
@@ -185,36 +194,32 @@ delivery. Notes:
 - Orders born here come back from GET /orders/detail with "paymentMethod":
   "PROMPTPAY" (or "FREE"), possibly "email": null, and "buyerName" from LINE.
 
-### Check an order / fetch tickets
-    GET /orders/detail?accessToken=<token>&accountId=<ACCOUNT_ID>
-    → { "id", "orderNo", "accessToken",
-        "status": "PENDING|PAID|REFUNDED|EXPIRED|CANCELED",
-        "email", "buyerName", "eventCode", "event", "expiresAt", "paidAt", "items",
-        "payment",
-        "tickets": [ { "id", "ticketNo", "status": "ISSUED|REDEEMED|VOIDED",
-                       "principal", "ownerEmail" } ],
-        "refundPolicy", ... }
-accountId is required here — a request without it returns 400.
+### After payment — you do not build a ticket page
 
-Address the order by the accessToken you got from the URL, not by orderId. The order id
-is an identifier: it appears in your logs, in the organizer's portal, in support
-conversations. The token is the credential. Passing both is fine and they must agree;
-passing only orderId still works today but is deprecated and logged, and will stop
-working — migrate.
+CowTicket hosts it. Every order lands on:
 
-"email" and "buyerName" can both be null: not every buyer gives an email, and which
-details are collected is the organizer's choice (see "purchaseForm"). Never render a
-placeholder in their place.
+    <CowTicket base>/tickets?orderId=<orderId>&token=<accessToken>
 
-This is the only ticket-read endpoint a storefront needs; it returns the full list. Do not
-build on the other /tickets/* endpoints — they are merchant/admin surface, not part of the
-storefront contract.
+That page is the buyer's tickets, their receipt, and their gate credential: the order
+QR they hold up, the ticket list with live check-in status, per-ticket codes, and the
+save-to-camera-roll flow. It is also what the confirmation email and the LINE messages
+link to, so it is where buyers return days later.
 
-Per-ticket "status" is ISSUED (valid), REDEEMED (already scanned) or VOIDED (cancelled by
-the organizer). Render a scannable QR ONLY for ISSUED. REDEEMED is normal — it is what the
-buyer sees after entering the venue — so show the ticket marked as used, without a QR.
-Likewise when the ORDER status is REFUNDED: the gate rejects every ticket on a refunded
-order, so never leave live QRs on that page.
+Do not rebuild any of it. This is a hard boundary, not a preference. The page is
+gate-critical — what the order QR is, which code is a live pass and which is a record
+of entry, what a refunded order shows, what a checked-in badge may and may not claim —
+and every one of those rules changed the last time check-in changed. A copy living in
+your storefront is a copy that goes silently wrong at a gate, and nobody finds out
+until someone is standing at a door being refused.
+
+So:
+- Do not render ticket QRs.
+- Do not poll for order status. There is no success page for you to hold open.
+- Do not build a "my tickets" page. Link to the URL above if you keep order history.
+
+GET /orders/detail still exists and still works, for order history and support
+lookups on your side. It is no longer part of the buying flow, and rendering tickets
+from it is out of contract.
 
 ### Check-in (only if building a scanner/gate feature)
     POST /tickets/redeem   { "accountId": "<ACCOUNT_ID>", "ticketId": "<id or ticketNo>",
@@ -234,18 +239,13 @@ the organizer's own app handles scanning.
 2. Checkout: render "purchaseForm" and collect exactly those fields, send the answers as
    metadata (and "principal" also as passDisplay.principal), POST /orders, redirect to
    checkoutUrl.
-3. Success page (successUrl): read the token from the query string, poll
-   GET /orders/detail (e.g. every 2s, up to ~1 min) until status is PAID, then render
-   the tickets: one QR code per ISSUED ticket encoding its ticketNo, with the ticketNo
-   also as visible text under the QR (manual-entry fallback) and the ticket type name.
-   Tickets that are REDEEMED or VOIDED, and every ticket on a REFUNDED order, render
-   without a QR and marked with their state — see the status rules above. Scanners
-   accept the ticket uuid too, but ticketNo is the one a human can read out. Show the
-   orderNo on the page. This page is also the buyer's permanent ticket wallet — the
-   confirmation email links back to it, so it must work on revisit (fetch by orderId
-   again, no cookies or session state). Render QRs black-on-white, >=200px. There are no
-   Apple/Google Wallet passes — do not render "Add to Wallet" buttons.
-4. Cancel page (cancelUrl): offer to try again; the reservation frees itself after 1h.
+3. That is the end of your flow. Stripe returns the buyer to the CowTicket ticket
+   page; free orders you send there yourself (URL above). Pass "returnUrl" so the
+   buyer can walk back into your site from it.
+
+There is no step 4. No success page, no polling, no ticket rendering, no cancel page
+of your own — a cancelled checkout returns to your "returnUrl". If you find yourself
+writing a QR component, you have left the contract.
 
 ## Managing events and ticket options (content sync)
 
@@ -384,11 +384,14 @@ Sync rules:
 
 ## Rules and gotchas
 
-- Poll for payment state; there is no storefront-facing webhook. The order may already
-  be PAID on first poll (Stripe webhooks usually finish before the redirect). Never
-  treat the Stripe redirect itself as proof of payment.
-- Still PENDING after the poll timeout is not an error — show "payment processing,
-  you'll receive an email". EXPIRED means the buyer took over an hour; send them back.
+- You do not wait for payment. The buyer is on the CowTicket ticket page by then, and
+  that page does the waiting — it polls while the order is PENDING and shows the
+  tickets the moment payment confirms. There is no storefront-facing webhook, and none
+  is needed: nothing on your side depends on the outcome.
+- If you keep order history of your own, read state with GET /orders/detail whenever
+  the buyer looks at it. Never treat a Stripe redirect as proof of payment, and never
+  block a page on reaching PAID — PENDING is normal and legitimate for up to an hour on
+  a PromptPay order, where the buyer is still going off to transfer.
 - Don't cache availability for more than a few seconds during an on-sale.
 - Handle 401 by re-exchanging the API key for a fresh JWT once, then retrying. A 401
   that survives the retry usually means a missing or mismatched accountId, not an
@@ -396,11 +399,11 @@ Sync rules:
 - A ticket is a bearer instrument owned by the organizer's account. It is not bound to a
   buyer identity: whoever presents a valid QR gets in, there is no claim/transfer/holder
   check anywhere in the API, and "principal" is a printed label the gate does not verify.
-  The success-page URL is the only thing guarding those tickets, so treat its
-  accessToken as a password — mark the page noindex, and keep the token and order id out
-  of analytics payloads,
+  The ticket-page URL is the only thing guarding those tickets, so treat its
+  accessToken as a password — keep the token and order id out of analytics payloads,
   client-side error reporting, and cross-origin Referer headers. Do not build a
-  "transfer to a friend" feature; there is no API for it and it would only resend the URL.
+  "transfer to a friend" feature; there is no API for it, and the ticket page already
+  lets a buyer send an individual ticket to whoever is using it.
 - Errors are plain-text messages with meaningful status codes (400 validation / sold out
   / outside selling period, 401 auth). Show the message to the buyer for sold-out and
   per-order-limit failures.
