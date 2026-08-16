@@ -11,7 +11,12 @@ interface StatusResponse {
   status: string;
   /** Human-friendly order reference (CT-XXXXXX). */
   orderNo: string;
-  email: string;
+  /** Both null on a chat order — render nothing rather than a placeholder. */
+  email: string | null;
+  buyerName: string | null;
+  paymentMethod: "STRIPE" | "PROMPTPAY" | "FREE" | null;
+  /** Tickets already scanned or cancelled: counted, never given a QR. */
+  withheld: number;
   event: {
     title: string;
     venue: string;
@@ -26,9 +31,10 @@ const POLL_MS = 2000;
 const TIMEOUT_MS = 60000;
 
 /** Polls our order-status route until the platform confirms payment, then
- *  renders the issued tickets as saveable QR images.
- *  Never trusts the Stripe redirect alone (see integration-guide.md §4.5). */
-export default function OrderStatus({ orderId, token }: { orderId?: string; token?: string }) {
+ *  renders the issued tickets as saveable QR images. The order is addressed by
+ *  its accessToken — the credential — never by the id, which is only an
+ *  identifier. Never trusts the payment redirect alone. */
+export default function OrderStatus({ token }: { token?: string }) {
   const [phase, setPhase] = useState<Phase>("checking");
   const [order, setOrder] = useState<StatusResponse | null>(null);
 
@@ -40,7 +46,6 @@ export default function OrderStatus({ orderId, token }: { orderId?: string; toke
       if (!alive) return;
       try {
         const query = new URLSearchParams();
-        if (orderId) query.set("orderId", orderId);
         if (token) query.set("token", token);
         const res = await fetch(`/api/orders/status?${query.toString()}`);
         if (res.status === 404) {
@@ -80,7 +85,7 @@ export default function OrderStatus({ orderId, token }: { orderId?: string; toke
     return () => {
       alive = false;
     };
-  }, [orderId, token]);
+  }, [token]);
 
   if (phase === "checking") {
     // Big, obviously-alive loading state: spinner ring + pulsing ticket skeleton.
@@ -139,10 +144,14 @@ export default function OrderStatus({ orderId, token }: { orderId?: string; toke
             </span>
           </p>
         )}
+        {/* Absent on a chat order — the tickets went to LINE, not to an inbox. */}
         {order?.email && (
           <p className="mt-2 text-sm text-ink/60">
             {t("ticketsEmailedTo")} {order.email}
           </p>
+        )}
+        {!!order?.withheld && (
+          <p className="mt-2 text-sm text-ink/60">{t("ticketsWithheld")}</p>
         )}
 
         {event && order.tickets.length > 0 && (
@@ -167,7 +176,13 @@ export default function OrderStatus({ orderId, token }: { orderId?: string; toke
     );
   }
   if (phase === "pending") {
-    return <p className="text-lg text-ink/70" role="status">{t("orderPending")}</p>;
+    // A chat order is waiting on the buyer to send their slip, not on a webhook —
+    // so it needs an instruction, not reassurance.
+    return (
+      <p className="text-lg text-ink/70" role="status">
+        {order?.paymentMethod === "PROMPTPAY" ? t("orderPendingChat") : t("orderPending")}
+      </p>
+    );
   }
   if (phase === "expired") {
     return <p className="text-lg text-tomato" role="alert">{t("orderExpired")}</p>;

@@ -1,29 +1,22 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getOrderDetail, TicketApiError, generateOrderToken } from "@/lib/ticketApi";
+import { getOrderDetail, TicketApiError } from "@/lib/ticketApi";
 import { getEvents, getCategory } from "@/lib/content";
 import { pick, formatDate, t } from "@/lib/i18n";
 
-/** Order status for the success page poller. The orderId comes from the
- *  httpOnly cookie set at order creation — never from the client. Once PAID,
- *  the response includes issued tickets plus display info for rendering
+/** Order status for the success page poller. The token in the query string is
+ *  the platform's per-order accessToken — the credential itself, so the platform
+ *  rejects a wrong one and we do no comparison of our own. Once PAID, the
+ *  response carries the admissible tickets plus display info for rendering
  *  saveable ticket images. */
 export async function GET(request: NextRequest) {
-  const { searchParams } = request.nextUrl;
-  const orderId = searchParams.get("orderId");
-  const token = searchParams.get("token");
+  const token = request.nextUrl.searchParams.get("token");
 
-  if (!orderId || !token) {
+  if (!token) {
     return NextResponse.json({ error: "missing parameters" }, { status: 400 });
   }
 
   try {
-    const order = await getOrderDetail(orderId);
-
-    // Verify token matches generated token for this order's email and eventCode
-    const expectedToken = generateOrderToken(order.email, order.eventCode);
-    if (token !== expectedToken) {
-      return NextResponse.json({ error: "unauthorized" }, { status: 401 });
-    }
+    const order = await getOrderDetail(token);
 
     // Map the platform eventCode back to our content event for display text.
     const event = getEvents().find((e) => e.ticketEventCode === order.eventCode);
@@ -41,15 +34,27 @@ export async function GET(request: NextRequest) {
         return session ? [[i.ticketConfigId, session] as const] : [];
       }),
     );
-    const tickets = order.tickets ?? [];
     const allSessions = event
       ? event.schedule.sessions.map((s) => `${formatDate(s.date)} · ${s.start}–${s.end}`).join(" / ")
       : "";
 
+    // A refunded order's tickets are rejected at the gate, and a REDEEMED or
+    // VOIDED ticket is not admissible either — never hand back a scannable code
+    // for any of them, or the buyer finds out at the front of the queue.
+    const issued =
+      order.status === "REFUNDED"
+        ? []
+        : (order.tickets ?? []).filter((tk) => tk.status === "ISSUED");
+    const withheld = (order.tickets ?? []).length - issued.length;
+
     return NextResponse.json({
       status: order.status,
       orderNo: order.orderNo,
+      // Both are null on a chat order — the client renders nothing rather than
+      // a placeholder.
       email: order.email,
+      buyerName: order.buyerName,
+      paymentMethod: order.paymentMethod ?? null,
       event: event
         ? {
           title: pick(event.title),
@@ -58,7 +63,7 @@ export async function GET(request: NextRequest) {
           festivalName: `${t("festivalName")} ${t("festivalYear")}`,
         }
         : null,
-      tickets: tickets.map((tk) => {
+      tickets: issued.map((tk) => {
         const session = sessionByConfigId.get(tk.ticketConfigId);
         if (!session) {
           // Ticket code retired from content, or an unmapped session — show the
@@ -73,6 +78,8 @@ export async function GET(request: NextRequest) {
             : allSessions,
         };
       }),
+      /** Tickets already scanned or cancelled — shown as a note, never as a QR. */
+      withheld,
     });
   } catch (err) {
     const status = err instanceof TicketApiError ? err.status : 502;

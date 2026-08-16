@@ -2,41 +2,55 @@
 
 import { useEffect, useRef, useState } from "react";
 import type { ColorToken } from "@/types/content";
+import type { PurchaseFormField } from "@/lib/ticketApi";
 import { tokenClasses } from "@/lib/colors";
-import { t } from "@/lib/i18n";
+import { t, DEFAULT_LOCALE } from "@/lib/i18n";
 
-export interface AttendeeForm {
-  /** Parent / buyer full name. */
-  name: string;
-  childName: string;
-  email: string;
-  /** Free-form: phone, LINE ID, Facebook — whatever the buyer prefers. */
-  contact: string;
-}
+/** Answers keyed by the organizer's field keys. */
+export type PurchaseAnswers = Record<string, string>;
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
-type FieldErrors = Partial<Record<keyof AttendeeForm, string>>;
+type FieldErrors = Record<string, string | undefined>;
 
-/** Confirmation dialog collecting attendee details before the order is created.
+function labelOf(field: PurchaseFormField): string {
+  return DEFAULT_LOCALE === "th" ? field.labelTh : field.labelEn;
+}
+
+/** Browsers autofill by field purpose, and the organizer's key is the only clue
+ *  we have. Anything unrecognised opts out rather than guessing wrong — a LINE
+ *  ID autofilled as a phone number is worse than no autofill. */
+function autoCompleteOf(field: PurchaseFormField): string {
+  if (field.type === "email") return "email";
+  if (field.type === "tel") return "tel";
+  if (field.key === "principal" || field.key === "name") return "name";
+  return "off";
+}
+
+/** Confirmation dialog for the card path, rendering exactly the questions the
+ *  organizer configured — the platform owns the field list, we only draw it.
  *  `onConfirm` resolves to an error message to display, or null on success
  *  (the caller then redirects, so the modal just stays in its busy state). */
 export default function AttendeeFormModal({
   color,
+  fields,
   submitting,
   onConfirm,
   onClose,
 }: {
   color: ColorToken;
+  fields: PurchaseFormField[];
   submitting: boolean;
-  onConfirm: (form: AttendeeForm) => Promise<string | null>;
+  onConfirm: (answers: PurchaseAnswers) => Promise<string | null>;
   onClose: () => void;
 }) {
   const c = tokenClasses(color);
-  const [form, setForm] = useState<AttendeeForm>({ name: "", childName: "", email: "", contact: "" });
+  const [answers, setAnswers] = useState<PurchaseAnswers>(() =>
+    Object.fromEntries(fields.map((f) => [f.key, ""])),
+  );
   const [error, setError] = useState<string | null>(null);
   const [fieldErrors, setFieldErrors] = useState<FieldErrors>({});
-  const firstFieldRef = useRef<HTMLInputElement>(null);
+  const firstFieldRef = useRef<HTMLInputElement | HTMLSelectElement>(null);
   const dialogRef = useRef<HTMLDivElement>(null);
 
   // Focus the first field once on open — NOT keyed on props, or any parent
@@ -51,7 +65,7 @@ export default function AttendeeFormModal({
       // Focus trap: keep Tab cycling inside the dialog.
       if (e.key === "Tab" && dialogRef.current) {
         const focusables = dialogRef.current.querySelectorAll<HTMLElement>(
-          "input, button:not(:disabled)",
+          "input, select, button:not(:disabled)",
         );
         if (focusables.length === 0) return;
         const first = focusables[0];
@@ -69,14 +83,17 @@ export default function AttendeeFormModal({
     return () => window.removeEventListener("keydown", onKey);
   }, [onClose]);
 
-  /** Per-field messages. Every field is required; email also needs a shape. */
-  function validate(f: AttendeeForm): FieldErrors {
+  /** Per-field messages, driven by the organizer's own `required` flags. */
+  function validate(current: PurchaseAnswers): FieldErrors {
     const found: FieldErrors = {};
-    if (!f.name.trim()) found.name = t("errRequired");
-    if (!f.childName.trim()) found.childName = t("errRequired");
-    if (!f.email.trim()) found.email = t("errRequired");
-    else if (!EMAIL_RE.test(f.email.trim())) found.email = t("errEmail");
-    if (!f.contact.trim()) found.contact = t("errRequired");
+    for (const f of fields) {
+      const value = (current[f.key] ?? "").trim();
+      if (!value) {
+        if (f.required) found[f.key] = t("errRequired");
+        continue; // optional and blank is fine
+      }
+      if (f.type === "email" && !EMAIL_RE.test(value)) found[f.key] = t("errEmail");
+    }
     return found;
   }
 
@@ -84,81 +101,23 @@ export default function AttendeeFormModal({
     e.preventDefault();
     if (submitting) return;
     // Never block on a disabled button — say what's wrong and focus it instead.
-    const found = validate(form);
+    const found = validate(answers);
     setFieldErrors(found);
-    const firstBad = (Object.keys(found) as (keyof AttendeeForm)[])[0];
+    const firstBad = fields.find((f) => found[f.key])?.key;
     if (firstBad) {
       setError(t("errFixFields"));
       document.getElementById(`af-${firstBad}`)?.focus();
       return;
     }
     setError(null);
-    const message = await onConfirm(form);
+    const message = await onConfirm(answers);
     if (message) setError(message);
   }
 
-  const field = ({
-    key,
-    label,
-    type,
-    autoComplete,
-    ref,
-    hint,
-  }: {
-    key: keyof AttendeeForm;
-    label: string;
-    type: string;
-    autoComplete: string;
-    ref?: React.Ref<HTMLInputElement>;
-    hint?: string;
-  }) => {
-    const fieldError = fieldErrors[key];
-    return (
-      <div>
-        <label htmlFor={`af-${key}`} className="block text-sm text-ink/70">
-          {label}
-        </label>
-        {hint && (
-          <p id={`af-${key}-hint`} className="mt-0.5 text-xs text-ink/60">
-            {hint}
-          </p>
-        )}
-        <input
-          ref={ref}
-          id={`af-${key}`}
-          type={type}
-          required
-          autoComplete={autoComplete}
-          aria-invalid={fieldError ? true : undefined}
-          aria-describedby={
-            [hint ? `af-${key}-hint` : null, fieldError ? `af-${key}-error` : null]
-              .filter(Boolean)
-              .join(" ") || undefined
-          }
-          readOnly={submitting}
-          value={form[key]}
-          // Clear this field's message as soon as the buyer starts fixing it.
-          onChange={(e) => {
-            const { value } = e.target;
-            setForm((f) => ({ ...f, [key]: value }));
-            setFieldErrors((prev) => (prev[key] ? { ...prev, [key]: undefined } : prev));
-          }}
-          onBlur={() => {
-            const message = validate(form)[key];
-            if (message) setFieldErrors((prev) => ({ ...prev, [key]: message }));
-          }}
-          className={`mt-1 w-full rounded-xl border-2 bg-paper px-3 py-2 text-base focus:outline-none ${
-            fieldError ? "border-tomato focus:border-tomato" : "border-ink/15 focus:border-ink/40"
-          }`}
-        />
-        {fieldError && (
-          <p id={`af-${key}-error`} className="mt-1 text-xs text-tomato">
-            {fieldError}
-          </p>
-        )}
-      </div>
-    );
-  };
+  function update(key: string, value: string) {
+    setAnswers((a) => ({ ...a, [key]: value }));
+    setFieldErrors((prev) => (prev[key] ? { ...prev, [key]: undefined } : prev));
+  }
 
   return (
     <div
@@ -183,16 +142,58 @@ export default function AttendeeFormModal({
 
         {/* noValidate: our bilingual messages replace the browser's own bubbles. */}
         <form onSubmit={submit} noValidate aria-busy={submitting} className="space-y-4">
-          {field({ key: "name", label: t("parentName"), type: "text", autoComplete: "name", ref: firstFieldRef })}
-          {field({ key: "childName", label: t("childName"), type: "text", autoComplete: "off" })}
-          {field({ key: "email", label: t("buyerEmail"), type: "email", autoComplete: "email" })}
-          {/* Free-form, so no `tel` type/autofill — a LINE ID is not a phone number. */}
-          {field({
-            key: "contact",
-            label: t("contact"),
-            type: "text",
-            autoComplete: "off",
-            hint: t("contactHint"),
+          {fields.map((f, i) => {
+            const fieldError = fieldErrors[f.key];
+            const describedBy = fieldError ? `af-${f.key}-error` : undefined;
+            const shared = {
+              id: `af-${f.key}`,
+              "aria-invalid": fieldError ? true : undefined,
+              "aria-describedby": describedBy,
+              value: answers[f.key] ?? "",
+              className: `mt-1 w-full rounded-xl border-2 bg-paper px-3 py-2 text-base focus:outline-none ${
+                fieldError ? "border-tomato focus:border-tomato" : "border-ink/15 focus:border-ink/40"
+              }`,
+            };
+            return (
+              <div key={f.key}>
+                <label htmlFor={`af-${f.key}`} className="block text-sm text-ink/70">
+                  {labelOf(f)}
+                </label>
+                {f.type === "select" ? (
+                  <select
+                    {...shared}
+                    ref={i === 0 ? (firstFieldRef as React.Ref<HTMLSelectElement>) : undefined}
+                    disabled={submitting}
+                    onChange={(e) => update(f.key, e.target.value)}
+                  >
+                    <option value="">—</option>
+                    {(f.options ?? []).map((opt) => (
+                      <option key={opt} value={opt}>
+                        {opt}
+                      </option>
+                    ))}
+                  </select>
+                ) : (
+                  <input
+                    {...shared}
+                    ref={i === 0 ? (firstFieldRef as React.Ref<HTMLInputElement>) : undefined}
+                    type={f.type}
+                    autoComplete={autoCompleteOf(f)}
+                    readOnly={submitting}
+                    onChange={(e) => update(f.key, e.target.value)}
+                    onBlur={() => {
+                      const message = validate(answers)[f.key];
+                      if (message) setFieldErrors((prev) => ({ ...prev, [f.key]: message }));
+                    }}
+                  />
+                )}
+                {fieldError && (
+                  <p id={`af-${f.key}-error`} className="mt-1 text-xs text-tomato">
+                    {fieldError}
+                  </p>
+                )}
+              </div>
+            );
           })}
 
           {error && (

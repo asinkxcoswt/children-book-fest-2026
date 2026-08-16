@@ -102,5 +102,16 @@
   "shareVia": { "th": "แชร์กิจกรรมนี้", "en": "Share this event" },
   "lineApp": { "th": "LINE", "en": "LINE" },
   "facebook": { "th": "Facebook", "en": "Facebook" },
-  "hostedBy": { "th": "จัดโดย", "en": "Hosted by" }
+  "hostedBy": { "th": "จัดโดย", "en": "Hosted by" },
+  "payWithLine": { "th": "ซื้อผ่าน LINE", "en": "Buy with LINE" },
+  "payWithCard": { "th": "ชำระด้วยช่องทางอื่น", "en": "Pay another way" },
+  "scanToBuyWithLine": { "th": "สแกนเพื่อซื้อผ่าน LINE", "en": "Scan to buy with LINE" },
+  "scanWithPhoneHint": { "th": "เปิดกล้องมือถือหรือแอป LINE แล้วสแกนคิวอาร์โค้ดนี้ เพื่อซื้อและรับบัตรบนมือถือของคุณ", "en": "Open your phone's camera or LINE and scan this code — you'll buy and receive your tickets on your phone." },
+  "lineQrAlt": { "th": "คิวอาร์โค้ดสำหรับซื้อบัตรผ่าน LINE", "en": "QR code for buying tickets with LINE" },
+  "openLineOnThisDevice": { "th": "มี LINE บนเครื่องนี้", "en": "I have LINE on this device" },
+  "openLineManually": { "th": "เปิด LINE", "en": "Open LINE" },
+  "openLineManuallyHint": { "th": "ดูเหมือนว่า LINE ยังไม่เปิดขึ้นมา แตะปุ่มด้านล่างเพื่อเปิดอีกครั้ง", "en": "LINE doesn't seem to have opened. Tap below to try again." },
+  "openingLine": { "th": "กำลังเปิด LINE…", "en": "Opening LINE…" },
+  "ticketsWithheld": { "th": "บัตรบางใบถูกใช้หรือยกเลิกแล้ว จึงไม่แสดงคิวอาร์โค้ด", "en": "Some tickets have been used or cancelled, so no QR code is shown for them." },
+  "orderPendingChat": { "th": "รอสลิปการโอนของคุณในแชท LINE", "en": "Waiting for your transfer slip in the LINE chat" }
 }

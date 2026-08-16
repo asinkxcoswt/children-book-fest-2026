@@ -49,7 +49,10 @@ one as the token, or it returns 401. There is no per-buyer identity anywhere in 
                     "available", "limitPerOrder", "startSellingDate", "endSellingDate",
                     "sessionStartAt", "sessionEndAt", "sessionDate" } ],
         "total": n,
-        "refundPolicy": { "allowed": bool, "termEn": str, "termTh": str } }
+        "refundPolicy": { "allowed": bool, "termEn": str, "termTh": str },
+        "paymentMethods": ["STRIPE"],
+        "purchaseForm": [ { "key", "type", "required", "labelTh", "labelEn",
+                            "options"?, "auto"? } ] }
 eventCode is unique inside your account, not across the platform, so this call needs
 accountId too — omit it and the account behind your token is used. Only ACTIVE ticket
 types inside their selling window are returned. "available" is a
@@ -57,6 +60,30 @@ live count. Show refundPolicy.termEn / termTh near the checkout button (pick by 
 storefront's language; show both if bilingual). An empty "data" means nothing is on sale
 right now — before the selling window, after it, or the organizer archived the event — so
 render a "not on sale" state, never an error.
+
+"purchaseForm" is what the organizer wants asked at checkout — render exactly these
+fields, in this order, instead of inventing your own. Each has a "key" (where the answer
+goes), a "type" ("text" | "tel" | "email" | "select"; "select" carries "options"),
+"required", and both "labelTh" and "labelEn" — pick the label by your reader's language.
+Send the answers as "metadata" on POST /orders, keyed by "key". One key is special:
+"principal" is the attendee name, so send that one as passDisplay.principal too (see
+below). Most events have no form configured; the resolved default depends on payment
+methods — an event selling by card gets one required email field (Stripe needs a receipt
+address), an event selling only through chat gets no questions at all. A field marked
+"auto": true was added by the platform rather than the organizer — render it exactly
+like any other field.
+
+"paymentMethods" lists the checkout paths the organizer enabled, and it decides which
+buttons you render:
+
+- "STRIPE"    → your normal card checkout (POST /orders below).
+- "PROMPTPAY" → chat checkout: a "ซื้อผ่าน LINE" button that starts a LINE
+                conversation (POST /orders/intent below). No card form, no email
+                field — the buyer completes everything in chat.
+
+An event may list both (render both buttons) or either alone. Treat an unrecognised
+value as a method you do not support yet and simply do not render a button for it,
+rather than failing.
 
 "data" arrives in the organizer's chosen display order — render it in this order,
 do not re-sort. Two optional fields section that list, on independent axes:
@@ -96,34 +123,88 @@ at the gate.
       "items": [ { "code": "<ticketConfig code>", "quantity": n,
                    "passDisplay": { ... } } ],                         // 1–20 items
       "metadata": { ...any buyer form answers... },                    // optional
-      "successUrl": "<absolute URL on the storefront, may contain {ORDER_ID}>",
-      "cancelUrl": "<absolute URL on the storefront, may contain {ORDER_ID}>" }
-    → { "orderId", "orderNo", "status", "expiresAt", "checkoutUrl" }
+      "successUrl": "<absolute URL, may contain {ORDER_ID} and {ORDER_TOKEN}>",
+      "cancelUrl": "<absolute URL, may contain {ORDER_ID} and {ORDER_TOKEN}>" }
+    → { "orderId", "orderNo", "accessToken", "status", "expiresAt", "checkoutUrl" }
 
 - status PENDING + checkoutUrl → redirect the buyer to checkoutUrl (Stripe Checkout).
 - Free orders return status PAID and checkoutUrl null → go straight to the success page.
 - Inventory is reserved atomically; unpaid orders expire after 1 hour and release seats.
 - metadata keys/values appear in the organizer's participant exports — put attendee
   form answers (phone, shirt size, ...) here. Keep it a flat object of scalars.
-- The success page needs the orderId, and CowTicket generates it. Put the literal token
-  {ORDER_ID} in successUrl (e.g. "https://site.com/orders?orderId={ORDER_ID}") and the
-  platform substitutes the real id before creating the Stripe session. The token is
-  case-sensitive and exactly {ORDER_ID} — no other spelling is substituted, and an
-  unsubstituted URL sends every paying buyer to a broken success page.
+- The success page needs the orderId, and CowTicket generates it. Put the literal
+  placeholders {ORDER_ID} and {ORDER_TOKEN} in successUrl — e.g.
+  "https://site.com/orders?orderId={ORDER_ID}&token={ORDER_TOKEN}" — and the platform
+  substitutes both before creating the Stripe session. They are case-sensitive and
+  exactly those spellings; no other spelling is substituted, and an unsubstituted URL
+  sends every paying buyer to a broken success page.
+- {ORDER_TOKEN} is a per-order secret. It is what lets your ticket page prove the visitor
+  is entitled to THIS order — pass it back on /orders/detail (below). Do not reuse it
+  across orders, do not derive your own token from the buyer's email (that authorises
+  every order they hold for the event, and is impossible for an order placed without an
+  email), and keep it out of analytics, client-side error reporting and cross-origin
+  Referer headers, exactly as you would the order id.
 - passDisplay (optional, per item) carries display text onto each issued ticket:
   { "main", "description", "head", "date", "dateDisplay", "principal", "zone", "seat" }.
   Always send "principal" (the attendee name) — it is what gate staff search by when a
   QR won't scan, and it comes back on each ticket in /orders/detail. Omitted fields fall
   back to defaults (event name, ticket type name, order date, buyer email).
 
+### Chat checkout — start a LINE purchase
+    POST /orders/intent
+    { "accountId": "<ACCOUNT_ID>",
+      "eventCode": "<eventCode>",
+      "items": [ { "code": "<ticketConfig code>", "quantity": n,
+                   "passDisplay": { ... } } ],                         // 1–20 items
+      "metadata": { ...answers already collected on your form... },    // optional
+      "successUrl": "<absolute URL, may contain {ORDER_ID} and {ORDER_TOKEN}>" }
+    → { "intentCode": "CTI-XXXXXX", "lineUrl": "https://line.me/R/oaMessage/..." }
+
+Called INSTEAD of POST /orders when the buyer taps the LINE button. Then simply send
+the buyer to "lineUrl" (location.href works on mobile) — it opens LINE with a message
+pre-filled; they press send and the rest of the purchase happens in the chat: any
+missing required purchaseForm answers, the PromptPay QR, the payment slip, and ticket
+delivery. Notes:
+
+- **No "email" and no "cancelUrl"** — the buyer fills in nothing on the web, and there
+  is no redirect to cancel from. That is the point of this flow.
+- **Nothing is reserved yet.** An intent holds no inventory and never expires; the
+  1-hour hold starts only when the order is created in chat. Do not show a countdown.
+- If your checkout already collected purchaseForm answers, pass them in "metadata"
+  (and "principal" also as passDisplay.principal) — the chat then skips those
+  questions. Anything required and missing is asked once, in a small web form inside
+  LINE, before any stock is held.
+- "successUrl" works exactly as in POST /orders — {ORDER_ID} and {ORDER_TOKEN} are
+  substituted when the order is created in chat, and the confirmation the buyer gets
+  in LINE links to it. It must render tickets by accessToken like your normal success
+  page; a buyer may open it days later from the chat history.
+- Requires the organizer to have PROMPTPAY in the event's paymentMethods; calling it
+  for a card-only event returns an error. One intent per tap is fine — codes are
+  single-buyer (the first LINE account to send one owns it) and creating another
+  costs nothing.
+- Orders born here come back from GET /orders/detail with "paymentMethod":
+  "PROMPTPAY" (or "FREE"), possibly "email": null, and "buyerName" from LINE.
+
 ### Check an order / fetch tickets
-    GET /orders/detail?orderId=<orderId>&accountId=<ACCOUNT_ID>
-    → { "id", "orderNo", "status": "PENDING|PAID|REFUNDED|EXPIRED|CANCELED",
-        "email", "eventCode", "event", "expiresAt", "paidAt", "items", "payment",
+    GET /orders/detail?accessToken=<token>&accountId=<ACCOUNT_ID>
+    → { "id", "orderNo", "accessToken",
+        "status": "PENDING|PAID|REFUNDED|EXPIRED|CANCELED",
+        "email", "buyerName", "eventCode", "event", "expiresAt", "paidAt", "items",
+        "payment",
         "tickets": [ { "id", "ticketNo", "status": "ISSUED|REDEEMED|VOIDED",
                        "principal", "ownerEmail" } ],
         "refundPolicy", ... }
 accountId is required here — a request without it returns 400.
+
+Address the order by the accessToken you got from the URL, not by orderId. The order id
+is an identifier: it appears in your logs, in the organizer's portal, in support
+conversations. The token is the credential. Passing both is fine and they must agree;
+passing only orderId still works today but is deprecated and logged, and will stop
+working — migrate.
+
+"email" and "buyerName" can both be null: not every buyer gives an email, and which
+details are collected is the organizer's choice (see "purchaseForm"). Never render a
+placeholder in their place.
 
 This is the only ticket-read endpoint a storefront needs; it returns the full list. Do not
 build on the other /tickets/* endpoints — they are merchant/admin surface, not part of the
@@ -150,9 +231,10 @@ the organizer's own app handles scanning.
 1. Ticket page: GET /events/ticketConfigs → render the ticket options in the given
    order (sectioned by "group" when present), prices (satang → ฿ divide by 100),
    availability, and the refund policy text. Respect limitPerOrder.
-2. Checkout: collect buyer email (+ any extra fields into metadata), POST /orders,
-   redirect to checkoutUrl.
-3. Success page (successUrl): read orderId from the query string, poll
+2. Checkout: render "purchaseForm" and collect exactly those fields, send the answers as
+   metadata (and "principal" also as passDisplay.principal), POST /orders, redirect to
+   checkoutUrl.
+3. Success page (successUrl): read the token from the query string, poll
    GET /orders/detail (e.g. every 2s, up to ~1 min) until status is PAID, then render
    the tickets: one QR code per ISSUED ticket encoding its ticketNo, with the ticketNo
    also as visible text under the QR (manual-entry fallback) and the ticket type name.
@@ -184,12 +266,21 @@ Error shape in this section: 400 = malformed request or unknown event/ticket opt
 with the real reason in the plain-text body. Read the body, not just the status.
 
     POST /events
-    { "accountId", "eventCode", "name",
+    { "accountId", "name",
+      "eventCode": "spring-fest",            // optional — generated if omitted
       "tags": ["..."],                       // optional, portal filtering/bulk export
       "reportEmails": ["..."],               // optional, organizer report recipients
       "refundAllowed": true,                 // optional, default true
-      "refundTermEn": "...", "refundTermTh": "..." }   // optional, defaults filled in
+      "refundTermEn": "...", "refundTermTh": "...",    // optional, defaults filled in
+      "paymentMethods": ["STRIPE"],                    // optional, default ["STRIPE"]
+      "purchaseForm": [                                // optional, default: email required
+        { "key": "principal", "type": "text", "required": true,
+          "labelTh": "ชื่อผู้เข้าร่วม", "labelEn": "Attendee name" },
+        { "key": "email", "type": "email", "required": true,
+          "labelTh": "อีเมล", "labelEn": "Email" } ] }
     → the created event
+Omit "eventCode" and one is generated (and retried until unique) — read it back from
+the response and store it, since every later call identifies the event by it.
 eventCode is the permanent handle you address the event by everywhere else. It is unique
 within your account — another account may use the same code, so always pair it with your
 accountId — and can never be changed. Reusing one in your own account is refused with
@@ -197,9 +288,22 @@ accountId — and can never be changed. Reusing one in your own account is refus
 
     PUT /events
     { "accountId", "eventCode", ...any of: name, tags, reportEmails,
-                                 refundAllowed, refundTermEn, refundTermTh }
+                                 refundAllowed, refundTermEn, refundTermTh,
+                                 paymentMethods, purchaseForm }
     → the updated event
 Only the fields you send change. An unknown eventCode is 400 "Event not found".
+
+"purchaseForm" replaces the whole list — send every field you want, not a patch. Field
+keys must start with a letter (letters, numbers, underscores after that) and be unique;
+"select" needs a non-empty "options"; every field needs both labels. "PROMPTPAY" is
+reserved and not accepted yet.
+
+You never have to add an email field for card payment. An event selling by card always
+collects a required email — Stripe needs somewhere to send the receipt — so if your form
+omits one, or marks it optional, the platform adds or promotes it when the form is read.
+That field comes back with "auto": true. Which means the form you GET back can differ
+from the one you PUT; always render what GET /events/ticketConfigs gives you rather than
+your own copy.
 
     POST /events/archive
     { "accountId", "eventCode", "archived": true }    // false = unarchive
@@ -239,7 +343,9 @@ these by "code" and keep the returned "id".
       "status": "ACTIVE",                    // or "HIDDEN"; default ACTIVE
       "group": "Ringside" }                  // optional section label (not time)
     → the created ticket option
-"code" is unique within the event (refused if reused) and is what POST /orders references.
+"code" is unique within the event and is what POST /orders references. Omit it and
+one is generated for you (and retried until unique) — send your own only if you
+need to choose it, in which case reusing an existing code is refused.
 
     PUT /ticketConfigs
     { "accountId", "id": "<ticketConfig id>",       // the id, NOT the code
@@ -248,9 +354,18 @@ these by "code" and keep the returned "id".
                  sessionStartAt, sessionEndAt, status, group }
     → the updated ticket option
 "code" and "eventCode" are immutable — a ticket option cannot move between events. Lowering
-"quantity" below sold + reserved is refused: sold tickets can never be un-sold. Ticket
-options are never deleted either; set "status": "HIDDEN" to take one off sale while keeping
-its orders intact.
+"quantity" below sold + reserved is refused: sold tickets can never be un-sold.
+
+    DELETE /ticketConfigs?accountId=<ACCOUNT_ID>&id=<ticketConfig id>
+    → the deleted ticket option
+Deletion is allowed **only while nothing references the option** — no orders, no issued
+tickets. The database enforces that, so it also holds if an order arrives mid-request; the
+call is refused rather than cascading. Use it to clear away a mistake or a test row.
+
+Once anything has been sold, deleting is refused for good: set "status": "HIDDEN" to take
+the option off sale while keeping its orders, its counters and its place in every report.
+Nothing else in this API is ever deleted — events, orders and tickets carry money history
+and are archived or cancelled instead.
 
 Sync rules:
 - CowTicket is the source of truth for price, inventory counters and everything money.
@@ -281,8 +396,9 @@ Sync rules:
 - A ticket is a bearer instrument owned by the organizer's account. It is not bound to a
   buyer identity: whoever presents a valid QR gets in, there is no claim/transfer/holder
   check anywhere in the API, and "principal" is a printed label the gate does not verify.
-  The order id is an unguessable uuid, so the success-page URL is the only thing guarding
-  those tickets — mark the page noindex, and keep the order id out of analytics payloads,
+  The success-page URL is the only thing guarding those tickets, so treat its
+  accessToken as a password — mark the page noindex, and keep the token and order id out
+  of analytics payloads,
   client-side error reporting, and cross-origin Referer headers. Do not build a
   "transfer to a friend" feature; there is no API for it and it would only resend the URL.
 - Errors are plain-text messages with meaningful status codes (400 validation / sold out

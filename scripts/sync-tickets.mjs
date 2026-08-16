@@ -40,6 +40,32 @@ const REFUND = {
   refundTermTh: "บัตรที่ซื้อแล้วไม่สามารถขอคืนเงินได้",
   refundTermEn: "All sales are final. Tickets are non-refundable.",
 };
+/** PromptPay is the path we optimise for — Thai buyers finish the purchase in a
+ *  LINE chat, which also becomes their durable ticket inbox. Stripe stays on as
+ *  the way in for anyone without LINE, so the storefront renders it as a quiet
+ *  secondary link rather than a competing button. */
+const PAYMENT_METHODS = ["PROMPTPAY", "STRIPE"];
+/** The organizer's checkout questions. Keep this minimal: every required field
+ *  is one more thing asked before a purchase can complete — in the chat for
+ *  PromptPay buyers, and in the web modal for card buyers. "principal" is the
+ *  reserved attendee-name key, and gate staff search by it. The platform adds a
+ *  required email of its own for card orders, so we never list one here. */
+const PURCHASE_FORM = [
+  {
+    key: "principal",
+    type: "text",
+    required: true,
+    labelTh: "ชื่อผู้เข้าร่วม",
+    labelEn: "Attendee name",
+  },
+  {
+    key: "contact",
+    type: "text",
+    required: false,
+    labelTh: "เบอร์โทร หรือ LINE ID",
+    labelEn: "Phone or LINE ID",
+  },
+];
 /** Year-prefixed: codes are permanent and unique per account, so the 2027
  *  edition must not collide with this one on the same account. */
 const eventCodeFor = (slug) => `cbf2026-${slug}`;
@@ -137,7 +163,8 @@ function desiredConfigs(event) {
 }
 
 /** Fields we own. Anything not listed here is left to the organizer's app. */
-const EVENT_FIELDS = ["name", "refundAllowed", "refundTermTh", "refundTermEn"];
+const EVENT_FIELDS = ["name", "refundAllowed", "refundTermTh", "refundTermEn",
+                      "paymentMethods", "purchaseForm"];
 const CONFIG_FIELDS = ["name", "group", "price", "quantity", "limitPerOrder", "status",
                        "startSellingDate", "endSellingDate", "sessionStartAt", "sessionEndAt"];
 
@@ -153,7 +180,26 @@ const INSTANT_FIELDS = new Set(["startSellingDate", "endSellingDate",
  *  again, one field over. */
 const BLANKABLE_FIELDS = new Set(["group"]);
 
+/** The platform injects its own required email field into a card-selling event's
+ *  form and marks it "auto", so what we read back is never quite what we sent.
+ *  Compare only the fields the organizer owns, or every run would see a diff and
+ *  re-PUT the same list forever. */
+const organizerFields = (form) =>
+  JSON.stringify(
+    (form ?? [])
+      .filter((f) => !f.auto)
+      .map((f) => ({
+        key: f.key,
+        type: f.type,
+        required: !!f.required,
+        labelTh: f.labelTh,
+        labelEn: f.labelEn,
+        ...(f.options ? { options: f.options } : {}),
+      })),
+  );
+
 function same(field, a, b) {
+  if (field === "purchaseForm") return organizerFields(a) === organizerFields(b);
   if (BLANKABLE_FIELDS.has(field)) return (a ?? "") === (b ?? "");
   if (a === null || b === null) return a === b;
   if (INSTANT_FIELDS.has(field)) return Date.parse(a) === Date.parse(b);
@@ -188,7 +234,13 @@ async function listEvents() {
 
 async function syncEvent(event, existingEvents) {
   const eventCode = eventCodeFor(event.slug);
-  const desired = { name: event.title.th, tags: [TAG], ...REFUND };
+  const desired = {
+    name: event.title.th,
+    tags: [TAG],
+    ...REFUND,
+    paymentMethods: PAYMENT_METHODS,
+    purchaseForm: PURCHASE_FORM,
+  };
   const current = existingEvents.get(eventCode);
 
   log(`\n${eventCode}  (${event.title.th})`);

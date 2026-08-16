@@ -5,7 +5,9 @@ import { useRouter } from "next/navigation";
 import type { ColorToken } from "@/types/content";
 import { tokenClasses } from "@/lib/colors";
 import { t, formatDate, formatTimeRange } from "@/lib/i18n";
-import AttendeeFormModal, { type AttendeeForm } from "@/components/AttendeeFormModal";
+import type { PaymentMethod, PurchaseFormField } from "@/lib/ticketApi";
+import AttendeeFormModal, { type PurchaseAnswers } from "@/components/AttendeeFormModal";
+import LineQrPanel from "@/components/LineQrPanel";
 
 interface TicketOption {
   code: string;
@@ -83,20 +85,50 @@ export default function TicketPurchase({
 
   const [tickets, setTickets] = useState<TicketOption[] | null>(null);
   const [refundPolicy, setRefundPolicy] = useState<RefundPolicy | null>(null);
+  const [paymentMethods, setPaymentMethods] = useState<PaymentMethod[]>([]);
+  const [purchaseForm, setPurchaseForm] = useState<PurchaseFormField[]>([]);
   const [failed, setFailed] = useState(false);
   const [qty, setQty] = useState<Record<string, number>>({});
   const [modalOpen, setModalOpen] = useState(false);
   const [submitting, setSubmitting] = useState(false);
+  /** Chat-checkout link for the current selection. Kept keyed by `sig` so a
+   *  stale link can never be followed after the buyer changes quantities. */
+  const [intent, setIntent] = useState<{ sig: string; lineUrl: string } | null>(null);
+  const [startingLine, setStartingLine] = useState(false);
+  /** Set when the deep link was fired but this page never went away. */
+  const [handoffFailed, setHandoffFailed] = useState(false);
+  /** A LINE deep link needs the app on the same device, so desktop gets a QR
+   *  instead. Detected from the pointer rather than the user agent, and only
+   *  after mount — false on the server keeps the mobile path flash-free, which
+   *  is the one that matters most. */
+  const [desktop, setDesktop] = useState(false);
+
+  useEffect(() => {
+    const mq = window.matchMedia("(hover: hover) and (pointer: fine)");
+    const sync = () => setDesktop(mq.matches);
+    sync();
+    mq.addEventListener("change", sync);
+    return () => mq.removeEventListener("change", sync);
+  }, []);
 
   useEffect(() => {
     let alive = true;
     fetch(`/api/tickets?slug=${encodeURIComponent(slug)}`)
       .then((res) => (res.ok ? res.json() : Promise.reject()))
-      .then((data: { tickets: TicketOption[]; refundPolicy: RefundPolicy | null }) => {
-        if (!alive) return;
-        setTickets(data.tickets);
-        setRefundPolicy(data.refundPolicy);
-      })
+      .then(
+        (data: {
+          tickets: TicketOption[];
+          refundPolicy: RefundPolicy | null;
+          paymentMethods: PaymentMethod[];
+          purchaseForm: PurchaseFormField[];
+        }) => {
+          if (!alive) return;
+          setTickets(data.tickets);
+          setRefundPolicy(data.refundPolicy);
+          setPaymentMethods(data.paymentMethods ?? []);
+          setPurchaseForm(data.purchaseForm ?? []);
+        },
+      )
       .catch(() => {
         if (alive) setFailed(true);
       });
@@ -108,26 +140,74 @@ export default function TicketPurchase({
   const total = (tickets ?? []).reduce((sum, tk) => sum + (qty[tk.code] ?? 0) * tk.price, 0);
   const count = Object.values(qty).reduce((a, b) => a + b, 0);
 
+  const chatCheckout = paymentMethods.includes("PROMPTPAY");
+  const cardCheckout = paymentMethods.includes("STRIPE");
+
+  const selection = Object.entries(qty)
+    .filter(([, quantity]) => quantity > 0)
+    .map(([code, quantity]) => ({ code, quantity }));
+  const sig = selection.map((i) => `${i.code}:${i.quantity}`).join(",");
+
   function step(code: string, delta: number, max: number) {
     setQty((q) => ({ ...q, [code]: Math.min(max, Math.max(0, (q[code] ?? 0) + delta)) }));
   }
 
-  async function confirmOrder(form: AttendeeForm): Promise<string | null> {
+  /** Creates the chat purchase, on click only. An intent is a real record on the
+   *  platform, so one is made per deliberate purchase attempt — never per
+   *  quantity tweak. The result is cached against the current selection, so
+   *  clicking again without changing the basket reuses it rather than issuing
+   *  another. */
+  async function startLineCheckout() {
+    if (startingLine) return;
+    if (intent?.sig === sig) return handoff(intent.lineUrl);
+    setStartingLine(true);
+    setHandoffFailed(false);
+    try {
+      const res = await fetch("/api/orders/intent", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ slug, items: selection }),
+      });
+      const data = (await res.json()) as { lineUrl?: string };
+      if (res.ok && data.lineUrl) {
+        setIntent({ sig, lineUrl: data.lineUrl });
+        handoff(data.lineUrl);
+        return;
+      }
+    } catch {
+      // fall through to the idle state; the buyer can try again
+    }
+    setStartingLine(false);
+  }
+
+  /** Desktop scans a code; everywhere else we navigate to the deep link.
+   *
+   *  The link is an ordinary https universal link, so navigating after an await
+   *  is fine in nearly every browser — but a few in-app webviews swallow it. So
+   *  rather than sniffing for those, watch what happens: if this page is still
+   *  in front shortly afterwards, the navigation didn't take, and we offer a
+   *  plain anchor for the buyer to press themselves. */
+  function handoff(lineUrl: string) {
+    if (desktop) {
+      setStartingLine(false);
+      return; // the QR panel renders from `intent`
+    }
+    window.location.assign(lineUrl);
+    window.setTimeout(() => {
+      if (document.visibilityState === "visible") {
+        setStartingLine(false);
+        setHandoffFailed(true);
+      }
+    }, 1200);
+  }
+
+  async function confirmOrder(answers: PurchaseAnswers): Promise<string | null> {
     setSubmitting(true);
     try {
       const res = await fetch("/api/orders", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          slug,
-          name: form.name.trim(),
-          childName: form.childName.trim(),
-          email: form.email.trim(),
-          contact: form.contact.trim(),
-          items: Object.entries(qty)
-            .filter(([, quantity]) => quantity > 0)
-            .map(([code, quantity]) => ({ code, quantity })),
-        }),
+        body: JSON.stringify({ slug, answers, items: selection }),
       });
       const data = (await res.json()) as { checkoutUrl?: string | null; error?: string; orderId?: string; token?: string };
       if (!res.ok) {
@@ -174,10 +254,9 @@ export default function TicketPurchase({
           {[0, 1].map((i) => (
             <li
               key={i}
-              className="relative animate-pulse overflow-hidden rounded-2xl border-2 border-ink/10 pl-4"
+              className={`relative animate-pulse overflow-hidden rounded-2xl border-y-2 border-r-2 border-l-8 border-y-ink/10 border-r-ink/10 pl-2 ${c.edge} opacity-40`}
               style={{ animationDelay: `${i * 150}ms` }}
             >
-              <span className={`absolute inset-y-0 left-0 w-2 ${c.soft}`} />
               <div className="flex items-center justify-between gap-2 p-3 pb-2">
                 <span className="h-4 w-24 rounded-full bg-ink/10" />
                 <span className={`h-6 w-14 rounded-full ${c.soft}`} />
@@ -236,19 +315,22 @@ export default function TicketPurchase({
               const spoken = [tk.sessionDate && formatDate(tk.sessionDate), time, tk.name]
                 .filter(Boolean)
                 .join(" ");
+              // Ticket-stub spine drawn as the left border, not an inner bar:
+              // inside a 2px box the colour stopped short of the card edge and the
+              // grey outline wrapped around it. As a border it reaches the edge and
+              // follows the corner radius. Sides are addressed individually
+              // (border-y/-r/-l) so no shorthand competes with the left edge — that
+              // conflict resolves by stylesheet order, not by what is written last.
               return (
                 <li
                   key={tk.code}
-                  className={`relative overflow-hidden rounded-2xl border-2 pl-4 transition-colors ${soldOut
-                    ? "border-ink/10 opacity-60"
+                  className={`relative overflow-hidden rounded-2xl border-y-2 border-r-2 border-l-8 ${c.edge} pl-2 transition-colors ${soldOut
+                    ? "border-y-ink/10 border-r-ink/10 opacity-60"
                     : selected
-                      ? `${c.border} ${c.soft}`
-                      : "border-ink/10 hover:border-ink/25"
+                      ? `border-y-ink/10 border-r-ink/10 ${c.soft}`
+                      : "border-y-ink/10 border-r-ink/10 hover:border-y-ink/25 hover:border-r-ink/25"
                     }`}
                 >
-                  {/* Ticket-stub spine. */}
-                  <span aria-hidden className={`absolute inset-y-0 left-0 w-2 ${c.bg}`} />
-    
                   <div className="p-3 pb-2">
                     {/* The day this ticket admits on — never only the time, or a
                         buyer can turn up on the wrong day. */}
@@ -324,14 +406,87 @@ export default function TicketPurchase({
         </span>
       </div>
 
-      <button
-        type="button"
-        disabled={count === 0}
-        onClick={() => setModalOpen(true)}
-        className={`mt-4 w-full rounded-full px-7 py-3 text-lg ${c.bg} ${c.on} transition-all hover:scale-[1.02] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ink focus-visible:ring-offset-2 disabled:opacity-40 disabled:hover:scale-100`}
-      >
-        {t("getTickets")}
-      </button>
+      {(() => {
+        // Shape and focus ring only. Spacing, size and colour belong to each
+        // caller: two competing utilities of the same property in one class
+        // string resolve by stylesheet order, not by which is written last.
+        const pill =
+          "block w-full rounded-full px-7 text-center transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ink focus-visible:ring-offset-2";
+        const primary = "py-3 text-lg hover:scale-[1.02]";
+        const cta = `mt-4 ${pill} ${primary} ${c.bg} ${c.on}`;
+        // LINE's own green, on ink rather than paper: white on this green is
+        // only 2.3:1, which fails AA even at this size, while ink clears 9:1.
+        const lineCta = `mt-4 ${pill} ${primary} bg-line text-ink`;
+
+        // Card-only event: the original single button, unchanged.
+        if (!chatCheckout) {
+          return (
+            <button
+              type="button"
+              disabled={count === 0}
+              onClick={() => setModalOpen(true)}
+              className={`${cta} disabled:opacity-40 disabled:hover:scale-100`}
+            >
+              {t("getTickets")}
+            </button>
+          );
+        }
+
+        const ready = intent?.sig === sig ? intent.lineUrl : null;
+        return (
+          <>
+            {count === 0 ? (
+              <button
+                type="button"
+                disabled
+                className={`mt-4 ${pill} py-3 text-lg bg-line text-ink opacity-40`}
+              >
+                {t("payWithLine")}
+              </button>
+            ) : desktop && ready ? (
+              // Desktop reveals the code only after the buyer commits, so no
+              // intent is created just by choosing quantities.
+              <LineQrPanel lineUrl={ready} />
+            ) : (
+              <button
+                type="button"
+                onClick={startLineCheckout}
+                aria-disabled={startingLine}
+                className={`${lineCta} ${startingLine ? "cursor-wait opacity-70" : ""}`}
+              >
+                {startingLine ? t("openingLine") : t("payWithLine")}
+              </button>
+            )}
+
+            {/* Step two, shown only to the buyers who needed it: the deep link
+                was fired and this page never went away, so the webview swallowed
+                it. A plain anchor they press themselves gets through. */}
+            {handoffFailed && ready && (
+              <div className="mt-3 rounded-2xl border-2 border-ink/10 p-4 text-center">
+                <p className="text-xs leading-relaxed text-ink/70">{t("openLineManuallyHint")}</p>
+                <a href={ready} className={`mt-3 ${pill} py-2.5 text-base bg-line text-ink`}>
+                  {t("openLineManually")}
+                </a>
+              </div>
+            )}
+
+            {/* The way in for buyers without LINE. An outlined pill rather than a
+                sentence: as running text it read as part of the refund policy
+                below it, which is the one thing next to it that must stay
+                readable. Secondary by weight, still unmistakably a control. */}
+            {cardCheckout && (
+              <button
+                type="button"
+                disabled={count === 0}
+                onClick={() => setModalOpen(true)}
+                className={`mt-3 ${pill} border-2 border-ink/20 py-2.5 text-base text-ink/80 hover:border-ink/45 hover:text-ink disabled:opacity-40`}
+              >
+                {t("payWithCard")}
+              </button>
+            )}
+          </>
+        );
+      })()}
 
       {refundPolicy?.termTh && (
         // Required next to the checkout button. Thai term only, by the client's
@@ -345,6 +500,7 @@ export default function TicketPurchase({
       {modalOpen && (
         <AttendeeFormModal
           color={color}
+          fields={purchaseForm}
           submitting={submitting}
           onConfirm={confirmOrder}
           onClose={() => {

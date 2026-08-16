@@ -14,6 +14,11 @@
   --color-ink: #000000;
   --color-paper: #ffffff;
 
+  /* Third-party brand colour, deliberately NOT part of the designer's palette —
+   * it belongs to LINE and may only dress controls that open LINE. Defined here
+   * so components still reference a token rather than a raw hex. */
+  --color-line: #06c755;
+
   /* Fonts are wired to next/font CSS variables set in app/layout.tsx. */
   --font-display: var(--font-itim);
   --font-body: var(--font-plex-thai);
@@ -36,7 +41,8 @@ body {
  * In @layer base so per-element cursor utilities (e.g. cursor-wait) still win. */
 @layer base {
   button:not(:disabled),
-  [role="button"]:not(:disabled) {
+  [role="button"]:not(:disabled),
+  a[href] {
     cursor: pointer;
   }
 }

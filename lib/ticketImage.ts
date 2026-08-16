@@ -4,7 +4,7 @@
 
 import QRCode from "qrcode";
 import type { ColorToken } from "@/types/content";
-import { tokenClasses } from "@/lib/colors";
+import { tokenClasses, cssVar } from "@/lib/colors";
 
 export interface TicketDisplay {
   /** Human-friendly ticket number (TK-XXXX-XXXX): encoded in the QR and printed
@@ -21,10 +21,6 @@ export interface TicketDisplay {
 /* Rendered size (CSS px); canvas draws at 2x for crisp gallery saves. */
 export const TICKET_W = 640;
 export const TICKET_H = 900;
-
-function cssVar(name: string): string {
-  return getComputedStyle(document.documentElement).getPropertyValue(name).trim();
-}
 
 /** document.fonts.ready only settles loads that are already *pending*, and a
  *  subsetted Thai face nothing has painted yet was never pending — so it can

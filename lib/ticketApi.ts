@@ -1,6 +1,4 @@
-import crypto from "crypto";
-
-/* Server-only ticket platform client (see integration-guide.md).
+/* Server-only ticket platform client (see cow-ticket.llm.txt).
  * IMPORTANT: only import this from Route Handlers / Server Components — the API
  * key and JWT must never reach the browser. (Consider adding the `server-only`
  * package for a build-time guarantee.) */
@@ -99,19 +97,64 @@ export interface RefundPolicy {
   termTh: string;
 }
 
+/** Checkout paths the organizer enabled. Anything we don't recognise is dropped
+ *  rather than rendered as a dead button. */
+export type PaymentMethod = "STRIPE" | "PROMPTPAY";
+
+/** One question the organizer wants asked at checkout. Render exactly these,
+ *  in this order — never invent fields. Answers go back as `metadata` keyed by
+ *  `key`; the reserved key "principal" is the attendee name and must also be
+ *  sent as `passDisplay.principal`. */
+export interface PurchaseFormField {
+  key: string;
+  type: "text" | "tel" | "email" | "select";
+  required: boolean;
+  labelTh: string;
+  labelEn: string;
+  /** Present (and non-empty) only for type "select". */
+  options?: string[];
+  /** True when the platform added the field rather than the organizer — a
+   *  card-selling event always gets a required email this way. Render it like
+   *  any other field. */
+  auto?: boolean;
+}
+
 export interface TicketConfigsResult {
   /** In the organizer's display order — render as-is, never re-sort. */
   tickets: TicketConfig[];
   refundPolicy: RefundPolicy | null;
+  /** Which checkout buttons to render. Empty means the platform sent nothing
+   *  usable; treat as card-only, matching the platform's own default. */
+  paymentMethods: PaymentMethod[];
+  /** The organizer's checkout questions. Often empty — an event selling only
+   *  through chat asks nothing on the web at all. */
+  purchaseForm: PurchaseFormField[];
 }
+
+const KNOWN_METHODS: PaymentMethod[] = ["STRIPE", "PROMPTPAY"];
 
 export async function getTicketConfigs(eventCode: string): Promise<TicketConfigsResult> {
   const res = await ticketApi(
     `/events/ticketConfigs?eventCode=${encodeURIComponent(eventCode)}&${accountParam()}`,
   );
   if (!res.ok) throw new TicketApiError(res.status, await res.text());
-  const data = (await res.json()) as { data: TicketConfig[]; refundPolicy?: RefundPolicy };
-  return { tickets: data.data, refundPolicy: data.refundPolicy ?? null };
+  const data = (await res.json()) as {
+    data: TicketConfig[];
+    refundPolicy?: RefundPolicy;
+    paymentMethods?: string[];
+    purchaseForm?: PurchaseFormField[];
+  };
+  // An unrecognised method is one we don't support yet, not an error — drop it
+  // so a future platform addition can't render a button that goes nowhere.
+  const paymentMethods = (data.paymentMethods ?? []).filter((m): m is PaymentMethod =>
+    (KNOWN_METHODS as string[]).includes(m),
+  );
+  return {
+    tickets: data.data,
+    refundPolicy: data.refundPolicy ?? null,
+    paymentMethods: paymentMethods.length ? paymentMethods : ["STRIPE"],
+    purchaseForm: data.purchaseForm ?? [],
+  };
 }
 
 export interface PassDisplay {
@@ -127,6 +170,10 @@ export interface PassDisplay {
 
 export interface CreateOrderResult {
   orderId: string;
+  orderNo: string;
+  /** Per-order secret proving a visitor is entitled to THIS order. It is the
+   *  credential the ticket page reads — treat it like a password. */
+  accessToken: string;
   status: "PENDING" | "PAID";
   expiresAt: string;
   /** null for free orders — skip the redirect. */
@@ -152,14 +199,47 @@ export async function createOrder(input: {
   return (await res.json()) as CreateOrderResult;
 }
 
+export interface CreateOrderIntentResult {
+  /** Short code the buyer sends to the LINE OA (CTI-XXXXXX). */
+  intentCode: string;
+  /** Deep link that opens LINE with the code pre-filled. */
+  lineUrl: string;
+}
+
+/** Starts a chat purchase instead of a card one. Holds no inventory and never
+ *  expires — the 1-hour hold begins only when the order is created in chat, so
+ *  there is nothing here to count down and nothing to release. Deliberately
+ *  takes no email and no cancelUrl: the buyer fills in nothing on the web. */
+export async function createOrderIntent(input: {
+  eventCode: string;
+  items: { code: string; quantity: number; passDisplay?: PassDisplay }[];
+  metadata?: Record<string, string | number | boolean>;
+  successUrl: string;
+}): Promise<CreateOrderIntentResult> {
+  const res = await ticketApi("/orders/intent", {
+    method: "POST",
+    body: JSON.stringify({
+      accountId: env("TICKET_ACCOUNT_ID"),
+      ...input,
+    }),
+  });
+  if (!res.ok) throw new TicketApiError(res.status, await res.text());
+  return (await res.json()) as CreateOrderIntentResult;
+}
+
 export type OrderStatus = "PENDING" | "PAID" | "EXPIRED" | "CANCELED" | "REFUNDED";
+
+/** ISSUED alone is admissible. REDEEMED has already been scanned and VOIDED was
+ *  cancelled — both must render without a QR, or the page hands out a code the
+ *  gate will reject in front of a queue. */
+export type TicketStatus = "ISSUED" | "REDEEMED" | "VOIDED";
 
 export interface IssuedTicket {
   /** Internal uuid — API use only, never shown to humans. */
   id: string;
   /** Human-friendly ticket number (TK-XXXX-XXXX) — goes in the QR and on screen. */
   ticketNo: string;
-  status: string;
+  status: TicketStatus;
   principal: string;
   /** Joins the ticket to its order item, and so to the session it admits to. */
   ticketConfigId: string;
@@ -176,7 +256,12 @@ export interface OrderDetail {
   /** Human-friendly order reference (CT-XXXXXX) — show to the buyer. */
   orderNo: string;
   status: OrderStatus;
-  email: string;
+  /** Null on a chat order — the buyer never gave one. Never render a
+   *  placeholder in its place; show nothing. */
+  email: string | null;
+  /** The buyer's LINE display name on a chat order, otherwise null. */
+  buyerName: string | null;
+  paymentMethod?: "STRIPE" | "PROMPTPAY" | "FREE";
   eventCode: string;
   expiresAt: string;
   paidAt: string | null;
@@ -186,23 +271,13 @@ export interface OrderDetail {
   tickets?: IssuedTicket[];
 }
 
-export async function getOrderDetail(orderId: string): Promise<OrderDetail> {
+/** Reads an order by its accessToken — the credential, not the id. The order id
+ *  is an identifier that turns up in logs and support threads; only the token
+ *  proves entitlement, so it is what we address the order by. */
+export async function getOrderDetail(accessToken: string): Promise<OrderDetail> {
   const res = await ticketApi(
-    `/orders/detail?orderId=${encodeURIComponent(orderId)}&${accountParam()}`,
+    `/orders/detail?accessToken=${encodeURIComponent(accessToken)}&${accountParam()}`,
   );
   if (!res.ok) throw new TicketApiError(res.status, await res.text());
   return (await res.json()) as OrderDetail;
-}
-
-/** Unguessable key for the ticket-page URL. CowTicket has no per-buyer identity —
- *  tickets are bearer instruments — so the link itself is the secret and must stay
- *  stable: buyers reopen it from the confirmation email weeks later, at the gate.
- *  Set ORDER_SECURITY_SECRET. Falling back to TICKET_API_KEY ties every issued
- *  link to the payment credential, so rotating that key breaks them all. */
-export function generateOrderToken(email: string, eventCode: string): string {
-  const secret = process.env.ORDER_SECURITY_SECRET || env("TICKET_API_KEY");
-  return crypto
-    .createHmac("sha256", secret)
-    .update(`${email.trim().toLowerCase()}:${eventCode}`)
-    .digest("hex");
 }

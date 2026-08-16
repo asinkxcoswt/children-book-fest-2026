@@ -11,7 +11,9 @@ export async function GET(request: NextRequest) {
   }
 
   try {
-    const { tickets, refundPolicy } = await getTicketConfigs(event.ticketEventCode);
+    const { tickets, refundPolicy, paymentMethods, purchaseForm } = await getTicketConfigs(
+      event.ticketEventCode,
+    );
     // Only the fields the purchase UI needs, in the organizer's display order.
     return NextResponse.json({
       tickets: tickets.map((c) => ({
@@ -28,6 +30,10 @@ export async function GET(request: NextRequest) {
         sessionDate: c.sessionDate ?? null,
       })),
       refundPolicy,
+      // Which checkout buttons the purchase UI may render, and the organizer's
+      // own checkout questions — both come from the platform, never from us.
+      paymentMethods,
+      purchaseForm,
     });
   } catch (err) {
     const status = err instanceof TicketApiError ? err.status : 502;
