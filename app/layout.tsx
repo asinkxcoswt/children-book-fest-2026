@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Itim, IBM_Plex_Sans_Thai } from "next/font/google";
 import "./globals.css";
 import { t } from "@/lib/i18n";
+import { SITE_URL } from "@/lib/site";
 import SiteFooter from "@/components/SiteFooter";
 
 /* Display face — rounded, friendly, full Thai + Latin coverage. */
@@ -21,21 +22,31 @@ const plexThai = IBM_Plex_Sans_Thai({
 });
 
 export const metadata: Metadata = {
-  // Absolute base for og:image/canonical URLs — set NEXT_PUBLIC_SITE_URL in
-  // the deployment environment; localhost keeps previews working.
-  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000"),
-  title: `${t("festivalName")} ${t("festivalYear")}`,
+  metadataBase: new URL(SITE_URL),
+  title: {
+    default: `${t("festivalName")} ${t("festivalYear")}`,
+    // Suffix without the year — subpage titles get truncated around 60
+    // characters in search results, and the page-specific part must survive.
+    template: `%s — ${t("festivalName")}`,
+  },
   description: t("heroBody"),
   openGraph: {
     siteName: `${t("festivalName")} ${t("festivalYear")}`,
     locale: "th_TH",
     type: "website",
-    // Placeholder until a dedicated share poster exists (opengraph-image pass).
-    images: [{ url: "/content/storytelling.png" }],
+    url: "/",
+    images: [
+      {
+        url: "/og/festival-share.png",
+        width: 1200,
+        height: 630,
+        alt: `${t("festivalName")} ${t("festivalYear")} — ${t("tagline")}`,
+      },
+    ],
   },
   twitter: {
     card: "summary_large_image",
-    images: ["/content/storytelling.png"],
+    images: ["/og/festival-share.png"],
   },
 };
 

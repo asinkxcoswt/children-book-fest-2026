@@ -26,9 +26,15 @@ export async function generateMetadata({
   return {
     title,
     description,
+    alternates: { canonical: `/event/${slug}` },
     openGraph: {
       title,
       description,
+      url: `/event/${slug}`,
+      // Re-declared: a child openGraph replaces the layout's wholesale, so
+      // siteName/locale would silently vanish from these pages otherwise.
+      siteName: `${t("festivalName")} ${t("festivalYear")}`,
+      locale: "th_TH",
       images: [{ url: event.thumbnail }],
       type: "article",
     },

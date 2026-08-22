@@ -21,7 +21,18 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
   return {
     title,
     description,
-    openGraph: { title, description, images: [{ url: category.thumbnail }] },
+    alternates: { canonical: `/category/${slug}` },
+    openGraph: {
+      title,
+      description,
+      url: `/category/${slug}`,
+      // Re-declared: a child openGraph replaces the layout's wholesale, so
+      // siteName/locale would silently vanish from these pages otherwise.
+      siteName: `${t("festivalName")} ${t("festivalYear")}`,
+      locale: "th_TH",
+      type: "website",
+      images: [{ url: category.thumbnail }],
+    },
     twitter: { card: "summary_large_image", title, description, images: [category.thumbnail] },
   };
 }

@@ -1,6 +1,8 @@
 import Link from "next/link";
 import Image from "next/image";
+import type { Metadata } from "next";
 import { getCategories, getEventCount, getEvents, getFestivalDates } from "@/lib/content";
+import { SITE_URL } from "@/lib/site";
 import { tokenClasses } from "@/lib/colors";
 import { t, pick, formatMonth } from "@/lib/i18n";
 import FestivalMap from "@/components/FestivalMap";
@@ -11,9 +13,30 @@ import WaveEdge from "@/components/WaveEdge";
 /* Home — "Storybook Village": an editorial storybook UI with the playful
  * explorable festival map as the centerpiece navigation. */
 
+export const metadata: Metadata = {
+  alternates: { canonical: "/" },
+};
+
 export default function V4Home() {
   const categories = getCategories();
   const dates = getFestivalDates();
+  // Festival-level structured data. Google event rich results also want a
+  // `location` (venue name + address) — add it here once the client confirms
+  // the real venue; per-event JSON-LD waits until event data is no longer mock.
+  const festivalJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "Festival",
+    name: `${t("festivalName")} ${t("festivalYear")}`,
+    alternateName: `${t("festivalName", "en")} ${t("festivalYear", "en")}`,
+    description: t("heroBody"),
+    inLanguage: "th",
+    startDate: dates[0],
+    endDate: dates[dates.length - 1],
+    eventAttendanceMode: "https://schema.org/OfflineEventAttendanceMode",
+    eventStatus: "https://schema.org/EventScheduled",
+    image: [`${SITE_URL}/og/festival-share.png`],
+    url: SITE_URL,
+  };
   // "15–20 ส.ค. 2569" — from real data so the hero never goes stale.
   const dateStamp = `${Number(dates[0].slice(-2))}–${Number(dates[dates.length - 1].slice(-2))} ${formatMonth(dates[dates.length - 1])} ${t("festivalYear")}`;
   // Sticker-fan positions for the zone illustrations (percent-based so the
@@ -27,6 +50,10 @@ export default function V4Home() {
 
   return (
     <main className="flex-1">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(festivalJsonLd) }}
+      />
       {/* Hero — a book cover: title, dates, and the zone art fanned like a
           hand of picture books. */}
       <section className="bg-peach/60">
