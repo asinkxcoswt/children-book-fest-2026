@@ -127,10 +127,7 @@ export default async function V4Event({ params }: { params: Promise<{ slug: stri
             {event.walkIn ? (
               // Free walk-in event: nothing to sell, so no purchase UI and no
               // ticket API call — the answer to "how do I get in" is static.
-              <WalkInNotice
-                color={category?.color ?? "peach"}
-                limitedSeats={Boolean(event.capacity)}
-              />
+              <WalkInNotice color={category?.color ?? "peach"} />
             ) : event.ticketEventCode ? (
               <TicketPurchase
                 slug={event.slug}

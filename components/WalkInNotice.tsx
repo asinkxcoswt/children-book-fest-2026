@@ -7,14 +7,7 @@ import { t } from "@/lib/i18n";
  *  Deliberately styled as one of the ticket-stub cards — same spine,
  *  perforation and price pill — so the eye lands where tickets always live and
  *  reads "this is the ticket slot, and you don't need one". */
-export default function WalkInNotice({
-  color,
-  limitedSeats,
-}: {
-  color: ColorToken;
-  /** Show the first-come-first-served note (events with a shown capacity). */
-  limitedSeats?: boolean;
-}) {
+export default function WalkInNotice({ color }: { color: ColorToken }) {
   const c = tokenClasses(color);
 
   return (
@@ -34,7 +27,6 @@ export default function WalkInNotice({
 
         <div className="p-3 pt-2">
           <p className="text-sm leading-relaxed text-ink/75">{t("walkInBody")}</p>
-          {limitedSeats && <p className="mt-2 text-xs text-ink/60">{t("walkInSeats")}</p>}
         </div>
       </div>
     </div>
