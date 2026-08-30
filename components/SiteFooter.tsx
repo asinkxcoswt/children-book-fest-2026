@@ -1,9 +1,8 @@
 import { t } from "@/lib/i18n";
 
 const HOST_URL = "https://www.kwanjaoei.com/";
-/** The host's official page, as linked from kwanjaoei.com. Swap if the
- *  festival gets its own dedicated page. */
-const FACEBOOK_URL = "https://www.facebook.com/kwan.Jao.Aey/";
+/** The festival's dedicated Facebook page. */
+const FACEBOOK_URL = "https://www.facebook.com/bkkcpbfest/";
 
 const linkClasses =
   "text-ink underline decoration-ink/30 underline-offset-4 transition-colors hover:decoration-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ink focus-visible:ring-offset-2";
