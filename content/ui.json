@@ -64,6 +64,14 @@
   "perOrderLimit": { "th": "สูงสุดต่อคำสั่งซื้อ", "en": "max per order" },
   "processingOrder": { "th": "กำลังดำเนินการ…", "en": "Processing…" },
   "loadingTickets": { "th": "กำลังโหลดข้อมูลบัตร…", "en": "Loading tickets…" },
+  "walkInTitle": { "th": "เข้าร่วมฟรี", "en": "Free entry" },
+  "walkInNoTicket": { "th": "ไม่ต้องใช้บัตร", "en": "No ticket needed" },
+  "walkInBody": {
+    "th": "เดินเข้ามาร่วมสนุกได้เลย ไม่ต้องจองบัตรหรือลงทะเบียนล่วงหน้า",
+    "en": "Just walk in and join — no booking or registration needed." },
+  "walkInSeats": {
+    "th": "ที่นั่งมีจำนวนจำกัด มาก่อนได้ก่อน",
+    "en": "Seats are limited — first come, first served." },
   "notOnSale": {
     "th": "ยังไม่เปิดจำหน่ายบัตรสำหรับกิจกรรมนี้",
     "en": "Tickets for this event are not on sale right now." },

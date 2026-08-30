@@ -7,6 +7,7 @@ import { tokenClasses } from "@/lib/colors";
 import { t, pick, formatDate } from "@/lib/i18n";
 import RegisterCta from "@/components/RegisterCta";
 import TicketPurchase from "@/components/TicketPurchase";
+import WalkInNotice from "@/components/WalkInNotice";
 import ShareButton from "@/components/ShareButton";
 
 export function generateStaticParams() {
@@ -123,7 +124,14 @@ export default async function V4Event({ params }: { params: Promise<{ slug: stri
             <ShareButton title={pick(event.title)} text={pick(event.summary)} />
           </div>
           <div>
-            {event.ticketEventCode ? (
+            {event.walkIn ? (
+              // Free walk-in event: nothing to sell, so no purchase UI and no
+              // ticket API call — the answer to "how do I get in" is static.
+              <WalkInNotice
+                color={category?.color ?? "peach"}
+                limitedSeats={Boolean(event.capacity)}
+              />
+            ) : event.ticketEventCode ? (
               <TicketPurchase
                 slug={event.slug}
                 color={category?.color ?? "peach"}

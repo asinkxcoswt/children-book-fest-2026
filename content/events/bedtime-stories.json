@@ -66,5 +66,6 @@
   ],
   "registrationUrl": "https://www.ticketmelon.com/littlepawcraft/story-treasure-hunt",
   "featured": true,
-  "ticketEventCode": "cbf2026-bedtime-stories"
+  "ticketEventCode": "cbf2026-bedtime-stories",
+  "walkIn": true
 }
