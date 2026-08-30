@@ -24,7 +24,8 @@ const DISMISS_PX = 90;
 /** Matches the transition duration below — the slide-out before unmount. */
 const EXIT_MS = 200;
 
-/** Bottom sheet summarising the session tapped on the mobile schedule board.
+/** Bottom sheet summarising the session tapped on the touch (phone/tablet)
+ *  schedule board.
  *  Deliberately NON-modal: no backdrop and no focus trap, so the board stays
  *  visible and tappable and visitors can hop from block to block without ever
  *  leaving the page. The detail page is one explicit tap away.

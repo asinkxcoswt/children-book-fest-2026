@@ -35,13 +35,18 @@ interface Props {
  *  - ≥sm: day-column grid; when it overflows, edge fades + prev/next buttons
  *    make the hidden days obvious. Hovering/focusing a block fades every other
  *    event so all sessions of the same event stand out.
- *  - <sm: the same grid compressed to fit the viewport, mini blocks. Touch has
- *    no hover, so tapping a block selects it instead of navigating: it applies
- *    the same cross-highlight and opens a brief-detail drawer, keeping the
- *    visitor on the board while they compare events. */
+ *  - <sm: the same grid compressed to fit the viewport, mini blocks.
+ *  Touch has no hover, so on any no-hover device (phones *and* tablets, which
+ *  get the ≥sm grid) tapping a block selects it instead of navigating: it
+ *  applies the same cross-highlight and opens a brief-detail drawer, keeping
+ *  the visitor on the board while they compare events. */
 export default function ScheduleBoardGrid({ days, bands, legend, details }: Props) {
   const [hovered, setHovered] = useState<string | null>(null);
   const [selected, setSelected] = useState<{ slug: string; session: string } | null>(null);
+  // No-hover device (phone/tablet): blocks in the ≥sm grid open the drawer
+  // instead of navigating. false during SSR/hydration so the server-rendered
+  // links match; flips right after mount on touch devices.
+  const [touchUI, setTouchUI] = useState(false);
   const scrollerRef = useRef<HTMLDivElement>(null);
   // The block that opened the drawer, so closing can hand focus back to it.
   const triggerRef = useRef<HTMLButtonElement | null>(null);
@@ -61,6 +66,14 @@ export default function ScheduleBoardGrid({ days, bands, legend, details }: Prop
     window.addEventListener("resize", updateScrollState);
     return () => window.removeEventListener("resize", updateScrollState);
   }, [updateScrollState]);
+
+  useEffect(() => {
+    const mq = window.matchMedia("(hover: none)");
+    const update = () => setTouchUI(mq.matches);
+    update();
+    mq.addEventListener("change", update);
+    return () => mq.removeEventListener("change", update);
+  }, []);
 
   const scrollByColumn = (direction: 1 | -1) => {
     const el = scrollerRef.current;
@@ -82,11 +95,12 @@ export default function ScheduleBoardGrid({ days, bands, legend, details }: Prop
 
   const ticket = (b: BoardBlock, compact: boolean) => {
     const c = tokenClasses(b.color);
-    // Desktop highlights on hover; touch highlights on the selected block.
-    const active = compact ? (selected?.slug ?? null) : hovered;
+    const opensDrawer = compact || touchUI;
+    // Pointer devices highlight on hover; touch highlights the selected block.
+    const active = opensDrawer ? (selected?.slug ?? null) : hovered;
     const faded = active !== null && active !== b.slug;
     const session = `${b.date}${b.start}`;
-    const isSelected = compact && selected?.session === session;
+    const isSelected = opensDrawer && selected?.session === session;
 
     const body = (
       <>
@@ -113,9 +127,9 @@ export default function ScheduleBoardGrid({ days, bands, legend, details }: Prop
       faded ? "opacity-25" : ""
     }`;
 
-    // Compact blocks are far too small to read, so a tap opens the drawer
+    // On touch there's no hover to preview with, so a tap opens the drawer
     // rather than committing the visitor to a page they can't preview.
-    if (compact) {
+    if (opensDrawer) {
       return (
         <button
           key={`${b.slug}${b.start}`}
@@ -128,7 +142,7 @@ export default function ScheduleBoardGrid({ days, bands, legend, details }: Prop
               prev?.session === session ? null : { slug: b.slug, session },
             );
           }}
-          className={`${shared} rounded-md p-1 ${
+          className={`${shared} ${compact ? "rounded-md p-1" : "rounded-lg p-2"} ${
             isSelected ? "ring-2 ring-ink ring-offset-1" : ""
           }`}
         >
@@ -200,22 +214,11 @@ export default function ScheduleBoardGrid({ days, bands, legend, details }: Prop
           ))}
         </div>
         {legendRow}
-
-        {selected && details[selected.slug] && (
-          <>
-            {/* Keeps the lower rows reachable above the open sheet. */}
-            <div aria-hidden className="h-[45svh]" />
-            <ScheduleEventDrawer
-              detail={details[selected.slug]}
-              currentSession={selected.session}
-              onClose={closeDrawer}
-            />
-          </>
-        )}
       </div>
 
       {/* ≥sm: day × time-band grid with overflow affordances. */}
       <div className="hidden sm:block">
+        {touchUI && <p className="mb-2 text-xs text-ink/50">{t("tapEventHint")}</p>}
         <div className="relative">
           <div ref={scrollerRef} onScroll={updateScrollState} className="overflow-x-auto">
             <div
@@ -284,6 +287,18 @@ export default function ScheduleBoardGrid({ days, bands, legend, details }: Prop
         </div>
         {legendRow}
       </div>
+
+      {selected && details[selected.slug] && (
+        <>
+          {/* Keeps the lower rows reachable above the open sheet. */}
+          <div aria-hidden className="h-[45svh]" />
+          <ScheduleEventDrawer
+            detail={details[selected.slug]}
+            currentSession={selected.session}
+            onClose={closeDrawer}
+          />
+        </>
+      )}
     </>
   );
 }
