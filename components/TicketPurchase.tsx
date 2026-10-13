@@ -4,7 +4,8 @@ import { useEffect, useState } from "react";
 import type { ColorToken } from "@/types/content";
 import { tokenClasses, tokenHex, cssVar } from "@/lib/colors";
 import { t, formatDate, formatTimeRange } from "@/lib/i18n";
-import type { PaymentMethod, PurchaseFormField } from "@/lib/ticketApi";
+import type { PaymentMethod, PurchaseFormField, TicketAddOn } from "@/lib/ticketApi";
+import type { TicketBox as TicketBoxPayload } from "@/lib/orderItems";
 import AttendeeFormModal, { type PurchaseAnswers } from "@/components/AttendeeFormModal";
 import LineQrPanel from "@/components/LineQrPanel";
 
@@ -13,22 +14,21 @@ interface TicketOption {
   /** The round number ("รอบที่ 1"); the day and time come from the session. */
   name: string;
   /** Organizer's section label for anything that is NOT time — zone, tier,
-   *  package. null = ungrouped. The session lives in sessionDate. */
+   *  package. null = ungrouped. */
   group: string | null;
   /** Satang; 0 = free. */
   price: number;
   limitPerOrder: number;
+  /** Counted in tickets — one family ticket is one unit however many it admits. */
   available: number;
   /** Calendar day the ticket admits on (YYYY-MM-DD, resolved by the platform
-   *  in Asia/Bangkok), or null for an event with no sessions. Label the card
-   *  from this, not from the raw `sessionStartAt` instant — a late session
-   *  formatted in a browser outside Bangkok can land on the previous day. */
+   *  in Asia/Bangkok), or null for an event with no sessions. */
   sessionDate: string | null;
-  /** When the ticket admits you (ISO instants). The card leads with this
-   *  rather than repeating it in `name`, so the time has one source and can't
-   *  drift out of sync with what the gate honours. */
   sessionStartAt: string | null;
   sessionEndAt: string | null;
+  /** Per-ticket composition dimensions (adult, child, kit…). Empty = a plain
+   *  ticket with nothing to configure. */
+  addOns: TicketAddOn[];
 }
 
 interface RefundPolicy {
@@ -37,39 +37,46 @@ interface RefundPolicy {
   termTh: string;
 }
 
-interface TicketSection {
-  group: string | null;
-  items: TicketOption[];
+/** One ticket the buyer is assembling. `code` is null until a session is
+ *  chosen; `addOns` holds absolute quantities keyed by add-on code. */
+interface Box {
+  id: number;
+  code: string | null;
+  addOns: Record<string, number>;
 }
 
 function baht(satang: number): string {
   return `฿${(satang / 100).toLocaleString("th-TH")}`;
 }
 
-/** Sections come from `group` alone — the organizer's own label for zone, tier
- *  or package. The other axis, the day a ticket admits on, is printed on each
- *  ticket instead of heading a section: every event here sells one ticket per
- *  day, so a heading per card would be one line of chrome for one line of
- *  content, and a date on the card can't be scrolled past.
- *
- *  Ungrouped options render flat and first, with no heading. Platform order is
- *  preserved throughout — never re-sort. */
-function toSections(tickets: TicketOption[]): TicketSection[] {
-  const ungrouped = tickets.filter((tk) => !tk.group);
-  const sections: TicketSection[] = ungrouped.length ? [{ group: null, items: ungrouped }] : [];
-  for (const tk of tickets) {
-    if (!tk.group) continue;
-    const last = sections[sections.length - 1];
-    if (last && last.group === tk.group) last.items.push(tk);
-    else sections.push({ group: tk.group, items: [tk] });
-  }
-  return sections;
+/** Every add-on starts at what the ticket includes. */
+function defaultAddOns(tk: TicketOption | undefined): Record<string, number> {
+  return Object.fromEntries((tk?.addOns ?? []).map((a) => [a.code, a.included]));
 }
 
-/** In-app ticket purchase. Buyers pick quantities on ticket-stub cards,
- *  then fill in attendee details in a confirmation modal; the order is created
- *  through our own API routes and paid on Stripe Checkout. Falls back to the
- *  external link if the ticket service is unreachable. */
+/** Ticket price plus every add-on unit above what is included. */
+function boxPrice(tk: TicketOption, box: Box): number {
+  return tk.addOns.reduce(
+    (sum, a) => sum + Math.max(0, (box.addOns[a.code] ?? a.included) - a.included) * a.extraPrice,
+    tk.price,
+  );
+}
+
+/** One line per ticket for assistive tech and for the dropdown: day, time,
+ *  round, price. "รอบที่ 1" alone gives no way to tell which day it is. */
+function describe(tk: TicketOption): string {
+  const time = tk.sessionStartAt ? formatTimeRange(tk.sessionStartAt, tk.sessionEndAt) : "";
+  return [tk.sessionDate && formatDate(tk.sessionDate), time, tk.name, tk.group]
+    .filter(Boolean)
+    .join(" · ");
+}
+
+/** In-app ticket purchase. Each card is ONE ticket being bought: the buyer
+ *  picks its session, adjusts its add-ons (extra children, kits…) and adds
+ *  another card for another ticket. Attendee details come in a confirmation
+ *  modal; the order is created through our own API routes and paid on Stripe
+ *  Checkout or in LINE. Falls back to the external link if the ticket service
+ *  is unreachable. */
 export default function TicketPurchase({
   slug,
   color,
@@ -86,28 +93,23 @@ export default function TicketPurchase({
   const [paymentMethods, setPaymentMethods] = useState<PaymentMethod[]>([]);
   const [purchaseForm, setPurchaseForm] = useState<PurchaseFormField[]>([]);
   const [failed, setFailed] = useState(false);
-  const [qty, setQty] = useState<Record<string, number>>({});
+  const [boxes, setBoxes] = useState<Box[]>([{ id: 1, code: null, addOns: {} }]);
+  const [nextId, setNextId] = useState(2);
   const [modalOpen, setModalOpen] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   /** Chat-checkout link for the current selection. Kept keyed by `sig` so a
-   *  stale link can never be followed after the buyer changes quantities. */
+   *  stale link can never be followed after the buyer changes the basket. */
   const [intent, setIntent] = useState<{ sig: string; lineUrl: string } | null>(null);
   const [startingLine, setStartingLine] = useState(false);
   /** Set when the deep link was fired but this page never went away. */
   const [handoffFailed, setHandoffFailed] = useState(false);
   /** A LINE deep link needs the app on the same device, so desktop gets a QR
    *  instead. Detected from the pointer rather than the user agent, and only
-   *  after mount — false on the server keeps the mobile path flash-free, which
-   *  is the one that matters most. */
+   *  after mount — false on the server keeps the mobile path flash-free. */
   const [desktop, setDesktop] = useState(false);
   /** Brand colours for CowTicket's hosted ticket page, read from our own
    *  stylesheet so globals.css stays the only place these hexes are written.
-   *  The event's category colour heads the ticket; ink carries the quieter
-   *  controls. `ink` sits outside ColorToken — it is text, not a category
-   *  colour — so it is read directly rather than through tokenHex.
-   *
-   *  Read at click time, not during render: it touches the DOM, and the only
-   *  callers are handlers that cannot run before the browser has one. */
+   *  Read at click time, not during render: it touches the DOM. */
   const readTheme = () => ({
     primaryColor: tokenHex(color),
     secondaryColor: cssVar("--color-ink"),
@@ -127,16 +129,22 @@ export default function TicketPurchase({
       .then((res) => (res.ok ? res.json() : Promise.reject()))
       .then(
         (data: {
-          tickets: TicketOption[];
+          tickets: (Omit<TicketOption, "addOns"> & { addOns?: TicketAddOn[] })[];
           refundPolicy: RefundPolicy | null;
           paymentMethods: PaymentMethod[];
           purchaseForm: PurchaseFormField[];
         }) => {
           if (!alive) return;
-          setTickets(data.tickets);
+          const list = data.tickets.map((tk) => ({ ...tk, addOns: tk.addOns ?? [] }));
+          setTickets(list);
           setRefundPolicy(data.refundPolicy);
           setPaymentMethods(data.paymentMethods ?? []);
           setPurchaseForm(data.purchaseForm ?? []);
+          // The first ticket starts on the first session still on sale, so the
+          // card reads as a ticket from the outset; the session is changeable
+          // from its header.
+          const first = list.find((tk) => tk.available > 0);
+          if (first) setBoxes([{ id: 1, code: first.code, addOns: defaultAddOns(first) }]);
         },
       )
       .catch(() => {
@@ -147,26 +155,69 @@ export default function TicketPurchase({
     };
   }, [slug]);
 
-  const total = (tickets ?? []).reduce((sum, tk) => sum + (qty[tk.code] ?? 0) * tk.price, 0);
-  const count = Object.values(qty).reduce((a, b) => a + b, 0);
+  const byCode = new Map((tickets ?? []).map((tk) => [tk.code, tk]));
+  const optionOf = (box: Box) => (box.code ? byCode.get(box.code) : undefined);
+
+  /** Per-order cap for one session: the organizer's limit, or what's left. */
+  const maxOf = (tk: TicketOption) => Math.min(tk.limitPerOrder, tk.available);
+  /** How many OTHER cards already sit on this session. */
+  const othersOn = (code: string, exceptId: number) =>
+    boxes.filter((b) => b.code === code && b.id !== exceptId).length;
+  const canPick = (tk: TicketOption, box: Box) =>
+    tk.available > 0 && othersOn(tk.code, box.id) < maxOf(tk);
+  /** Another card is only offered while some session can still take one. */
+  const canAdd = (tickets ?? []).some((tk) => othersOn(tk.code, -1) < maxOf(tk));
+
+  const chosen = boxes.filter((b) => b.code !== null);
+  const total = chosen.reduce((sum, b) => {
+    const tk = optionOf(b);
+    return tk ? sum + boxPrice(tk, b) : sum;
+  }, 0);
+  /** Every card has a session — the only state the checkout buttons accept. */
+  const complete = boxes.length > 0 && chosen.length === boxes.length;
 
   const chatCheckout = paymentMethods.includes("PROMPTPAY");
   const cardCheckout = paymentMethods.includes("STRIPE");
 
-  const selection = Object.entries(qty)
-    .filter(([, quantity]) => quantity > 0)
-    .map(([code, quantity]) => ({ code, quantity }));
-  const sig = selection.map((i) => `${i.code}:${i.quantity}`).join(",");
+  const payload: TicketBoxPayload[] = chosen.map((b) => ({ code: b.code!, addOns: b.addOns }));
+  const sig = JSON.stringify(payload);
 
-  function step(code: string, delta: number, max: number) {
-    setQty((q) => ({ ...q, [code]: Math.min(max, Math.max(0, (q[code] ?? 0) + delta)) }));
+  function pickSession(id: number, code: string) {
+    setBoxes((bs) =>
+      bs.map((b) =>
+        // A new session means a new set of add-ons; start them at included.
+        b.id === id && b.code !== code ? { ...b, code, addOns: defaultAddOns(byCode.get(code)) } : b,
+      ),
+    );
+  }
+
+  function stepAddOn(id: number, addOn: TicketAddOn, delta: number) {
+    setBoxes((bs) =>
+      bs.map((b) => {
+        if (b.id !== id) return b;
+        const cur = b.addOns[addOn.code] ?? addOn.included;
+        const next = Math.min(addOn.max, Math.max(addOn.included, cur + delta));
+        return { ...b, addOns: { ...b.addOns, [addOn.code]: next } };
+      }),
+    );
+  }
+
+  function addBox() {
+    // Deliberately unchosen: a new card that already names a session is one
+    // the buyer may not notice they need to check. The checkout buttons stay
+    // disabled until it has one.
+    setBoxes((bs) => [...bs, { id: nextId, code: null, addOns: {} }]);
+    setNextId((n) => n + 1);
+  }
+
+  function removeBox(id: number) {
+    setBoxes((bs) => (bs.length > 1 ? bs.filter((b) => b.id !== id) : bs));
   }
 
   /** Creates the chat purchase, on click only. An intent is a real record on the
    *  platform, so one is made per deliberate purchase attempt — never per
-   *  quantity tweak. The result is cached against the current selection, so
-   *  clicking again without changing the basket reuses it rather than issuing
-   *  another. */
+   *  stepper tweak. Cached against the current selection so clicking again
+   *  without changing the basket reuses it. */
   async function startLineCheckout() {
     if (startingLine) return;
     if (intent?.sig === sig) return handoff(intent.lineUrl);
@@ -176,7 +227,7 @@ export default function TicketPurchase({
       const res = await fetch("/api/orders/intent", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ slug, items: selection, theme: readTheme() }),
+        body: JSON.stringify({ slug, boxes: payload, theme: readTheme() }),
       });
       const data = (await res.json()) as { lineUrl?: string };
       if (res.ok && data.lineUrl) {
@@ -190,13 +241,9 @@ export default function TicketPurchase({
     setStartingLine(false);
   }
 
-  /** Desktop scans a code; everywhere else we navigate to the deep link.
-   *
-   *  The link is an ordinary https universal link, so navigating after an await
-   *  is fine in nearly every browser — but a few in-app webviews swallow it. So
-   *  rather than sniffing for those, watch what happens: if this page is still
-   *  in front shortly afterwards, the navigation didn't take, and we offer a
-   *  plain anchor for the buyer to press themselves. */
+  /** Desktop scans a code; everywhere else we navigate to the deep link. If
+   *  this page is still in front shortly afterwards the webview swallowed the
+   *  navigation, and we offer a plain anchor for the buyer to press. */
   function handoff(lineUrl: string) {
     if (desktop) {
       setStartingLine(false);
@@ -217,7 +264,7 @@ export default function TicketPurchase({
       const res = await fetch("/api/orders", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ slug, answers, items: selection, theme: readTheme() }),
+        body: JSON.stringify({ slug, answers, boxes: payload, theme: readTheme() }),
       });
       const data = (await res.json()) as {
         checkoutUrl?: string | null;
@@ -261,29 +308,24 @@ export default function TicketPurchase({
   }
 
   if (!tickets) {
-    // Skeleton mirroring the ticket-stub cards so the sidebar doesn't jump.
+    // Skeleton mirroring a ticket card so the sidebar doesn't jump.
     return (
       <div role="status" aria-label={t("loadingTickets")}>
         <h2 className="font-display text-lg text-ink">{t("tickets")}</h2>
         <ul className="mt-3 space-y-3" aria-hidden>
-          {[0, 1].map((i) => (
-            <li
-              key={i}
-              className={`relative animate-pulse overflow-hidden rounded-2xl border-y-2 border-r-2 border-l-8 border-y-ink/10 border-r-ink/10 pl-2 ${c.edge} opacity-40`}
-              style={{ animationDelay: `${i * 150}ms` }}
-            >
-              <div className="flex items-center justify-between gap-2 p-3 pb-2">
-                <span className="h-4 w-24 rounded-full bg-ink/10" />
-                <span className={`h-6 w-14 rounded-full ${c.soft}`} />
-              </div>
-              <div className="mx-3 border-t-2 border-dashed border-ink/10" />
-              <div className="flex items-center gap-2 p-3 pt-2">
-                <span className="h-8 w-8 rounded-full border-2 border-ink/10" />
-                <span className="h-4 w-6 rounded bg-ink/10" />
-                <span className="h-8 w-8 rounded-full border-2 border-ink/10" />
-              </div>
-            </li>
-          ))}
+          <li
+            className={`relative animate-pulse overflow-hidden rounded-2xl border-y-2 border-r-2 border-l-8 border-y-ink/10 border-r-ink/10 pl-2 ${c.edge} opacity-40`}
+          >
+            <div className="flex items-center justify-between gap-2 p-3 pb-2">
+              <span className="h-4 w-24 rounded-full bg-ink/10" />
+              <span className={`h-6 w-14 rounded-full ${c.soft}`} />
+            </div>
+            <div className="mx-3 border-t-2 border-dashed border-ink/10" />
+            <div className="space-y-2 p-3 pt-2">
+              <span className="block h-10 rounded-xl bg-ink/5" />
+              <span className="block h-10 rounded-xl bg-ink/5" />
+            </div>
+          </li>
         </ul>
         <p className="mt-3 flex items-center gap-2 text-sm text-ink/60">
           <span aria-hidden className="relative flex h-2.5 w-2.5">
@@ -307,117 +349,190 @@ export default function TicketPurchase({
     );
   }
 
+  /** With one session there is nothing to change, so no hint and no picker. */
+  const switchable = tickets.length > 1;
+  const stepBtn =
+    "flex h-8 w-8 items-center justify-center rounded-full border-2 font-display text-lg transition-colors disabled:opacity-30";
+
   return (
     <div>
       <h2 className="font-display text-lg text-ink">{t("tickets")}</h2>
 
-      {toSections(tickets).map((section, i) => (
-        <section key={`${i}-${section.group ?? ""}`} className="mt-3">
-          {/* The organizer's own label — zone, tier, package. */}
-          {section.group && (
-            <h3 className={`mb-2 font-display text-sm ${c.text}`}>{section.group}</h3>
-          )}
-          <ul className="space-y-3">
-            {section.items.map((tk) => {
-              const max = Math.min(tk.limitPerOrder, tk.available);
-              const selected = (qty[tk.code] ?? 0) > 0;
-              const soldOut = tk.available === 0;
-              const time = tk.sessionStartAt
-                ? formatTimeRange(tk.sessionStartAt, tk.sessionEndAt)
-                : "";
-              // Screen readers get the whole ticket, not just its name: "รอบที่ 1"
-              // alone gives no way to tell which day's ticket is being stepped.
-              const spoken = [tk.sessionDate && formatDate(tk.sessionDate), time, tk.name]
-                .filter(Boolean)
-                .join(" ");
-              // Ticket-stub spine drawn as the left border, not an inner bar:
-              // inside a 2px box the colour stopped short of the card edge and the
-              // grey outline wrapped around it. As a border it reaches the edge and
-              // follows the corner radius. Sides are addressed individually
-              // (border-y/-r/-l) so no shorthand competes with the left edge — that
-              // conflict resolves by stylesheet order, not by what is written last.
-              return (
-                <li
-                  key={tk.code}
-                  className={`relative overflow-hidden rounded-2xl border-y-2 border-r-2 border-l-8 ${c.edge} pl-2 transition-colors ${soldOut
-                    ? "border-y-ink/10 border-r-ink/10 opacity-60"
-                    : selected
-                      ? `border-y-ink/10 border-r-ink/10 ${c.soft}`
-                      : "border-y-ink/10 border-r-ink/10 hover:border-y-ink/25 hover:border-r-ink/25"
-                    }`}
-                >
-                  <div className="p-3 pb-2">
-                    {/* The day this ticket admits on — never only the time, or a
-                        buyer can turn up on the wrong day. */}
-                    {tk.sessionDate && (
-                      <p className={`font-display text-xs ${c.text}`}>{formatDate(tk.sessionDate)}</p>
-                    )}
-                    <div className="flex items-baseline justify-between gap-2">
-                      {/* Tickets with no session fall back to their name, which
-                          is then the only label they have. */}
-                      <span className="font-display text-base text-ink">
+      <ul className="mt-3 space-y-3">
+        {boxes.map((box, index) => {
+          const tk = optionOf(box);
+          const label = `${t("ticketNo")} ${index + 1}`;
+          const time = tk?.sessionStartAt ? formatTimeRange(tk.sessionStartAt, tk.sessionEndAt) : "";
+          // Ticket-stub spine drawn as the left border so the colour reaches the
+          // card edge and follows the radius; sides addressed individually so no
+          // shorthand competes with the left edge.
+          return (
+            <li
+              key={box.id}
+              className={`relative overflow-hidden rounded-2xl border-y-2 border-r-2 border-l-8 border-y-ink/10 border-r-ink/10 ${c.edge} pl-2 ${c.soft}`}
+            >
+              {/* The ticket face: date, time, round, price — the same card as
+                  before. The session text is also the picker: a native select
+                  sits invisibly over it, so a tap opens the platform's own
+                  chooser, and the hint underneath says so. */}
+              <div className="flex items-start justify-between gap-2 p-3 pb-2">
+                <div className="relative min-w-0 flex-1 rounded-lg focus-within:ring-2 focus-within:ring-ink focus-within:ring-offset-2">
+                  {tk ? (
+                    <>
+                      <p className={`font-display text-xs ${c.text}`}>
+                        {boxes.length > 1 && <span className="text-ink/50">{label} · </span>}
+                        {tk.sessionDate && formatDate(tk.sessionDate)}
+                      </p>
+                      <p className="font-display text-base text-ink">
                         {time || tk.name}
-                      </span>
-                      <span
-                        className={`shrink-0 rounded-full px-3 py-0.5 font-display text-sm ${soldOut ? "bg-ink/10 text-ink/60" : `${c.bg} ${c.on}`
-                          }`}
-                      >
-                        {tk.price === 0 ? t("free") : baht(tk.price)}
-                      </span>
-                    </div>
-                    {time && (
-                      <p className="text-xs text-ink/60">{tk.name}</p>
-                    )}
-                  </div>
-
-                  <div className="mx-3 border-t-2 border-dashed border-ink/10" />
-    
-                  {soldOut ? (
-                    <p className="p-3 pt-2 font-display text-sm text-tomato">{t("soldOut")}</p>
+                        {switchable && <span aria-hidden className="ml-1 text-ink/40">▾</span>}
+                      </p>
+                      {time && <p className="text-xs text-ink/60">{[tk.group, tk.name].filter(Boolean).join(" · ")}</p>}
+                      {switchable && <p className={`mt-0.5 text-xs ${c.text}`}>{t("tapToChangeSession")}</p>}
+                    </>
                   ) : (
-                    <div className="flex items-center justify-between gap-2 p-3 pt-2">
-                      <div className="flex items-center gap-2">
-                        <button
-                          type="button"
-                          aria-label={`${t("quantity")} − ${spoken}`}
-                          disabled={(qty[tk.code] ?? 0) === 0}
-                          onClick={() => step(tk.code, -1, max)}
-                          className="flex h-8 w-8 items-center justify-center rounded-full border-2 border-ink/15 font-display text-lg text-ink transition-colors hover:border-ink/40 disabled:opacity-30"
-                        >
-                          −
-                        </button>
-                        <span aria-live="polite" className="w-6 text-center font-display text-lg text-ink">
-                          {qty[tk.code] ?? 0}
-                        </span>
-                        <button
-                          type="button"
-                          aria-label={`${t("quantity")} + ${spoken}`}
-                          disabled={(qty[tk.code] ?? 0) >= max}
-                          onClick={() => step(tk.code, 1, max)}
-                          className={`flex h-8 w-8 items-center justify-center rounded-full border-2 font-display text-lg transition-colors disabled:opacity-30 ${selected ? `${c.border} ${c.text}` : "border-ink/15 text-ink hover:border-ink/40"
-                            }`}
-                        >
-                          +
-                        </button>
-                      </div>
-                      <span className="text-right text-xs text-ink/50">
-                        {tk.available <= 10
-                          ? `${tk.available} ${t("ticketsLeft")}`
-                          : `${tk.limitPerOrder} ${t("perOrderLimit")}`}
-                      </span>
-                    </div>
+                    <>
+                      <p className={`font-display text-xs ${c.text}`}>{label}</p>
+                      <p className="font-display text-base text-ink">
+                        {t("chooseSession")}
+                        <span aria-hidden className="ml-1 text-ink/40">▾</span>
+                      </p>
+                    </>
                   )}
-                </li>
-              );
-            })}
-          </ul>
-        </section>
-      ))}
+                  {(switchable || !tk) && (
+                    <select
+                      value={box.code ?? ""}
+                      onChange={(e) => e.target.value && pickSession(box.id, e.target.value)}
+                      aria-label={`${t("chooseSession")} — ${label}`}
+                      className="absolute inset-0 h-full w-full cursor-pointer opacity-0"
+                    >
+                      <option value="" disabled>
+                        {t("chooseSession")}
+                      </option>
+                      {tickets.map((opt) => {
+                        const enabled = box.code === opt.code || canPick(opt, box);
+                        const price = opt.price === 0 ? t("free") : baht(opt.price);
+                        const note =
+                          opt.available === 0
+                            ? t("soldOut")
+                            : !enabled
+                              ? t("limitReached")
+                              : opt.available <= 10
+                                ? `${opt.available} ${t("ticketsLeft")}`
+                                : "";
+                        return (
+                          <option key={opt.code} value={opt.code} disabled={!enabled}>
+                            {[describe(opt), price, note].filter(Boolean).join(" · ")}
+                          </option>
+                        );
+                      })}
+                    </select>
+                  )}
+                </div>
+                {/* Stacked, not side by side: a row of ✕ + pill squeezed the
+                    date line into two lines. */}
+                <div className="flex shrink-0 flex-col items-end gap-1">
+                  {boxes.length > 1 && (
+                    <button
+                      type="button"
+                      onClick={() => removeBox(box.id)}
+                      aria-label={`${t("removeTicket")} — ${label}`}
+                      className="-mr-1 -mt-1 flex h-7 w-7 items-center justify-center rounded-full text-ink/50 transition-colors hover:bg-ink/10 hover:text-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ink"
+                    >
+                      <span aria-hidden>✕</span>
+                    </button>
+                  )}
+                  {tk && (
+                    <span className={`rounded-full px-3 py-0.5 font-display text-sm ${c.bg} ${c.on}`}>
+                      {boxPrice(tk, box) === 0 ? t("free") : baht(boxPrice(tk, box))}
+                    </span>
+                  )}
+                </div>
+              </div>
+
+              <div className="mx-3 border-t-2 border-dashed border-ink/10" />
+
+              {/* Below the perforation: what this one ticket is made of. A
+                  plain ticket shows its stock line instead, as before. */}
+              {tk && tk.addOns.length === 0 && (
+                <p className="p-3 pt-2 text-right text-xs text-ink/50">
+                  {tk.available <= 10
+                    ? `${tk.available} ${t("ticketsLeft")}`
+                    : `${tk.limitPerOrder} ${t("perOrderLimit")}`}
+                </p>
+              )}
+              {tk && tk.addOns.length > 0 && (
+                <>
+                  <ul className="space-y-2 p-3 pt-2">
+                    {tk.addOns.map((a) => {
+                      const qty = box.addOns[a.code] ?? a.included;
+                      const fixed = a.included === a.max;
+                      const extra = Math.max(0, qty - a.included) * a.extraPrice;
+                      const spoken = `${a.name} — ${label}`;
+                      // One quiet line under the name: what this row costs
+                      // right now. Nothing above what's included reads as
+                      // "included"; extras read as their added cost.
+                      const cost =
+                        qty <= a.included
+                          ? t("included")
+                          : a.extraPrice === 0
+                            ? t("free")
+                            : `+${baht(extra)}`;
+                      return (
+                        <li key={a.code} className="flex items-center justify-between gap-2">
+                          <span className="min-w-0">
+                            <span className="block font-display text-sm text-ink">{a.name}</span>
+                            <span className={`block text-xs ${extra > 0 ? `font-display ${c.text}` : "text-ink/50"}`}>
+                              {cost}
+                            </span>
+                          </span>
+                          <span className="flex items-center gap-2">
+                            <button
+                              type="button"
+                              aria-label={`${t("quantity")} − ${spoken}`}
+                              disabled={fixed || qty <= a.included}
+                              onClick={() => stepAddOn(box.id, a, -1)}
+                              className={`${stepBtn} border-ink/15 text-ink hover:border-ink/40`}
+                            >
+                              −
+                            </button>
+                            <span aria-live="polite" className="w-6 text-center font-display text-lg text-ink">
+                              {qty}
+                            </span>
+                            <button
+                              type="button"
+                              aria-label={`${t("quantity")} + ${spoken}`}
+                              disabled={fixed || qty >= a.max}
+                              onClick={() => stepAddOn(box.id, a, 1)}
+                              className={`${stepBtn} ${qty > a.included ? `${c.border} ${c.text}` : "border-ink/15 text-ink hover:border-ink/40"}`}
+                            >
+                              +
+                            </button>
+                          </span>
+                        </li>
+                      );
+                    })}
+                  </ul>
+                </>
+              )}
+            </li>
+          );
+        })}
+      </ul>
+
+      <button
+        type="button"
+        onClick={addBox}
+        disabled={!canAdd}
+        className="mt-3 inline-flex items-center gap-2 rounded-full border-2 border-dashed border-ink/20 px-4 py-2 font-display text-sm text-ink/70 transition-colors hover:border-ink/45 hover:text-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ink disabled:opacity-40"
+      >
+        <span aria-hidden>+</span> {t("addTicket")}
+      </button>
 
       <div className="mt-4 flex items-baseline justify-between">
         <span className="text-sm text-ink/60">{t("total")}</span>
         <span className="font-display text-xl text-ink">
-          {total === 0 && count > 0 ? t("free") : baht(total)}
+          {total === 0 && complete ? t("free") : baht(total)}
         </span>
       </div>
 
@@ -433,12 +548,12 @@ export default function TicketPurchase({
         // only 2.3:1, which fails AA even at this size, while ink clears 9:1.
         const lineCta = `mt-4 ${pill} ${primary} bg-line text-ink`;
 
-        // Card-only event: the original single button, unchanged.
+        // Card-only event: a single button.
         if (!chatCheckout) {
           return (
             <button
               type="button"
-              disabled={count === 0}
+              disabled={!complete}
               onClick={() => setModalOpen(true)}
               className={`${cta} disabled:opacity-40 disabled:hover:scale-100`}
             >
@@ -450,7 +565,7 @@ export default function TicketPurchase({
         const ready = intent?.sig === sig ? intent.lineUrl : null;
         return (
           <>
-            {count === 0 ? (
+            {!complete ? (
               <button
                 type="button"
                 disabled
@@ -460,7 +575,7 @@ export default function TicketPurchase({
               </button>
             ) : desktop && ready ? (
               // Desktop reveals the code only after the buyer commits, so no
-              // intent is created just by choosing quantities.
+              // intent is created just by assembling tickets.
               <LineQrPanel lineUrl={ready} />
             ) : (
               <button
@@ -473,9 +588,8 @@ export default function TicketPurchase({
               </button>
             )}
 
-            {/* Step two, shown only to the buyers who needed it: the deep link
-                was fired and this page never went away, so the webview swallowed
-                it. A plain anchor they press themselves gets through. */}
+            {/* Shown only when the deep link was fired and this page never
+                went away: a plain anchor the buyer presses themselves. */}
             {handoffFailed && ready && (
               <div className="mt-3 rounded-2xl border-2 border-ink/10 p-4 text-center">
                 <p className="text-xs leading-relaxed text-ink/70">{t("openLineManuallyHint")}</p>
@@ -485,14 +599,12 @@ export default function TicketPurchase({
               </div>
             )}
 
-            {/* The way in for buyers without LINE. An outlined pill rather than a
-                sentence: as running text it read as part of the refund policy
-                below it, which is the one thing next to it that must stay
-                readable. Secondary by weight, still unmistakably a control. */}
+            {/* The way in for buyers without LINE — an outlined pill, secondary
+                by weight but still unmistakably a control. */}
             {cardCheckout && (
               <button
                 type="button"
-                disabled={count === 0}
+                disabled={!complete}
                 onClick={() => setModalOpen(true)}
                 className={`mt-3 ${pill} border-2 border-ink/20 py-2.5 text-base text-ink/80 hover:border-ink/45 hover:text-ink disabled:opacity-40`}
               >

@@ -1,6 +1,15 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getEvent } from "@/lib/content";
-import { getTicketConfigs, TicketApiError } from "@/lib/ticketApi";
+import { getTicketConfigs, TicketApiError, type TicketAddOn } from "@/lib/ticketApi";
+
+/** Sample add-ons for reviewing the purchase UI before CowTicket ships the
+ *  real field. Attached only when TICKET_MOCK_ADDONS=1 is set locally AND the
+ *  platform sent none; never set it in production config. */
+const MOCK_ADDONS: TicketAddOn[] = [
+  { code: "adult", name: "ผู้ใหญ่", included: 1, max: 1, extraPrice: 0 },
+  { code: "child", name: "เด็ก", included: 1, max: 4, extraPrice: 5000 },
+];
+const mockAddOns = process.env.TICKET_MOCK_ADDONS === "1";
 
 /** Live ticket availability for an event, proxied so the API key stays server-side. */
 export async function GET(request: NextRequest) {
@@ -28,6 +37,9 @@ export async function GET(request: NextRequest) {
         sessionStartAt: c.sessionStartAt ?? null,
         sessionEndAt: c.sessionEndAt ?? null,
         sessionDate: c.sessionDate ?? null,
+        // ASSUMED API — per-ticket add-ons (see TicketAddOn). Empty until the
+        // platform ships it, which the UI renders as a plain ticket.
+        addOns: c.addOns ?? (mockAddOns ? MOCK_ADDONS : []),
       })),
       refundPolicy,
       // Which checkout buttons the purchase UI may render, and the organizer's

@@ -8,10 +8,12 @@ import {
   type OrderTheme,
 } from "@/lib/ticketApi";
 import { pick, formatDate } from "@/lib/i18n";
+import { parseBoxes, resolveBoxes } from "@/lib/orderItems";
 
 interface IntentRequestBody {
   slug?: string;
-  items?: { code?: string; quantity?: number }[];
+  /** One entry per ticket being bought (see `TicketBox`). */
+  boxes?: unknown;
   theme?: OrderTheme;
 }
 
@@ -32,20 +34,23 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: "unknown event" }, { status: 404 });
   }
 
-  const items = (body.items ?? []).filter(
-    (i): i is { code: string; quantity: number } =>
-      typeof i.code === "string" && Number.isInteger(i.quantity) && (i.quantity as number) > 0,
-  );
-  if (items.length === 0) {
+  const boxes = parseBoxes(body.boxes);
+  if (boxes.length === 0) {
     return NextResponse.json({ error: "invalid form data" }, { status: 400 });
   }
 
   const origin = request.nextUrl.origin;
   try {
-    const { paymentMethods } = await getTicketConfigs(event.ticketEventCode);
+    const { tickets, paymentMethods } = await getTicketConfigs(event.ticketEventCode);
     if (!paymentMethods.includes("PROMPTPAY")) {
       return NextResponse.json({ error: "chat checkout is not available" }, { status: 400 });
     }
+
+    const resolved = resolveBoxes(boxes, tickets);
+    if ("error" in resolved) {
+      return NextResponse.json({ error: "invalid form data" }, { status: 400 });
+    }
+    const { items } = resolved;
 
     // Same display text as the card path — the platform still doesn't know our
     // event's date or venue, and these tickets are issued the same way.

@@ -58,6 +58,37 @@ function accountParam(): string {
   return `accountId=${encodeURIComponent(env("TICKET_ACCOUNT_ID"))}`;
 }
 
+/** ASSUMED API (not yet in CowTicket — see cow-ticket.llm.txt for the live
+ *  contract). One add-on dimension of a ticket type: "adult", "child", "kit".
+ *  Every ticket of this type carries `included` units of it at no extra cost,
+ *  the buyer may raise it to `max`, and each unit above `included` costs
+ *  `extraPrice`. `included === max` is a fixed, displayed-only component
+ *  (e.g. "1 adult"). A ticket type has 0–5 of these. */
+export interface TicketAddOn {
+  code: string;
+  name: string;
+  included: number;
+  max: number;
+  /** Satang per unit above `included`. */
+  extraPrice: number;
+}
+
+/** ASSUMED API. Chosen add-on quantities describing EACH ticket in an order
+ *  item (so an item with quantity 2 is two identical tickets). Absolute
+ *  quantities, never deltas — `qty` lies in [included, max]. */
+export interface OrderItemAddOn {
+  code: string;
+  qty: number;
+}
+
+export interface OrderItemInput {
+  code: string;
+  quantity: number;
+  /** Omitted when the ticket type has no add-ons. */
+  addOns?: OrderItemAddOn[];
+  passDisplay?: PassDisplay;
+}
+
 export interface TicketConfig {
   id: string;
   eventCode: string;
@@ -86,8 +117,11 @@ export interface TicketConfig {
    *  Asia/Bangkok. Prefer this over local timezone maths so our sections match
    *  the organizer's portal exactly. */
   sessionDate: string | null;
-  /** Live availability: quota − sold − reserved. */
+  /** Live availability: quota − sold − reserved. Counted in tickets, not
+   *  people — a family ticket admitting four is one unit here. */
   available: number;
+  /** ASSUMED API — absent until the platform ships add-ons; treat as []. */
+  addOns?: TicketAddOn[];
 }
 
 /** Organizer's refund terms — must be shown near the checkout button. */
@@ -215,7 +249,7 @@ export interface CreateOrderResult {
 export async function createOrder(input: {
   eventCode: string;
   email: string;
-  items: { code: string; quantity: number; passDisplay?: PassDisplay }[];
+  items: OrderItemInput[];
   metadata?: Record<string, string | number | boolean>;
   /** Link BACK into our site from CowTicket's ticket page, and where a cancelled
    *  Stripe checkout returns to. Send the event page, not the home page — it is
@@ -247,7 +281,7 @@ export interface CreateOrderIntentResult {
  *  takes no email and no cancelUrl: the buyer fills in nothing on the web. */
 export async function createOrderIntent(input: {
   eventCode: string;
-  items: { code: string; quantity: number; passDisplay?: PassDisplay }[];
+  items: OrderItemInput[];
   metadata?: Record<string, string | number | boolean>;
   /** Carried from the intent onto every order the chat creates. */
   returnUrl: string;

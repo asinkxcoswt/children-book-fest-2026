@@ -9,6 +9,7 @@ import {
   type PurchaseFormField,
 } from "@/lib/ticketApi";
 import { pick, formatDate } from "@/lib/i18n";
+import { parseBoxes, resolveBoxes } from "@/lib/orderItems";
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
@@ -16,7 +17,8 @@ interface OrderRequestBody {
   slug?: string;
   /** Answers keyed by the organizer's `purchaseForm` field keys. */
   answers?: Record<string, unknown>;
-  items?: { code?: string; quantity?: number }[];
+  /** One entry per ticket being bought (see `TicketBox`). */
+  boxes?: unknown;
   /** Read from our own stylesheet by the browser — see `tokenHex`. Sanitized
    *  here regardless, since anything reaching a route handler is untrusted. */
   theme?: OrderTheme;
@@ -65,21 +67,28 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: "unknown event" }, { status: 404 });
   }
 
-  const items = (body.items ?? []).filter(
-    (i): i is { code: string; quantity: number } =>
-      typeof i.code === "string" && Number.isInteger(i.quantity) && (i.quantity as number) > 0,
-  );
-  if (items.length === 0) {
+  const boxes = parseBoxes(body.boxes);
+  if (boxes.length === 0) {
     return NextResponse.json({ error: "invalid form data" }, { status: 400 });
   }
 
   const origin = request.nextUrl.origin;
   try {
-    const { purchaseForm, paymentMethods } = await getTicketConfigs(event.ticketEventCode);
+    const { tickets, purchaseForm, paymentMethods } = await getTicketConfigs(
+      event.ticketEventCode,
+    );
     if (!paymentMethods.includes("STRIPE")) {
       // Card checkout was turned off between page load and submit.
       return NextResponse.json({ error: "card payment is not available" }, { status: 400 });
     }
+
+    // Add-on ranges and per-order limits are re-checked against a fresh read:
+    // the browser only drew the steppers, the platform owns the rules.
+    const resolved = resolveBoxes(boxes, tickets);
+    if ("error" in resolved) {
+      return NextResponse.json({ error: "invalid form data" }, { status: 400 });
+    }
+    const { items } = resolved;
 
     const checked = validateAnswers(purchaseForm, body.answers ?? {});
     if ("error" in checked) {
