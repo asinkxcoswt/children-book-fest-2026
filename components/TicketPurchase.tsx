@@ -1,12 +1,16 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import type { ColorToken } from "@/types/content";
 import { tokenClasses, tokenHex, cssVar } from "@/lib/colors";
 import { t, formatDate, formatTimeRange } from "@/lib/i18n";
 import type { PaymentMethod, PurchaseFormField, TicketAddOn } from "@/lib/ticketApi";
 import type { TicketBox as TicketBoxPayload } from "@/lib/orderItems";
-import AttendeeFormModal, { type PurchaseAnswers } from "@/components/AttendeeFormModal";
+import AttendeeFormModal, {
+  type PurchaseAnswers,
+  type UnitAnswers,
+  type UnitGroup,
+} from "@/components/AttendeeFormModal";
 import LineQrPanel from "@/components/LineQrPanel";
 
 interface TicketOption {
@@ -19,8 +23,11 @@ interface TicketOption {
   /** Satang; 0 = free. */
   price: number;
   limitPerOrder: number;
-  /** Counted in tickets — one family ticket is one unit however many it admits. */
+  /** What one ticket takes out of this depends on `capacityUnit`. */
   available: number;
+  /** "tickets": one unit per ticket. "seats": a ticket takes the sum of its
+   *  seat-counting add-ons' quantities — a family of four needs four. */
+  capacityUnit: "tickets" | "seats";
   /** Calendar day the ticket admits on (YYYY-MM-DD, resolved by the platform
    *  in Asia/Bangkok), or null for an event with no sessions. */
   sessionDate: string | null;
@@ -62,6 +69,23 @@ function boxPrice(tk: TicketOption, box: Box): number {
   );
 }
 
+/** Seats one ticket takes out of a seat-counted option's stock. For a
+ *  ticket-counted option every ticket is one unit regardless of add-ons. */
+function seatsOf(tk: TicketOption, addOns: Record<string, number>): number {
+  if (tk.capacityUnit !== "seats") return 1;
+  return tk.addOns.reduce(
+    (sum, a) => sum + (a.countsAsSeat ? (addOns[a.code] ?? a.included) : 0),
+    0,
+  );
+}
+
+/** Sold out means "cannot fit one more ticket at its included composition",
+ *  not "available is zero": a family ticket needing two seats is gone when
+ *  one seat is left. */
+function soldOut(tk: TicketOption): boolean {
+  return tk.available < seatsOf(tk, defaultAddOns(tk));
+}
+
 /** One line per ticket for assistive tech and for the dropdown: day, time,
  *  round, price. "รอบที่ 1" alone gives no way to tell which day it is. */
 function describe(tk: TicketOption): string {
@@ -95,6 +119,11 @@ export default function TicketPurchase({
   const [failed, setFailed] = useState(false);
   const [boxes, setBoxes] = useState<Box[]>([{ id: 1, code: null, addOns: {} }]);
   const [nextId, setNextId] = useState(2);
+  /** Why a stepper tap did nothing, shown under that row for a moment. The
+   *  buttons at a bound stay tappable so the answer arrives where the buyer is
+   *  looking, instead of a greyed button they have to puzzle over. */
+  const [notice, setNotice] = useState<{ boxId: number; code: string; text: string } | null>(null);
+  const noticeTimer = useRef<number | null>(null);
   const [modalOpen, setModalOpen] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   /** Chat-checkout link for the current selection. Kept keyed by `sig` so a
@@ -129,13 +158,13 @@ export default function TicketPurchase({
       .then((res) => (res.ok ? res.json() : Promise.reject()))
       .then(
         (data: {
-          tickets: (Omit<TicketOption, "addOns"> & { addOns?: TicketAddOn[] })[];
+          tickets: TicketOption[];
           refundPolicy: RefundPolicy | null;
           paymentMethods: PaymentMethod[];
           purchaseForm: PurchaseFormField[];
         }) => {
           if (!alive) return;
-          const list = data.tickets.map((tk) => ({ ...tk, addOns: tk.addOns ?? [] }));
+          const list = data.tickets;
           setTickets(list);
           setRefundPolicy(data.refundPolicy);
           setPaymentMethods(data.paymentMethods ?? []);
@@ -143,7 +172,7 @@ export default function TicketPurchase({
           // The first ticket starts on the first session still on sale, so the
           // card reads as a ticket from the outset; the session is changeable
           // from its header.
-          const first = list.find((tk) => tk.available > 0);
+          const first = list.find((tk) => !soldOut(tk));
           if (first) setBoxes([{ id: 1, code: first.code, addOns: defaultAddOns(first) }]);
         },
       )
@@ -158,15 +187,21 @@ export default function TicketPurchase({
   const byCode = new Map((tickets ?? []).map((tk) => [tk.code, tk]));
   const optionOf = (box: Box) => (box.code ? byCode.get(box.code) : undefined);
 
-  /** Per-order cap for one session: the organizer's limit, or what's left. */
-  const maxOf = (tk: TicketOption) => Math.min(tk.limitPerOrder, tk.available);
   /** How many OTHER cards already sit on this session. */
   const othersOn = (code: string, exceptId: number) =>
     boxes.filter((b) => b.code === code && b.id !== exceptId).length;
+  /** Stock the OTHER cards on this session already take, in its own unit. */
+  const stockUsedBy = (tk: TicketOption, exceptId: number) =>
+    boxes
+      .filter((b) => b.code === tk.code && b.id !== exceptId)
+      .reduce((sum, b) => sum + seatsOf(tk, b.addOns), 0);
+  /** Whether a card can sit on this session: under the per-order limit, and
+   *  with room for a fresh ticket at its included composition. */
   const canPick = (tk: TicketOption, box: Box) =>
-    tk.available > 0 && othersOn(tk.code, box.id) < maxOf(tk);
+    othersOn(tk.code, box.id) < tk.limitPerOrder &&
+    stockUsedBy(tk, box.id) + seatsOf(tk, defaultAddOns(tk)) <= tk.available;
   /** Another card is only offered while some session can still take one. */
-  const canAdd = (tickets ?? []).some((tk) => othersOn(tk.code, -1) < maxOf(tk));
+  const canAdd = (tickets ?? []).some((tk) => canPick(tk, { id: -1, code: null, addOns: {} }));
 
   const chosen = boxes.filter((b) => b.code !== null);
   const total = chosen.reduce((sum, b) => {
@@ -182,6 +217,22 @@ export default function TicketPurchase({
   const payload: TicketBoxPayload[] = chosen.map((b) => ({ code: b.code!, addOns: b.addOns }));
   const sig = JSON.stringify(payload);
 
+  /** Per-unit questions for the card path: one group per unit of every add-on
+   *  that asks something, in basket order, headed "บัตรใบที่ 1 · เด็ก 2". */
+  const unitGroups: UnitGroup[] = boxes.flatMap((box, index) => {
+    const tk = optionOf(box);
+    if (!tk) return [];
+    return tk.addOns.flatMap((a) => {
+      if (!a.fields?.length) return [];
+      const qty = box.addOns[a.code] ?? a.included;
+      return Array.from({ length: qty }, (_, i) => ({
+        id: `${box.id}:${a.code}:${i}`,
+        heading: `${t("ticketNo")} ${index + 1} · ${a.name} ${qty > 1 ? i + 1 : ""}`.trim(),
+        fields: a.fields!,
+      }));
+    });
+  });
+
   function pickSession(id: number, code: string) {
     setBoxes((bs) =>
       bs.map((b) =>
@@ -191,14 +242,33 @@ export default function TicketPurchase({
     );
   }
 
+  function showNotice(boxId: number, code: string, text: string) {
+    if (noticeTimer.current) window.clearTimeout(noticeTimer.current);
+    setNotice({ boxId, code, text });
+    noticeTimer.current = window.setTimeout(() => setNotice(null), 3000);
+  }
+
   function stepAddOn(id: number, addOn: TicketAddOn, delta: number) {
+    const box = boxes.find((b) => b.id === id);
+    if (!box) return;
+    const cur = box.addOns[addOn.code] ?? addOn.included;
+    const next = cur + delta;
+    if (next < addOn.included) {
+      return showNotice(id, addOn.code, t("addOnIncluded").replace("{n}", String(addOn.included)));
+    }
+    if (next > addOn.max) {
+      return showNotice(id, addOn.code, t("addOnLimit").replace("{n}", String(addOn.max)));
+    }
+    // A seat-counted option can run out mid-ticket: the fourth child needs a
+    // fifth seat that may not be there.
+    const tk = optionOf(box);
+    if (tk && addOn.countsAsSeat && tk.capacityUnit === "seats" && delta > 0) {
+      const wanted = stockUsedBy(tk, id) + seatsOf(tk, { ...box.addOns, [addOn.code]: next });
+      if (wanted > tk.available) return showNotice(id, addOn.code, t("notEnoughSeats"));
+    }
+    setNotice(null);
     setBoxes((bs) =>
-      bs.map((b) => {
-        if (b.id !== id) return b;
-        const cur = b.addOns[addOn.code] ?? addOn.included;
-        const next = Math.min(addOn.max, Math.max(addOn.included, cur + delta));
-        return { ...b, addOns: { ...b.addOns, [addOn.code]: next } };
-      }),
+      bs.map((b) => (b.id === id ? { ...b, addOns: { ...b.addOns, [addOn.code]: next } } : b)),
     );
   }
 
@@ -258,13 +328,25 @@ export default function TicketPurchase({
     }, 1200);
   }
 
-  async function confirmOrder(answers: PurchaseAnswers): Promise<string | null> {
+  async function confirmOrder(answers: PurchaseAnswers, units: UnitAnswers): Promise<string | null> {
     setSubmitting(true);
     try {
+      // Fold the dialog's flat unit answers back onto their boxes: add-on code
+      // → one record per unit, in order.
+      const withUnits: TicketBoxPayload[] = chosen.map((b) => {
+        const tk = optionOf(b)!;
+        const perAddOn: NonNullable<TicketBoxPayload["units"]> = {};
+        for (const a of tk.addOns) {
+          if (!a.fields?.length) continue;
+          const qty = b.addOns[a.code] ?? a.included;
+          perAddOn[a.code] = Array.from({ length: qty }, (_, i) => units[`${b.id}:${a.code}:${i}`] ?? {});
+        }
+        return { code: b.code!, addOns: b.addOns, units: perAddOn };
+      });
       const res = await fetch("/api/orders", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ slug, answers, boxes: payload, theme: readTheme() }),
+        body: JSON.stringify({ slug, answers, boxes: withUnits, theme: readTheme() }),
       });
       const data = (await res.json()) as {
         checkoutUrl?: string | null;
@@ -390,6 +472,10 @@ export default function TicketPurchase({
                       {time && <p className="text-xs text-ink/60">{[tk.group, tk.name].filter(Boolean).join(" · ")}</p>}
                       {switchable && <p className={`mt-0.5 text-xs ${c.text}`}>{t("tapToChangeSession")}</p>}
                     </>
+                  ) : tickets.every(soldOut) ? (
+                    // Nothing on sale fits even one more ticket: say so rather
+                    // than offer a picker with every round greyed out.
+                    <p className="font-display text-base text-tomato">{t("eventFull")}</p>
                   ) : (
                     <>
                       <p className={`font-display text-xs ${c.text}`}>{label}</p>
@@ -399,7 +485,7 @@ export default function TicketPurchase({
                       </p>
                     </>
                   )}
-                  {(switchable || !tk) && (
+                  {(switchable || !tk) && !tickets.every(soldOut) && (
                     <select
                       value={box.code ?? ""}
                       onChange={(e) => e.target.value && pickSession(box.id, e.target.value)}
@@ -413,7 +499,7 @@ export default function TicketPurchase({
                         const enabled = box.code === opt.code || canPick(opt, box);
                         const price = opt.price === 0 ? t("free") : baht(opt.price);
                         const note =
-                          opt.available === 0
+                          soldOut(opt)
                             ? t("soldOut")
                             : !enabled
                               ? t("limitReached")
@@ -450,65 +536,71 @@ export default function TicketPurchase({
                 </div>
               </div>
 
-              <div className="mx-3 border-t-2 border-dashed border-ink/10" />
-
               {/* Below the perforation: what this one ticket is made of. A
-                  plain ticket shows its stock line instead, as before. */}
-              {tk && tk.addOns.length === 0 && (
-                <p className="p-3 pt-2 text-right text-xs text-ink/50">
-                  {tk.available <= 10
-                    ? `${tk.available} ${t("ticketsLeft")}`
-                    : `${tk.limitPerOrder} ${t("perOrderLimit")}`}
-                </p>
+                  plain ticket only warns when stock is low; the per-order
+                  limit is not announced — the buyer meets it when the picker
+                  greys a round out. No perforation when nothing sits under it. */}
+              {tk && tk.addOns.length === 0 && tk.available <= 10 && (
+                <>
+                  <div className="mx-3 border-t-2 border-dashed border-ink/10" />
+                  <p className="p-3 pt-2 text-right text-xs text-ink/50">
+                    {tk.available} {t("ticketsLeft")}
+                  </p>
+                </>
               )}
               {tk && tk.addOns.length > 0 && (
                 <>
+                  <div className="mx-3 border-t-2 border-dashed border-ink/10" />
                   <ul className="space-y-2 p-3 pt-2">
                     {tk.addOns.map((a) => {
                       const qty = box.addOns[a.code] ?? a.included;
-                      const fixed = a.included === a.max;
                       const extra = Math.max(0, qty - a.included) * a.extraPrice;
                       const spoken = `${a.name} — ${label}`;
-                      // One quiet line under the name: what this row costs
-                      // right now. Nothing above what's included reads as
-                      // "included"; extras read as their added cost.
-                      const cost =
-                        qty <= a.included
-                          ? t("included")
-                          : a.extraPrice === 0
-                            ? t("free")
-                            : `+${baht(extra)}`;
+                      // The row is silent at what the ticket includes; only
+                      // extras get a price line. Why a tap at a bound did
+                      // nothing arrives as a notice under the row instead.
+                      const price = extra > 0 ? `+${baht(extra)}` : qty > a.included ? t("free") : "";
+                      const priceTone = `font-display ${c.text}`;
+                      const atMin = qty <= a.included;
+                      const atMax = qty >= a.max;
+                      const rowNotice =
+                        notice && notice.boxId === box.id && notice.code === a.code ? notice.text : null;
                       return (
-                        <li key={a.code} className="flex items-center justify-between gap-2">
-                          <span className="min-w-0">
-                            <span className="block font-display text-sm text-ink">{a.name}</span>
-                            <span className={`block text-xs ${extra > 0 ? `font-display ${c.text}` : "text-ink/50"}`}>
-                              {cost}
+                        <li key={a.code}>
+                          <div className="flex items-center justify-between gap-2">
+                            <span className="min-w-0">
+                              <span className="block font-display text-sm text-ink">{a.name}</span>
+                              {price && <span className={`block text-xs ${priceTone}`}>{price}</span>}
                             </span>
-                          </span>
-                          <span className="flex items-center gap-2">
-                            <button
-                              type="button"
-                              aria-label={`${t("quantity")} − ${spoken}`}
-                              disabled={fixed || qty <= a.included}
-                              onClick={() => stepAddOn(box.id, a, -1)}
-                              className={`${stepBtn} border-ink/15 text-ink hover:border-ink/40`}
-                            >
-                              −
-                            </button>
-                            <span aria-live="polite" className="w-6 text-center font-display text-lg text-ink">
-                              {qty}
+                            <span className="flex items-center gap-2">
+                              <button
+                                type="button"
+                                aria-label={`${t("quantity")} − ${spoken}`}
+                                aria-disabled={atMin}
+                                onClick={() => stepAddOn(box.id, a, -1)}
+                                className={`${stepBtn} border-ink/15 text-ink hover:border-ink/40 ${atMin ? "opacity-30" : ""}`}
+                              >
+                                −
+                              </button>
+                              <span aria-live="polite" className="w-6 text-center font-display text-lg text-ink">
+                                {qty}
+                              </span>
+                              <button
+                                type="button"
+                                aria-label={`${t("quantity")} + ${spoken}`}
+                                aria-disabled={atMax}
+                                onClick={() => stepAddOn(box.id, a, 1)}
+                                className={`${stepBtn} ${qty > a.included ? `${c.border} ${c.text}` : "border-ink/15 text-ink hover:border-ink/40"} ${atMax ? "opacity-30" : ""}`}
+                              >
+                                +
+                              </button>
                             </span>
-                            <button
-                              type="button"
-                              aria-label={`${t("quantity")} + ${spoken}`}
-                              disabled={fixed || qty >= a.max}
-                              onClick={() => stepAddOn(box.id, a, 1)}
-                              className={`${stepBtn} ${qty > a.included ? `${c.border} ${c.text}` : "border-ink/15 text-ink hover:border-ink/40"}`}
-                            >
-                              +
-                            </button>
-                          </span>
+                          </div>
+                          {rowNotice && (
+                            <p role="status" className="mt-1 text-right text-xs text-tomato">
+                              {rowNotice}
+                            </p>
+                          )}
                         </li>
                       );
                     })}
@@ -628,6 +720,7 @@ export default function TicketPurchase({
         <AttendeeFormModal
           color={color}
           fields={purchaseForm}
+          unitGroups={unitGroups}
           submitting={submitting}
           onConfirm={confirmOrder}
           onClose={() => {

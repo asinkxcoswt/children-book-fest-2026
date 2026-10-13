@@ -58,11 +58,10 @@ function accountParam(): string {
   return `accountId=${encodeURIComponent(env("TICKET_ACCOUNT_ID"))}`;
 }
 
-/** ASSUMED API (not yet in CowTicket — see cow-ticket.llm.txt for the live
- *  contract). One add-on dimension of a ticket type: "adult", "child", "kit".
- *  Every ticket of this type carries `included` units of it at no extra cost,
- *  the buyer may raise it to `max`, and each unit above `included` costs
- *  `extraPrice`. `included === max` is a fixed, displayed-only component
+/** One add-on dimension of a ticket type: "adult", "child", "kit". Every
+ *  ticket of this type carries `included` units of it at no extra cost, the
+ *  buyer may raise it to `max`, and each unit above `included` costs
+ *  `extraPrice`. `included === max` is a fixed, display-only component
  *  (e.g. "1 adult"). A ticket type has 0–5 of these. */
 export interface TicketAddOn {
   code: string;
@@ -71,14 +70,27 @@ export interface TicketAddOn {
   max: number;
   /** Satang per unit above `included`. */
   extraPrice: number;
+  /** When the ticket type's `capacityUnit` is "seats", each unit of this
+   *  add-on takes one seat out of `available`. */
+  countsAsSeat?: boolean;
+  /** Questions asked once per UNIT of this add-on (three children, three name
+   *  boxes). Same grammar as the purchase form, minus "email". Answered on the
+   *  card path only — the LINE form collects them on the chat path. */
+  fields?: PurchaseFormField[];
 }
 
-/** ASSUMED API. Chosen add-on quantities describing EACH ticket in an order
- *  item (so an item with quantity 2 is two identical tickets). Absolute
- *  quantities, never deltas — `qty` lies in [included, max]. */
+/** Chosen add-on quantities describing EACH ticket in an order item (so an
+ *  item with quantity 2 is two identical tickets). Absolute quantities, never
+ *  deltas — `qty` lies in [included, max]. */
 export interface OrderItemAddOn {
   code: string;
   qty: number;
+}
+
+/** Per-unit answers for one ticket: add-on code → one record per unit, in
+ *  order, keyed by field key. */
+export interface OrderItemUnit {
+  addOns: Record<string, Record<string, string>[]>;
 }
 
 export interface OrderItemInput {
@@ -86,6 +98,9 @@ export interface OrderItemInput {
   quantity: number;
   /** Omitted when the ticket type has no add-ons. */
   addOns?: OrderItemAddOn[];
+  /** One entry per ticket (so `quantity` of them), only when an add-on asks
+   *  questions, and never on the chat path. */
+  units?: OrderItemUnit[];
   passDisplay?: PassDisplay;
 }
 
@@ -117,10 +132,14 @@ export interface TicketConfig {
    *  Asia/Bangkok. Prefer this over local timezone maths so our sections match
    *  the organizer's portal exactly. */
   sessionDate: string | null;
-  /** Live availability: quota − sold − reserved. Counted in tickets, not
-   *  people — a family ticket admitting four is one unit here. */
+  /** Live availability: quota − sold − reserved. What one ticket takes out
+   *  of it depends on `capacityUnit`. */
   available: number;
-  /** ASSUMED API — absent until the platform ships add-ons; treat as []. */
+  /** "tickets" (default): one unit per ticket. "seats": a ticket takes the
+   *  sum of its seat-counting add-ons' quantities — a family ticket with
+   *  three children needs four. */
+  capacityUnit?: "tickets" | "seats";
+  /** Always present on the storefront read; [] when none. */
   addOns?: TicketAddOn[];
 }
 

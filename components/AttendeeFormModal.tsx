@@ -9,6 +9,27 @@ import { t, DEFAULT_LOCALE } from "@/lib/i18n";
 /** Answers keyed by the organizer's field keys. */
 export type PurchaseAnswers = Record<string, string>;
 
+/** One unit of an add-on that asks questions — the third child on the second
+ *  ticket, say. `id` is the caller's handle; `heading` is what the buyer sees
+ *  above its fields. */
+export interface UnitGroup {
+  id: string;
+  heading: string;
+  fields: PurchaseFormField[];
+}
+
+/** Per-unit answers, keyed by `UnitGroup.id` then field key. */
+export type UnitAnswers = Record<string, PurchaseAnswers>;
+
+/** Every question in the dialog, order-level and per-unit alike, flattened to
+ *  one list so focus, validation and rendering treat them the same. `id` is
+ *  unique across the dialog; `unit` is set for per-unit entries. */
+interface Prompt {
+  id: string;
+  field: PurchaseFormField;
+  unit?: { groupId: string; heading: string; first: boolean };
+}
+
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 type FieldErrors = Record<string, string | undefined>;
@@ -34,19 +55,34 @@ function autoCompleteOf(field: PurchaseFormField): string {
 export default function AttendeeFormModal({
   color,
   fields,
+  unitGroups = [],
   submitting,
   onConfirm,
   onClose,
 }: {
   color: ColorToken;
   fields: PurchaseFormField[];
+  /** Per-unit questions from the add-ons in the basket, in basket order. */
+  unitGroups?: UnitGroup[];
   submitting: boolean;
-  onConfirm: (answers: PurchaseAnswers) => Promise<string | null>;
+  onConfirm: (answers: PurchaseAnswers, units: UnitAnswers) => Promise<string | null>;
   onClose: () => void;
 }) {
   const c = tokenClasses(color);
+  // Order-level prompts keep their bare key as id, so nothing about the
+  // original single-form behaviour changes; unit prompts are namespaced.
+  const prompts: Prompt[] = [
+    ...fields.map((field) => ({ id: field.key, field })),
+    ...unitGroups.flatMap((g) =>
+      g.fields.map((field, i) => ({
+        id: `${g.id}.${field.key}`,
+        field,
+        unit: { groupId: g.id, heading: g.heading, first: i === 0 },
+      })),
+    ),
+  ];
   const [answers, setAnswers] = useState<PurchaseAnswers>(() =>
-    Object.fromEntries(fields.map((f) => [f.key, ""])),
+    Object.fromEntries(prompts.map((p) => [p.id, ""])),
   );
   const [error, setError] = useState<string | null>(null);
   const [fieldErrors, setFieldErrors] = useState<FieldErrors>({});
@@ -86,13 +122,13 @@ export default function AttendeeFormModal({
   /** Per-field messages, driven by the organizer's own `required` flags. */
   function validate(current: PurchaseAnswers): FieldErrors {
     const found: FieldErrors = {};
-    for (const f of fields) {
-      const value = (current[f.key] ?? "").trim();
+    for (const { id, field: f } of prompts) {
+      const value = (current[id] ?? "").trim();
       if (!value) {
-        if (f.required) found[f.key] = t("errRequired");
+        if (f.required) found[id] = t("errRequired");
         continue; // optional and blank is fine
       }
-      if (f.type === "email" && !EMAIL_RE.test(value)) found[f.key] = t("errEmail");
+      if (f.type === "email" && !EMAIL_RE.test(value)) found[id] = t("errEmail");
     }
     return found;
   }
@@ -103,14 +139,23 @@ export default function AttendeeFormModal({
     // Never block on a disabled button — say what's wrong and focus it instead.
     const found = validate(answers);
     setFieldErrors(found);
-    const firstBad = fields.find((f) => found[f.key])?.key;
+    const firstBad = prompts.find((p) => found[p.id])?.id;
     if (firstBad) {
       setError(t("errFixFields"));
       document.getElementById(`af-${firstBad}`)?.focus();
       return;
     }
     setError(null);
-    const message = await onConfirm(answers);
+    // Split the flat answer map back into the two shapes the order wants.
+    const orderAnswers: PurchaseAnswers = Object.fromEntries(
+      fields.map((f) => [f.key, answers[f.key] ?? ""]),
+    );
+    const units: UnitAnswers = {};
+    for (const p of prompts) {
+      if (!p.unit) continue;
+      (units[p.unit.groupId] ??= {})[p.field.key] = answers[p.id] ?? "";
+    }
+    const message = await onConfirm(orderAnswers, units);
     if (message) setError(message);
   }
 
@@ -142,21 +187,25 @@ export default function AttendeeFormModal({
 
         {/* noValidate: our bilingual messages replace the browser's own bubbles. */}
         <form onSubmit={submit} noValidate aria-busy={submitting} className="space-y-4">
-          {fields.map((f, i) => {
-            const fieldError = fieldErrors[f.key];
-            const describedBy = fieldError ? `af-${f.key}-error` : undefined;
+          {prompts.map(({ id, field: f, unit }, i) => {
+            const fieldError = fieldErrors[id];
+            const describedBy = fieldError ? `af-${id}-error` : undefined;
             const shared = {
-              id: `af-${f.key}`,
+              id: `af-${id}`,
               "aria-invalid": fieldError ? true : undefined,
               "aria-describedby": describedBy,
-              value: answers[f.key] ?? "",
+              value: answers[id] ?? "",
               className: `mt-1 w-full rounded-xl border-2 bg-paper px-3 py-2 text-base focus:outline-none ${
                 fieldError ? "border-tomato focus:border-tomato" : "border-ink/15 focus:border-ink/40"
               }`,
             };
             return (
-              <div key={f.key}>
-                <label htmlFor={`af-${f.key}`} className="block text-sm text-ink/70">
+              <div key={id}>
+                {/* A heading opens each unit's block: "บัตรใบที่ 1 · เด็ก 2". */}
+                {unit?.first && (
+                  <p className={`mb-1 mt-2 font-display text-sm ${c.text}`}>{unit.heading}</p>
+                )}
+                <label htmlFor={`af-${id}`} className="block text-sm text-ink/70">
                   {labelOf(f)}
                 </label>
                 {f.type === "select" ? (
@@ -164,7 +213,7 @@ export default function AttendeeFormModal({
                     {...shared}
                     ref={i === 0 ? (firstFieldRef as React.Ref<HTMLSelectElement>) : undefined}
                     disabled={submitting}
-                    onChange={(e) => update(f.key, e.target.value)}
+                    onChange={(e) => update(id, e.target.value)}
                   >
                     <option value="">—</option>
                     {(f.options ?? []).map((opt) => (
@@ -180,15 +229,15 @@ export default function AttendeeFormModal({
                     type={f.type}
                     autoComplete={autoCompleteOf(f)}
                     readOnly={submitting}
-                    onChange={(e) => update(f.key, e.target.value)}
+                    onChange={(e) => update(id, e.target.value)}
                     onBlur={() => {
-                      const message = validate(answers)[f.key];
-                      if (message) setFieldErrors((prev) => ({ ...prev, [f.key]: message }));
+                      const message = validate(answers)[id];
+                      if (message) setFieldErrors((prev) => ({ ...prev, [id]: message }));
                     }}
                   />
                 )}
                 {fieldError && (
-                  <p id={`af-${f.key}-error`} className="mt-1 text-xs text-tomato">
+                  <p id={`af-${id}-error`} className="mt-1 text-xs text-tomato">
                     {fieldError}
                   </p>
                 )}

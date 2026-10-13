@@ -84,7 +84,7 @@ export async function POST(request: NextRequest) {
 
     // Add-on ranges and per-order limits are re-checked against a fresh read:
     // the browser only drew the steppers, the platform owns the rules.
-    const resolved = resolveBoxes(boxes, tickets);
+    const resolved = resolveBoxes(boxes, tickets, { collectUnits: true });
     if ("error" in resolved) {
       return NextResponse.json({ error: "invalid form data" }, { status: 400 });
     }

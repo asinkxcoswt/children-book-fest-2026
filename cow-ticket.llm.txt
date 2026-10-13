@@ -16,8 +16,11 @@ All prices/amounts are in satang (Thai Baht × 100). Currency is THB only.
 Every API key has a type ("customer", "organizer" or "admin") and a set of permission
 scopes, both fixed when the key is created. Selling (the flow below) needs a customer
 token; managing events and ticket options needs an admin-type key carrying the
-"events:manage" scope — see "Managing events and ticket options". Ask the user which
-kind of key they handed you; a key cannot be upgraded afterwards.
+"events:manage" scope — see "Managing events and ticket options". The key-creation form
+calls these "Storefront" (a customer-type key, sell-only) and "Management" (an
+admin-type key with chosen scopes) — if the integration only sells tickets, tell the
+user a Storefront key is enough. Ask the user which kind of key they handed you; a key
+cannot be upgraded afterwards.
 
 Keep the API key server-side only (environment variables). Never expose the API key or
 the JWT below to browser code; proxy CowTicket calls through the storefront's backend.
@@ -47,7 +50,9 @@ one as the token, or it returns 401. There is no per-buyer identity anywhere in 
     GET /events/ticketConfigs?accountId=<ACCOUNT_ID>&eventCode=<eventCode>
     → { "data": [ { "id", "eventCode", "code", "name", "group", "price", "currency",
                     "available", "limitPerOrder", "startSellingDate", "endSellingDate",
-                    "sessionStartAt", "sessionEndAt", "sessionDate" } ],
+                    "sessionStartAt", "sessionEndAt", "sessionDate", "capacityUnit",
+                    "addOns": [ { "code", "name", "included", "max", "extraPrice",
+                                  "countsAsSeat"?, "fields"? } ] } ],
         "total": n,
         "refundPolicy": { "allowed": bool, "termEn": str, "termTh": str },
         "paymentMethods": ["STRIPE"],
@@ -67,11 +72,18 @@ goes), a "type" ("text" | "tel" | "email" | "select"; "select" carries "options"
 "required", and both "labelTh" and "labelEn" — pick the label by your reader's language.
 Send the answers as "metadata" on POST /orders, keyed by "key". One key is special:
 "principal" is the attendee name, so send that one as passDisplay.principal too (see
-below). Most events have no form configured; the resolved default depends on payment
+below); even if you only put it in "metadata", it still becomes each ticket's holder
+name (what gate staff search by). An answer to an "email"-type field is likewise
+lifted onto the order itself when no top-level "email" was sent, so the buyer still
+gets the confirmation email and support can look the order up by address. Most events have no form configured; the resolved default depends on payment
 methods — an event selling by card gets one required email field (Stripe needs a receipt
 address), an event selling only through chat gets no questions at all. A field marked
 "auto": true was added by the platform rather than the organizer — render it exactly
 like any other field.
+
+The purchase form is asked once per ORDER. Questions about the people inside a ticket
+(each child's name on a family ticket) are not form fields — they belong to the add-on,
+see "fields" under "Per-ticket add-ons" below.
 
 "paymentMethods" lists the checkout paths the organizer enabled, and it decides which
 buttons you render:
@@ -121,12 +133,59 @@ event it is the only thing telling two otherwise identical tickets apart, and a 
 who reads "10:00–10:30" with no date can arrive on the wrong day and be turned away
 at the gate.
 
+### Per-ticket add-ons
+"addOns" on a ticket option (always present, [] when none, array order = display order)
+describes components the buyer adjusts INSIDE one ticket — a family ticket that admits
+1 adult + 1 child, with extra children at ฿50 each:
+
+    "addOns": [ { "code": "adult", "name": "ผู้ใหญ่", "included": 1, "max": 1, "extraPrice": 0 },
+                { "code": "child", "name": "เด็ก",    "included": 1, "max": 4, "extraPrice": 5000,
+                  "fields": [ { "key": "name", "type": "text", "required": true,
+                                "labelTh": "ชื่อ", "labelEn": "Name" } ] } ]
+
+- "included" units come with every ticket at no cost; "max" is the per-ticket ceiling;
+  "extraPrice" (satang) is charged per unit ABOVE included. max == included is a fixed,
+  display-only component — render it, do not offer a stepper.
+- Unit price = price + Σ max(0, qty − included) × extraPrice. Compute it for display
+  only; the amount CowTicket charges is the one it computes.
+- One ticket with add-ons is still ONE ticket: one QR, one unit of "limitPerOrder".
+  Capacity depends on the option's "capacityUnit": "tickets" (default — one unit of
+  "available" per ticket) or "seats" (an add-on carries "countsAsSeat": true; a ticket
+  then takes the SUM of its seat-counting add-ons' quantities out of "available").
+  Before offering a quantity, compute seats = Σ qty of add-ons with countsAsSeat and
+  check seats × quantity ≤ available — a family ticket with 3 children needs 4 seats,
+  and POST /orders refuses it as sold out when fewer remain.
+- When ordering, send "addOns": [ { "code", "qty" } ] per item with ABSOLUTE
+  quantities in [included, max]. Omitted add-ons default to "included". Two tickets
+  with different compositions are two items with the same "code" — that is allowed,
+  and "limitPerOrder" applies to the sum of their quantities. Sending "addOns" for a
+  ticket option that has none, an unknown code, or a qty out of range is a 400 with a
+  readable reason, and nothing is reserved.
+- Each ticket in GET /orders/detail carries its composition ("addOns" on items[] and
+  tickets[], snapshotted at purchase — later edits to the ticket option never change
+  a placed order), so show "ผู้ใหญ่ 1 · เด็ก 3" wherever you show the ticket.
+- "fields" (optional, ≤ 5, same grammar as purchaseForm minus "email") are questions
+  asked once per UNIT of that add-on: three children means three name boxes, and the
+  count follows the basket. Send the answers as "units" on the item, one entry per
+  ticket, keyed by add-on code — never in "metadata":
+
+      "items": [ { "code": "family", "quantity": 2, "addOns": [ { "code": "child", "qty": 3 } ],
+                   "units": [ { "addOns": { "child": [ { "name": "A" }, { "name": "B" }, { "name": "C" } ] } },
+                              { "addOns": { "child": [ ... ] } } ] } ]
+
+  Required questions must be answered for every unit or POST /orders is a 400 (nothing
+  reserved); optional ones may be blank. Each ticket in GET /orders/detail then carries
+  its own "attendees" copy. On the chat path the CowTicket form inside LINE draws all of
+  this — you send nothing.
+
 ### Create an order
     POST /orders
     { "accountId": "<ACCOUNT_ID>",
       "eventCode": "<eventCode>",
       "email": "<buyer email>",
       "items": [ { "code": "<ticketConfig code>", "quantity": n,
+                   "addOns": [ { "code": "child", "qty": 3 } ],        // only if the option has add-ons
+                   "units": [ ... ],                                   // only if an add-on asks questions
                    "passDisplay": { ... } } ],                         // 1–20 items
       "metadata": { ...any buyer form answers... },                    // optional
       "returnUrl": "<absolute URL back into your site>",               // optional
@@ -167,6 +226,7 @@ at the gate.
     { "accountId": "<ACCOUNT_ID>",
       "eventCode": "<eventCode>",
       "items": [ { "code": "<ticketConfig code>", "quantity": n,
+                   "addOns": [ { "code": "child", "qty": 3 } ],        // as in POST /orders
                    "passDisplay": { ... } } ],                         // 1–20 items
       "metadata": { ...answers already collected on your form... },    // optional
       "returnUrl": "<absolute URL back into your site>",               // optional
@@ -203,6 +263,13 @@ delivery. Notes:
   costs nothing.
 - Orders born here come back from GET /orders/detail with "paymentMethod":
   "PROMPTPAY" (or "FREE"), possibly "email": null, and "buyerName" from LINE.
+- **Add-ons on this path:** send "addOns": [ { "code", "qty" } ] per item exactly as
+  for POST /orders, if your page lets the buyer choose them (a family ticket's child
+  count). Apply the same capacity check first ("capacityUnit": "seats" → seats ×
+  quantity ≤ available). Do NOT send "units": the add-ons' per-unit questions (child
+  names, sizes) are asked by the CowTicket form inside LINE, after the buyer taps
+  through — your page never collects them. Sending an intent with no "addOns" for an
+  option that has them is fine: every add-on starts at its "included" count.
 
 ### After payment — you do not build a ticket page
 
@@ -275,7 +342,8 @@ the organizer's own app handles scanning.
 
 ## The flow to implement on the storefront
 
-1. Ticket page: GET /events/ticketConfigs → render the ticket options in the given
+1. Ticket page: GET /events/ticketConfigs → render the ticket options (and, per option,
+   its "addOns" as steppers between "included" and "max", pricing extras per unit) in the given
    order (sectioned by "group" when present), prices (satang → ฿ divide by 100),
    availability, and the refund policy text. Respect limitPerOrder.
 2. Checkout: render "purchaseForm" and collect exactly those fields, send the answers as
@@ -370,7 +438,8 @@ This is how you reconcile: read what exists, then create/update/archive to match
     → { "data": [ { "id", "code", "name", "group", "price", "currency", "quantity",
                     "sold", "reserved", "limitPerOrder", "status",
                     "startSellingDate", "endSellingDate",
-                    "sessionStartAt", "sessionEndAt", "sessionDate", "sortOrder" } ], "total": n }
+                    "sessionStartAt", "sessionEndAt", "sessionDate", "sortOrder",
+                    "addOns": [ { "code", "name", "included", "max", "extraPrice" } ] | null } ], "total": n }
 The merchant view of ticket options — unlike GET /events/ticketConfigs it includes HIDDEN
 ones, raw counters and the "id" you need to update a row. Match your own ticket types to
 these by "code" and keep the returned "id".
@@ -384,7 +453,9 @@ these by "code" and keep the returned "id".
       "sessionStartAt": "2026-03-14T10:00:00Z",     // optional — when it ADMITS you
       "sessionEndAt": "2026-03-14T10:30:00Z",       // optional; needs sessionStartAt
       "status": "ACTIVE",                    // or "HIDDEN"; default ACTIVE
-      "group": "Ringside" }                  // optional section label (not time)
+      "group": "Ringside",                   // optional section label (not time)
+      "addOns": [ { "code"?, "name", "included", "max", "extraPrice", "countsAsSeat"?,
+                    "fields"?: [ { "key", "type", "required", "labelTh", "labelEn", "options"? } ] } ] }  // optional, ≤ 5
     → the created ticket option
 "code" is unique within the event and is what POST /orders references. Omit it and
 one is generated for you (and retried until unique) — send your own only if you
@@ -394,10 +465,14 @@ need to choose it, in which case reusing an existing code is refused.
     { "accountId", "id": "<ticketConfig id>",       // the id, NOT the code
       ...any of: name, price, quantity, limitPerOrder,
                  startSellingDate, endSellingDate,
-                 sessionStartAt, sessionEndAt, status, group }
+                 sessionStartAt, sessionEndAt, status, group, addOns }
     → the updated ticket option
 "code" and "eventCode" are immutable — a ticket option cannot move between events. Lowering
 "quantity" below sold + reserved is refused: sold tickets can never be un-sold.
+"addOns" REPLACES the whole list ([] clears it). Add-on codes are lowercase
+^[a-z][a-z0-9_]*$ and are generated when omitted; an add-on that any order already
+includes cannot be removed or have its code changed (its name, included, max and
+extraPrice can — they only affect new orders). At most 5 per ticket option.
 
     DELETE /ticketConfigs?accountId=<ACCOUNT_ID>&id=<ticketConfig id>
     → the deleted ticket option

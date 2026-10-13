@@ -46,7 +46,8 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "chat checkout is not available" }, { status: 400 });
     }
 
-    const resolved = resolveBoxes(boxes, tickets);
+    // Per-unit questions (child names) are asked by the LINE form, never sent.
+    const resolved = resolveBoxes(boxes, tickets, { collectUnits: false });
     if ("error" in resolved) {
       return NextResponse.json({ error: "invalid form data" }, { status: 400 });
     }
