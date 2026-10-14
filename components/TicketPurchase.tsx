@@ -99,17 +99,9 @@ function describe(tk: TicketOption): string {
  *  picks its session, adjusts its add-ons (extra children, kits…) and adds
  *  another card for another ticket. Attendee details come in a confirmation
  *  modal; the order is created through our own API routes and paid on Stripe
- *  Checkout or in LINE. Falls back to the external link if the ticket service
- *  is unreachable. */
-export default function TicketPurchase({
-  slug,
-  color,
-  fallbackUrl,
-}: {
-  slug: string;
-  color: ColorToken;
-  fallbackUrl: string;
-}) {
+ *  Checkout or in LINE. Shows an unavailable notice if the ticket service is
+ *  unreachable. */
+export default function TicketPurchase({ slug, color }: { slug: string; color: ColorToken }) {
   const c = tokenClasses(color);
 
   const [tickets, setTickets] = useState<TicketOption[] | null>(null);
@@ -373,20 +365,8 @@ export default function TicketPurchase({
   }
 
   if (failed) {
-    // Ticket service unreachable — fall back to the external registration link.
-    return (
-      <div>
-        <p className="text-sm text-ink/60">{t("ticketsUnavailable")}</p>
-        <a
-          href={fallbackUrl}
-          target="_blank"
-          rel="noopener noreferrer"
-          className={`mt-3 inline-flex items-center gap-2 rounded-full px-7 py-3 text-lg ${c.bg} ${c.on}`}
-        >
-          {t("register")} <span aria-hidden>↗</span>
-        </a>
-      </div>
-    );
+    // Ticket service unreachable — nothing to link to, so just say so.
+    return <p className="text-sm text-ink/60">{t("ticketsUnavailable")}</p>;
   }
 
   if (!tickets) {

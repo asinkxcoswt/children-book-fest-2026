@@ -9,7 +9,6 @@
     "en": "Three days of stories, illustration, and play for children, parents, and educators." },
   "browseZones": { "th": "เลือกชมตามโซน", "en": "Browse the zones" },
   "exploreEvents": { "th": "เลือกชมกิจกรรม", "en": "Explore events" },
-  "featuredEvents": { "th": "กิจกรรมแนะนำ", "en": "Featured events" },
   "programmeByDay": { "th": "ตารางกิจกรรมรายวัน", "en": "Programme by day" },
   "morning": { "th": "เช้า", "en": "Morning" },
   "earlierDays": { "th": "วันก่อนหน้า", "en": "Earlier days" },
@@ -18,10 +17,6 @@
   "evening": { "th": "เย็น", "en": "Evening" },
   "allEvents": { "th": "กิจกรรมทั้งหมด", "en": "All events" },
   "eventsInZone": { "th": "กิจกรรมในโซนนี้", "en": "Events in this zone" },
-  "register": { "th": "ลงทะเบียน", "en": "Register" },
-  "registerExternalNote": {
-    "th": "การลงทะเบียนดำเนินการผ่านระบบภายนอก",
-    "en": "Registration is handled on an external system." },
   "viewEvent": { "th": "ดูรายละเอียด", "en": "View details" },
   "close": { "th": "ปิด", "en": "Close" },
   "allSessions": { "th": "รอบทั้งหมด", "en": "All sessions" },

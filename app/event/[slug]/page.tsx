@@ -5,7 +5,6 @@ import type { Metadata } from "next";
 import { getEvents, getEvent, getCategory, getSessionsByDate } from "@/lib/content";
 import { tokenClasses } from "@/lib/colors";
 import { t, pick, formatDate } from "@/lib/i18n";
-import RegisterCta from "@/components/RegisterCta";
 import TicketPurchase from "@/components/TicketPurchase";
 import WalkInNotice from "@/components/WalkInNotice";
 import ShareButton from "@/components/ShareButton";
@@ -129,14 +128,8 @@ export default async function V4Event({ params }: { params: Promise<{ slug: stri
               // ticket API call — the answer to "how do I get in" is static.
               <WalkInNotice color={category?.color ?? "peach"} />
             ) : event.ticketEventCode ? (
-              <TicketPurchase
-                slug={event.slug}
-                color={category?.color ?? "peach"}
-                fallbackUrl={event.registrationUrl}
-              />
-            ) : (
-              <RegisterCta url={event.registrationUrl} className={`${c.bg} ${c.on}`} />
-            )}
+              <TicketPurchase slug={event.slug} color={category?.color ?? "peach"} />
+            ) : null}
           </div>
         </aside>
       </div>

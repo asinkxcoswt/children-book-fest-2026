@@ -71,8 +71,6 @@ export interface FestivalEvent {
   /** Seats, if shown. */
   capacity?: number;
   gallery: GalleryImage[];
-  /** External registration system URL — fallback when the ticket service is unavailable. */
-  registrationUrl: string;
   /** Event code registered in the ticket platform. When set, the site sells tickets
    *  in-app through the ticket API instead of linking out. */
   ticketEventCode?: string;
@@ -82,6 +80,4 @@ export interface FestivalEvent {
    *  editorial flag — an empty ticket response alone also means "sales paused",
    *  which must NOT read as "free, walk in". */
   walkIn?: boolean;
-  /** Surfaced on home pages when true. */
-  featured?: boolean;
 }

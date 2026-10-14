@@ -29,10 +29,6 @@ export function getEvents(): FestivalEvent[] {
   return events;
 }
 
-export function getFeaturedEvents(): FestivalEvent[] {
-  return events.filter((e) => e.featured);
-}
-
 export function getEvent(slug: string): FestivalEvent | undefined {
   return events.find((e) => e.slug === slug);
 }
