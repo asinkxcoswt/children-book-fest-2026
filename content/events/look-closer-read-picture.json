@@ -1,0 +1,74 @@
+{
+  "slug": "look-closer-read-picture",
+  "thumbnail": "/content/events/look-closer-read-picture/poster-cliped.png",
+  "title": {
+    "th": "Look Closer Read Picture",
+    "en": ""
+  },
+  "summary": {
+    "th": "แบ่งปัน | ชวนดู | อวด หนังสือภาพ",
+    "en": ""
+  },
+  "description": {
+    "th": "\"สานอักษร\" และ \"Mappa\" เปิดพื้นที่รื่นรมย์สำหรับคน \"รัก\" หนังสือภาพ จะหิ้วเอามาแบ่งปัน หรือจะมายืมดูด้วยกันก็ได้ มาเจอกันได้เลย ^^",
+    "en": ""
+  },
+  "category": "author-talks",
+  "schedule": {
+    "venue": {
+      "th": "ห้อง MDIC",
+      "en": ""
+    },
+    "sessions": [
+      {
+        "date": "2026-11-28",
+        "start": "14:00",
+        "end": "15:50",
+        "ticketCodes": [
+          "20261128-1400"
+        ]
+      }
+    ]
+  },
+  "ageRange": "เด็กๆ | ครอบครัว | ผู้สนใจทั่วไป",
+  "capacity": 999,
+  "gallery": [
+    {
+      "src": "/content/events/look-closer-read-picture/poster-cliped.png",
+      "alt": {
+        "th": "เด็ก ๆ นั่งฟังนิทานรอบเวที",
+        "en": "Children gathered around the storytelling stage"
+      }
+    },
+    {
+      "src": "/content/events/bedtime-stories/storytelling-2.png",
+      "alt": {
+        "th": "ภาพจากหนังสือฉายบนจอใหญ่",
+        "en": "Picture-book art projected on a large screen"
+      }
+    },
+    {
+      "src": "/content/events/bedtime-stories/storytelling-2.png",
+      "alt": {
+        "th": "ภาพจากหนังสือฉายบนจอใหญ่",
+        "en": "Picture-book art projected on a large screen"
+      }
+    },
+    {
+      "src": "/content/events/bedtime-stories/storytelling-2.png",
+      "alt": {
+        "th": "ภาพจากหนังสือฉายบนจอใหญ่",
+        "en": "Picture-book art projected on a large screen"
+      }
+    },
+    {
+      "src": "/content/events/bedtime-stories/storytelling-2.png",
+      "alt": {
+        "th": "ภาพจากหนังสือฉายบนจอใหญ่",
+        "en": "Picture-book art projected on a large screen"
+      }
+    }
+  ],
+  "ticketEventCode": "cbf2026-look-closer-read-picture",
+  "walkIn": false
+}

@@ -28,8 +28,9 @@ const TAG = "children-book-fest-2026";
 /** Sessions are stored chronologically, so a session's index is the round
  *  number a buyer counts in. CowTicket requires a name, and this is the one
  *  thing that identifies a ticket without restating the day and time the
- *  session fields already carry. */
-const ticketNameFor = (index) => `รอบที่ ${index + 1}`;
+ *  session fields already carry. A single-session event has nothing to count,
+ *  so it reads "รอบเดียว" (one round only) instead of "รอบที่ 1". */
+const ticketNameFor = (index, total) => (total === 1 ? "รอบเดียว" : `รอบที่ ${index + 1}`);
 const PRICE = 1000; // satang = ฿10
 const LIMIT_PER_ORDER = 4;
 const DEFAULT_QUANTITY = 200;
@@ -40,16 +41,14 @@ const REFUND = {
   refundTermTh: "บัตรที่ซื้อแล้วไม่สามารถขอคืนเงินได้",
   refundTermEn: "All sales are final. Tickets are non-refundable.",
 };
-/** PromptPay is the path we optimise for — Thai buyers finish the purchase in a
- *  LINE chat, which also becomes their durable ticket inbox. Stripe stays on as
- *  the way in for anyone without LINE, so the storefront renders it as a quiet
- *  secondary link rather than a competing button. */
-const PAYMENT_METHODS = ["PROMPTPAY", "STRIPE"];
-/** The organizer's checkout questions. Keep this minimal: every required field
- *  is one more thing asked before a purchase can complete — in the chat for
- *  PromptPay buyers, and in the web modal for card buyers. "principal" is the
- *  reserved attendee-name key, and gate staff search by it. The platform adds a
- *  required email of its own for card orders, so we never list one here. */
+/** Starting values for a NEW event only. Payment methods and the checkout form
+ *  are the organizer's to edit in the CowTicket portal, so an existing event's
+ *  values are never compared or overwritten (see EVENT_FIELDS). PromptPay only:
+ *  Thai buyers finish the purchase in a LINE chat, which also becomes their
+ *  durable ticket inbox. */
+const PAYMENT_METHODS = ["PROMPTPAY"];
+/** Initial checkout questions for a new event. "principal" is the reserved
+ *  attendee-name key, and gate staff search by it. */
 const PURCHASE_FORM = [
   {
     key: "principal",
@@ -146,7 +145,7 @@ function desiredConfigs(event) {
   // Chronological: the API has no sort field, so creation order IS display order.
   return event.schedule.sessions.map((s, i) => ({
     code: s.ticketCodes[0],
-    name: ticketNameFor(i),
+    name: ticketNameFor(i, event.schedule.sessions.length),
     // The session is what admits you, and the platform now models it directly.
     // Do NOT put the date back into `group` — that field is for non-time
     // sections (zone, tier, package), which the storefront renders as the
@@ -162,9 +161,10 @@ function desiredConfigs(event) {
   }));
 }
 
-/** Fields we own. Anything not listed here is left to the organizer's app. */
-const EVENT_FIELDS = ["name", "refundAllowed", "refundTermTh", "refundTermEn",
-                      "paymentMethods", "purchaseForm"];
+/** Fields we own on an EXISTING event. Anything not listed here — including
+ *  paymentMethods and purchaseForm, which are only seeded at creation — is
+ *  left to the organizer's app. */
+const EVENT_FIELDS = ["name", "refundAllowed", "refundTermTh", "refundTermEn"];
 const CONFIG_FIELDS = ["name", "group", "price", "quantity", "limitPerOrder", "status",
                        "startSellingDate", "endSellingDate", "sessionStartAt", "sessionEndAt"];
 

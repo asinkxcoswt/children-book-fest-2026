@@ -99,13 +99,14 @@ export default async function V4Category({ params }: { params: Promise<{ slug: s
                 href={`/event/${ev.slug}`}
                 className="flex flex-col gap-4 rounded-2xl border-2 border-ink/10 p-4 transition-colors hover:border-ink/30 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ink focus-visible:ring-offset-2 sm:flex-row sm:items-center"
               >
-                <div aria-hidden className={`h-28 w-full shrink-0 rounded-xl ${c.bg} p-2 sm:w-44`}>
+                <div aria-hidden className="w-full shrink-0 overflow-hidden rounded-xl border-2 border-ink/10 sm:w-44">
                   <Image
                     src={ev.thumbnail}
                     alt=""
                     width={400}
                     height={400}
-                    className="h-full w-full rounded-2xl object-cover"
+                    sizes="(min-width: 640px) 11rem, 100vw"
+                    className="h-auto w-full"
                   />
                 </div>
                 <span className="flex-1">
