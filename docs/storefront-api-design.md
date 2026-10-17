@@ -7,13 +7,16 @@ Status: **superseded in part** (2026-10-17). Decisions so far:
   `checkoutUrl ?? ticketUrl`, as the CowTicket guide requires. Three routes
   remain to proxy, not four.
 - **Done (branch `static-export`): no publishable key in CowTicket.** The
-  three remaining proxies run as Cloudflare Pages Functions next to the static
+  three remaining proxies run inside a Cloudflare Worker next to the static
   export (see "Cloudflare proxy" below). The publishable-key design further
   down is kept as the longer-term platform feature, not current work.
 
 ## Cloudflare proxy (chosen for this site)
 
-A `functions/api/` folder deployed with the static `out/` on Cloudflare Pages:
+A Worker (`worker/index.ts`) that serves `out/` as static assets and routes
+`/api/*` to handlers in `functions/api/`. (It started as Cloudflare Pages
+Functions; the Cloudflare project turned out to be a Worker, which is also what
+Cloudflare now recommends, so the handlers were kept and a tiny router added.)
 
 - `functions/api/tickets.ts`, `functions/api/orders.ts`,
   `functions/api/orders/intent.ts` — ports of the three route handlers. They
@@ -33,13 +36,13 @@ A `functions/api/` folder deployed with the static `out/` on Cloudflare Pages:
 - Tooling: `wrangler` is a dev dependency; `pnpm preview` serves `out/` plus
   the functions locally, reading credentials from `.env.local`.
 
-### Deploying to Cloudflare Pages
+### Deploying to Cloudflare
 
 | Setting | Value |
 |---|---|
 | Build command | `pnpm build` |
 | Build output directory | `out` |
-| Functions | picked up automatically from `functions/` |
+| Deploy command | `npx wrangler deploy` (Workers Builds) |
 | Variables | `TICKET_API_URL`, `TICKET_ACCOUNT_ID`, `NEXT_PUBLIC_SITE_URL` |
 | Secrets | `TICKET_API_KEY` |
 | Node version | `NODE_VERSION=22` (or whatever `pnpm build` needs) |
@@ -154,7 +157,7 @@ preflights and the gateway list **must** contain the storefront origin.
 
 - Add `STOREFRONT_ORIGINS: string[]` to `stacks/configurations/{dev,test,prod}.ts`
   and spread it into `cors.allowOrigins` next to `MERCHANT_WEB_URL`. For the
-  festival: the Cloudflare Pages domain and its custom domain; `localhost:3000`
+  festival: the workers.dev domain and its custom domain; `localhost:3000`
   is already there for dev.
 - The per-key `allowedOrigins` check in the authorizer is the second layer: the
   gateway list is "which sites may talk to this API at all", the key list is

@@ -1,4 +1,4 @@
-/* The contract between the browser and our Cloudflare Pages Functions under
+/* The contract between the browser and our Cloudflare Worker's handlers under
  * /api. Shared by both sides so a field cannot drift. Everything here is
  * types only — no secrets, no fetch. */
 

@@ -1,9 +1,21 @@
 {
-  // Cloudflare Pages project: the static export in out/ plus the ticket
-  // proxies in functions/. Used by `pnpm preview` and `pnpm deploy`.
+  // Cloudflare Worker: the static export in out/ served as assets, with
+  // worker/index.ts handling /api/* (the CowTicket proxies in functions/).
+  // Used by `pnpm preview` (wrangler dev) and `pnpm deploy` (wrangler deploy).
   // Secrets (TICKET_API_KEY etc.) are NOT set here — see README.
   "$schema": "node_modules/wrangler/config-schema.json",
   "name": "children-book-fest-2026",
+  "main": "worker/index.ts",
   "compatibility_date": "2026-10-01",
-  "pages_build_output_dir": "./out"
+  "assets": {
+    "directory": "./out",
+    "binding": "ASSETS",
+    // Next's export writes /event/x.html; serve it at /event/x like Pages did.
+    "html_handling": "auto-trailing-slash",
+    "not_found_handling": "404-page",
+    // Only API calls run the Worker; every other request is answered from the
+    // asset store without an invocation (free, and faster).
+    "run_worker_first": ["/api/*"]
+  },
+  "observability": { "enabled": true }
 }

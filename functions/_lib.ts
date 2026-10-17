@@ -1,5 +1,5 @@
-/* Shared pieces for the Pages Functions under functions/api. These run on
- * Cloudflare Workers, not Node: web `fetch`, `Request`, `Response` only.
+/* Shared pieces for the /api handlers under functions/api, dispatched by
+ * worker/index.ts. These run on Cloudflare Workers, not Node: web `fetch`, `Request`, `Response` only.
  * Bundled by wrangler, so plain relative imports into lib/ are fine. */
 
 import type { OrderItemInput, OrderTheme, PassDisplay } from "../lib/ticketApi";
@@ -7,7 +7,7 @@ import { TicketApiError } from "../lib/ticketApi";
 import type { ErrorResponse } from "../lib/storefront";
 
 /** Set as Pages environment variables (production/preview) or in .dev.vars
- *  for `wrangler pages dev`. Never NEXT_PUBLIC_, never in the bundle. */
+ *  for `wrangler dev`. Never NEXT_PUBLIC_, never in the bundle. */
 export interface Env {
   TICKET_API_URL: string;
   TICKET_API_KEY: string;

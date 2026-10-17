@@ -2,9 +2,9 @@
 
 Promotional site for the festival: themed zones, event listings, event detail
 pages and in-page ticket purchase. Built with Next.js 16 (App Router), exported
-as a fully static site and hosted on Cloudflare Pages. Ticketing is handled by
-CowTicket; the only server-side code is three small Pages Functions that keep
-the CowTicket API key off the browser.
+as a fully static site and served by a Cloudflare Worker. Ticketing is handled
+by CowTicket; the only server-side code is three small `/api` handlers in that
+Worker that keep the CowTicket API key off the browser.
 
 ```
 app/            routes (static, prerendered at build)
@@ -12,7 +12,8 @@ components/     UI
 content/        events, categories and UI strings — the editable data
 image-src/      image originals (never shipped)
 public/content/ pre-rendered WebP/JPEG images (generated, committed)
-functions/api/  Cloudflare Pages Functions: the CowTicket proxies
+functions/api/  the /api handlers: the CowTicket proxies
+worker/         Worker entry: routes /api/* to them, serves out/ otherwise
 lib/            shared code; lib/ticketApi.ts is the CowTicket client
 scripts/        image rendering and ticket sync
 docs/           design notes
@@ -36,8 +37,8 @@ pnpm install
 | `pnpm dev` | Next dev server on http://localhost:3000. The purchase panel needs the functions, so it will show "unavailable" here — use `pnpm preview` to test buying. |
 | `pnpm images` | Renders `image-src/content/**` into `public/content/**` (WebP at 400/800/1600 px plus a JPEG share card). Run after adding or replacing an image, then commit the output. |
 | `pnpm build` | Static export into `out/`. Also runs the TypeScript check. |
-| `pnpm preview` | Serves `out/` plus `functions/` locally with Cloudflare's runtime on http://localhost:8788, credentials from `.env.local`. This is the real purchase flow against whatever `TICKET_API_URL` points at. Run `pnpm build` first. |
-| `pnpm deploy` | Publishes `out/` and `functions/` to the Cloudflare Pages project named in `wrangler.jsonc`. Needs `wrangler login` once. Run `pnpm build` first. |
+| `pnpm preview` | Runs the Worker locally with Cloudflare's runtime on http://localhost:8787, serving `out/` and the `/api` handlers, credentials from `.env.local`. This is the real purchase flow against whatever `TICKET_API_URL` points at. Run `pnpm build` first. |
+| `pnpm deploy` | Uploads the Worker and `out/` to the Cloudflare account you are logged into (`wrangler login` once), as the Worker named in `wrangler.jsonc`. Run `pnpm build` first. |
 | `pnpm lint` | ESLint. |
 | `pnpm typecheck` | `tsc --noEmit`. |
 | `pnpm check` | Lint and typecheck together; run before opening a PR. |
@@ -67,19 +68,23 @@ There is no success page, no polling and no ticket rendering on this site —
 CowTicket hosts the ticket page. See `cow-ticket.llm.txt` for the platform
 contract and `docs/storefront-api-design.md` for the hosting design.
 
-## Deploying to Cloudflare Pages
+## Deploying to Cloudflare
 
-First time, in the Cloudflare dashboard (or with `wrangler pages project create`):
+The site is one Worker (`wrangler.jsonc`): `out/` is uploaded as static assets
+and served directly, and only `/api/*` runs code. Two ways to ship it:
 
-| Setting | Value |
+- **Workers Builds (connected repo)** — in the Worker's Settings → Build:
+  build command `pnpm build`, deploy command `npx wrangler deploy`. Every push
+  to `main` builds and deploys. This is how it is set up today.
+- **From a machine** — `pnpm build && pnpm deploy` after `wrangler login`.
+
+Either way, set these on the Worker (Settings → Variables and Secrets):
+
+| Kind | Name |
 |---|---|
-| Build command (if building on Cloudflare) | `pnpm build` |
-| Build output directory | `out` |
-| Variables | `TICKET_API_URL`, `TICKET_ACCOUNT_ID`, `NEXT_PUBLIC_SITE_URL` |
-| Secrets | `TICKET_API_KEY` |
-
-Then either connect the GitHub repo so every push to `main` deploys, or deploy
-from a machine with `pnpm build && pnpm deploy`.
+| Variable | `TICKET_API_URL`, `TICKET_ACCOUNT_ID` |
+| Secret | `TICKET_API_KEY` |
+| Build variable | `NEXT_PUBLIC_SITE_URL` (baked into the pages at build time) |
 
 After the first deploy add one WAF rate-limiting rule (free plan allows one):
 path starts with `/api/orders`, 10 requests per 10 seconds per IP, block for

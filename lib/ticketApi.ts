@@ -1,5 +1,5 @@
 /* Ticket platform client (see cow-ticket.llm.txt). Runs anywhere `fetch`
- * exists — a Cloudflare Pages Function in production, a Node script for the
+ * exists — a Cloudflare Worker in production, a Node script for the
  * content sync. The caller passes the credentials in; nothing here reads
  * process.env, so the organizer API key can never leak into browser code by
  * an accidental import. Components may import the TYPES only. */
