@@ -1,0 +1,9 @@
+{
+  // Cloudflare Pages project: the static export in out/ plus the ticket
+  // proxies in functions/. Used by `pnpm preview` and `pnpm deploy`.
+  // Secrets (TICKET_API_KEY etc.) are NOT set here — see README.
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "children-book-fest-2026",
+  "compatibility_date": "2026-10-01",
+  "pages_build_output_dir": "./out"
+}
