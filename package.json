@@ -2,6 +2,10 @@
   "name": "children-book-fest-2026",
   "version": "0.1.0",
   "private": true,
+  "packageManager": "pnpm@11.28.6",
+  "engines": {
+    "node": ">=22"
+  },
   "scripts": {
     "dev": "next dev",
     "images": "node scripts/optimize-images.mjs",
