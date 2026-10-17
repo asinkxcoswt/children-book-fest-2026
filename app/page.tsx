@@ -51,51 +51,43 @@ export default function V4Home() {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(festivalJsonLd) }}
       />
-      {/* Hero — the client's stage banner. The lettering is painted into the
-          wide banner, so from `sm` up the heading is visually hidden and the
-          image carries it; on phones the lettering would be unreadable, so a
-          crop of the character cluster sits beside live text instead. */}
+      {/* Hero — the client's stage banner, wide from `sm` up and the portrait
+          version on phones. Both carry the painted title, so the heading is
+          visually hidden and kept for screen readers and search. */}
       <section className="bg-paper">
         {/* The banner's edges are the red curtain, so a tomato band behind it
             carries the curtains to the viewport edges; the ink rule below is
-            the stage floor continuing. Phones show the crop on plain paper. */}
-        <div className="sm:border-b-[10px] sm:border-ink/80 sm:bg-tomato">
+            the stage floor continuing. */}
+        <div className="border-b-[10px] border-ink/80 bg-tomato">
           <div className="mx-auto max-w-5xl">
-          <Image
-            src="/content/banner.png"
-            alt=""
-            width={3090}
-            height={1356}
-            priority
-            sizes="(min-width: 1024px) 64rem, 100vw"
-            className="hidden h-auto w-full sm:block"
-          />
-          <div className="grid grid-cols-[9rem_1fr] items-end gap-4 px-6 pt-8 sm:hidden">
             <Image
-              src="/content/banner-mobile.png"
+              src="/content/banner.png"
               alt=""
-              width={1040}
+              width={3090}
               height={1356}
               priority
-              sizes="9rem"
-              className="h-auto w-full"
+              sizes="(min-width: 1024px) 64rem, 100vw"
+              className="hidden h-auto w-full sm:block"
             />
-            <p className="pb-4 font-display text-base leading-snug text-tomato">{t("festivalName")}</p>
-          </div>
+            <Image
+              src="/content/banner-portrait.png"
+              alt=""
+              width={3508}
+              height={4961}
+              priority
+              sizes="100vw"
+              className="h-auto w-full sm:hidden"
+            />
           </div>
         </div>
-        <div className="relative mx-auto max-w-5xl px-6 pb-12 pt-6 sm:pt-16">
-          <p className="inline-block rounded-full bg-bubblegum px-3 py-0.5 font-display text-sm text-paper sm:hidden">
-            {t("episode")}
-          </p>
-          <h1 className="mt-2 font-display text-5xl leading-tight text-ink sm:sr-only">{t("theme")}</h1>
+        <div className="relative mx-auto max-w-5xl px-6 pb-12 pt-16">
+          <h1 className="sr-only">{t("theme")}</h1>
           {/* The dates as a ticket stuck on the stage floor — the one fact the
-              banner lacks. From `sm` it straddles the banner's bottom edge; on
-              phones it follows the title. */}
-          <p className="mt-5 inline-block -rotate-2 rounded-xl border-2 border-ink bg-sunshine px-5 py-2 font-display text-xl tracking-wide text-ink shadow-[3px_3px_0_var(--color-ink)] sm:absolute sm:-top-6 sm:left-8 sm:mt-0 sm:text-2xl">
+              banner lacks — straddling the banner's bottom edge. */}
+          <p className="absolute -top-6 left-6 inline-block -rotate-2 rounded-xl border-2 border-ink bg-sunshine px-5 py-2 font-display text-xl tracking-wide text-ink shadow-[3px_3px_0_var(--color-ink)] sm:left-8 sm:text-2xl">
             {dateStamp}
           </p>
-          <div className="mt-6 flex flex-wrap items-center gap-4 sm:mt-0">
+          <div className="flex flex-wrap items-center gap-4">
             <Link
               href="#map"
               className="inline-block rounded-full bg-tomato px-7 py-3 text-lg text-paper transition-transform hover:scale-105 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ink focus-visible:ring-offset-2"

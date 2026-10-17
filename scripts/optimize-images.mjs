@@ -9,12 +9,11 @@
  *
  * Run: pnpm images   (sharp comes with Next, no extra dependency)
  *
- * Two files are hand-cut from the client's banner (image-src/content/banner.png,
+ * One file is hand-cut from the client's wide banner (image-src/content/banner.png,
  * 3090x1356) and should be re-cut if a new banner arrives:
- *   image-src/content/banner-mobile.png  extract {left:0, top:0, width:1040, height:1356}
- *                                        (the character cluster, no lettering)
- *   public/og/festival-share.png         resize {height:630}, then
- *                                        extract {left:118, top:0, width:1200, height:630}
+ *   public/og/festival-share.png   resize {height:630}, then
+ *                                  extract {left:118, top:0, width:1200, height:630}
+ * The phone hero uses the client's own portrait banner (banner-portrait.png).
  */
 import { readdir, mkdir, stat } from "node:fs/promises";
 import { join, dirname, extname, relative } from "node:path";
