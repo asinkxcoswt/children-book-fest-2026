@@ -7,6 +7,9 @@
   "name": "children-book-fest-2026",
   "main": "worker/index.ts",
   "compatibility_date": "2026-10-01",
+  // No *.workers.dev preview URLs: a preview shares production secrets and
+  // vars, so anyone testing one would place real orders. Production only.
+  "preview_urls": false,
   "assets": {
     "directory": "./out",
     "binding": "ASSETS",
