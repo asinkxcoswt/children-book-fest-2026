@@ -139,7 +139,7 @@ export default function FestivalMap({
                   width={100}
                   height={160}
                   sizes="6rem"
-                  className="h-40 w-24 object-contain object-bottom drop-shadow-lg"
+                  className="block h-auto w-24 drop-shadow-lg"
                 />
               </div>
 
