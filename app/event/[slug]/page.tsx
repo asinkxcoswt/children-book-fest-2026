@@ -64,10 +64,11 @@ export default async function V4Event({ params }: { params: Promise<{ slug: stri
       <p className="mt-2 text-lg text-ink/70">{pick(event.summary)}</p>
 
       {/* Primary poster — shown at its own aspect ratio, never cropped. The
-          event's mascot, when it has one, stands in front of the poster's
-          bottom-right corner so the two read as one picture. */}
-      <div className="relative mt-8 sm:max-w-xl">
-        <div className="overflow-hidden rounded-2xl border-2 border-ink/10">
+          event's mascot, when it has one, peeks out from BEHIND the poster
+          (over the top-right corner on phones, out of the right edge on wider
+          screens) so it is tied to the picture but can never cover it. */}
+      <div className={`relative sm:max-w-xl ${event.mascot ? "mt-36 sm:mt-8" : "mt-8"}`}>
+        <div className="relative z-10 overflow-hidden rounded-2xl border-2 border-ink/10 bg-paper">
           <Image
             src={event.thumbnail}
             alt={pick(event.title)}
@@ -85,7 +86,7 @@ export default async function V4Event({ params }: { params: Promise<{ slug: stri
             width={300}
             height={480}
             sizes="(min-width: 640px) 11rem, 7rem"
-            className="absolute -bottom-3 -right-3 h-40 w-28 object-contain object-bottom drop-shadow-lg sm:-bottom-4 sm:-right-10 sm:h-64 sm:w-44"
+            className="absolute bottom-[calc(100%-3rem)] right-4 z-0 h-auto w-24 drop-shadow-md sm:bottom-0 sm:-right-28 sm:h-64 sm:w-44 sm:object-contain sm:object-bottom"
           />
         )}
       </div>
