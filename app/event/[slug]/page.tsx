@@ -63,32 +63,17 @@ export default async function V4Event({ params }: { params: Promise<{ slug: stri
       <h1 className="mt-3 font-display text-4xl text-ink sm:text-5xl">{pick(event.title)}</h1>
       <p className="mt-2 text-lg text-ink/70">{pick(event.summary)}</p>
 
-      {/* Primary poster — shown at its own aspect ratio, never cropped. The
-          event's mascot, when it has one, peeks out from BEHIND the poster
-          (over the top-right corner on phones, out of the right edge on wider
-          screens) so it is tied to the picture but can never cover it. */}
-      <div className={`relative sm:max-w-xl ${event.mascot ? "mt-36 sm:mt-8" : "mt-8"}`}>
-        <div className="relative z-10 overflow-hidden rounded-2xl border-2 border-ink/10 bg-paper">
-          <Image
-            src={event.thumbnail}
-            alt={pick(event.title)}
-            width={1200}
-            height={1200}
-            priority
-            sizes="(min-width: 640px) 36rem, 100vw"
-            className="h-auto w-full"
-          />
-        </div>
-        {event.mascot && (
-          <Image
-            src={event.mascot}
-            alt=""
-            width={300}
-            height={480}
-            sizes="(min-width: 640px) 11rem, 7rem"
-            className="absolute bottom-[calc(100%-3rem)] right-4 z-0 h-auto w-24 drop-shadow-md sm:bottom-0 sm:-right-28 sm:h-64 sm:w-44 sm:object-contain sm:object-bottom"
-          />
-        )}
+      {/* Primary poster — shown at its own aspect ratio, never cropped. */}
+      <div className="mt-8 overflow-hidden rounded-2xl border-2 border-ink/10 sm:max-w-xl">
+        <Image
+          src={event.thumbnail}
+          alt={pick(event.title)}
+          width={1200}
+          height={1200}
+          priority
+          sizes="(min-width: 640px) 36rem, 100vw"
+          className="h-auto w-full"
+        />
       </div>
 
       <div className="mt-10 grid gap-10 sm:grid-cols-[1fr_18rem]">
@@ -124,7 +109,19 @@ export default async function V4Event({ params }: { params: Promise<{ slug: stri
           </dl>
         </div>
 
-        <aside className="h-fit rounded-2xl border-2 border-ink/10 p-6">
+        <aside className={`relative h-fit rounded-2xl border-2 border-ink/10 bg-paper p-6 ${event.mascot ? "mt-8 sm:mt-0" : ""}`}>
+          {/* The event's mascot, when it has one, peeks over the top-right
+              corner of the ticket box — behind it, so it never covers content. */}
+          {event.mascot && (
+            <Image
+              src={event.mascot}
+              alt=""
+              width={300}
+              height={480}
+              sizes="6rem"
+              className="absolute bottom-[calc(100%-1rem)] right-5 -z-10 h-auto w-24 drop-shadow-sm"
+            />
+          )}
           {/* Zone chip (names the color coding, links back to the zone) + share. */}
           <div className="mb-5 flex flex-wrap items-center gap-2">
             {category && (
