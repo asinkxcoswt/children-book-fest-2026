@@ -1,6 +1,9 @@
 import type { MetadataRoute } from "next";
 import { t } from "@/lib/i18n";
 
+// Required for `output: "export"`: metadata routes are written once at build time.
+export const dynamic = "force-static";
+
 export default function manifest(): MetadataRoute.Manifest {
   return {
     name: `${t("festivalName")} ${t("festivalYear")}`,

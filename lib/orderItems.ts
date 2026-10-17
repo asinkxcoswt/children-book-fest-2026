@@ -81,9 +81,16 @@ function checkUnit(
  *
  *  `collectUnits` is false on the chat path: the LINE form asks those
  *  questions itself, and the contract says never to send them. */
+/** What `resolveBoxes` needs to know about a ticket type — satisfied by the
+ *  platform's TicketConfig and by the trimmed TicketOption the browser holds. */
+export type ResolvableConfig = Pick<
+  TicketConfig,
+  "code" | "limitPerOrder" | "available" | "capacityUnit" | "addOns"
+>;
+
 export function resolveBoxes(
   boxes: TicketBox[],
-  configs: TicketConfig[],
+  configs: ResolvableConfig[],
   { collectUnits }: { collectUnits: boolean },
 ): { items: OrderItemInput[] } | { error: string } {
   if (boxes.length === 0) return { error: "no tickets selected" };

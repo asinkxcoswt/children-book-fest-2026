@@ -2,6 +2,9 @@ import type { MetadataRoute } from "next";
 import { getCategories, getEvents } from "@/lib/content";
 import { SITE_URL } from "@/lib/site";
 
+// Required for `output: "export"`: metadata routes are written once at build time.
+export const dynamic = "force-static";
+
 export default function sitemap(): MetadataRoute.Sitemap {
   return [
     { url: `${SITE_URL}/`, priority: 1 },

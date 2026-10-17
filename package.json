@@ -5,6 +5,8 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
+    "images": "node scripts/optimize-images.mjs",
+    "preview": "wrangler pages dev out --env-file .env.local",
     "start": "next start",
     "lint": "eslint",
     "sync:tickets": "node --env-file=.env.local scripts/sync-tickets.mjs"
@@ -24,6 +26,7 @@
     "eslint": "^9",
     "eslint-config-next": "16.2.9",
     "tailwindcss": "^4",
-    "typescript": "^5"
+    "typescript": "^5",
+    "wrangler": "^4.151.0"
   }
 }

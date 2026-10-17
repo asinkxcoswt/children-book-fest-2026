@@ -1,48 +1,32 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import type { ColorToken } from "@/types/content";
+import type { ColorToken, EventSession } from "@/types/content";
 import { tokenClasses, tokenHex, cssVar } from "@/lib/colors";
 import { t, formatDate, formatTimeRange } from "@/lib/i18n";
-import type { PaymentMethod, PurchaseFormField, TicketAddOn } from "@/lib/ticketApi";
-import type { TicketBox as TicketBoxPayload } from "@/lib/orderItems";
+import type {
+  PaymentMethod,
+  PassDisplay,
+  PurchaseFormField,
+  RefundPolicy,
+  TicketAddOn,
+} from "@/lib/ticketApi";
+import { resolveBoxes, type TicketBox as TicketBoxPayload } from "@/lib/orderItems";
+import type {
+  ErrorResponse,
+  IntentRequest,
+  IntentResponse,
+  OrderRequest,
+  OrderResponse,
+  TicketOption,
+  TicketsResponse,
+} from "@/lib/storefront";
 import AttendeeFormModal, {
   type PurchaseAnswers,
   type UnitAnswers,
   type UnitGroup,
 } from "@/components/AttendeeFormModal";
 import LineQrPanel from "@/components/LineQrPanel";
-
-interface TicketOption {
-  code: string;
-  /** The round number ("รอบที่ 1"); the day and time come from the session. */
-  name: string;
-  /** Organizer's section label for anything that is NOT time — zone, tier,
-   *  package. null = ungrouped. */
-  group: string | null;
-  /** Satang; 0 = free. */
-  price: number;
-  limitPerOrder: number;
-  /** What one ticket takes out of this depends on `capacityUnit`. */
-  available: number;
-  /** "tickets": one unit per ticket. "seats": a ticket takes the sum of its
-   *  seat-counting add-ons' quantities — a family of four needs four. */
-  capacityUnit: "tickets" | "seats";
-  /** Calendar day the ticket admits on (YYYY-MM-DD, resolved by the platform
-   *  in Asia/Bangkok), or null for an event with no sessions. */
-  sessionDate: string | null;
-  sessionStartAt: string | null;
-  sessionEndAt: string | null;
-  /** Per-ticket composition dimensions (adult, child, kit…). Empty = a plain
-   *  ticket with nothing to configure. */
-  addOns: TicketAddOn[];
-}
-
-interface RefundPolicy {
-  allowed: boolean;
-  termEn: string;
-  termTh: string;
-}
 
 /** One ticket the buyer is assembling. `code` is null until a session is
  *  chosen; `addOns` holds absolute quantities keyed by add-on code. */
@@ -101,7 +85,25 @@ function describe(tk: TicketOption): string {
  *  modal; the order is created through our own API routes and paid on Stripe
  *  Checkout or in LINE. Shows an unavailable notice if the ticket service is
  *  unreachable. */
-export default function TicketPurchase({ slug, color }: { slug: string; color: ColorToken }) {
+/** Display text for the wallet pass / ticket page, from our content. */
+export interface PassSource {
+  title: string;
+  venue: string;
+  sessions: EventSession[];
+}
+
+export default function TicketPurchase({
+  slug,
+  eventCode,
+  color,
+  pass,
+}: {
+  slug: string;
+  /** The platform's event code — public, it is in every ticket URL. */
+  eventCode: string;
+  color: ColorToken;
+  pass: PassSource;
+}) {
   const c = tokenClasses(color);
 
   const [tickets, setTickets] = useState<TicketOption[] | null>(null);
@@ -146,15 +148,10 @@ export default function TicketPurchase({ slug, color }: { slug: string; color: C
 
   useEffect(() => {
     let alive = true;
-    fetch(`/api/tickets?slug=${encodeURIComponent(slug)}`)
+    fetch(`/api/tickets?eventCode=${encodeURIComponent(eventCode)}`)
       .then((res) => (res.ok ? res.json() : Promise.reject()))
       .then(
-        (data: {
-          tickets: TicketOption[];
-          refundPolicy: RefundPolicy | null;
-          paymentMethods: PaymentMethod[];
-          purchaseForm: PurchaseFormField[];
-        }) => {
+        (data: TicketsResponse) => {
           if (!alive) return;
           const list = data.tickets;
           setTickets(list);
@@ -174,7 +171,7 @@ export default function TicketPurchase({ slug, color }: { slug: string; color: C
     return () => {
       alive = false;
     };
-  }, [slug]);
+  }, [eventCode]);
 
   const byCode = new Map((tickets ?? []).map((tk) => [tk.code, tk]));
   const optionOf = (box: Box) => (box.code ? byCode.get(box.code) : undefined);
@@ -276,6 +273,23 @@ export default function TicketPurchase({ slug, color }: { slug: string; color: C
     setBoxes((bs) => (bs.length > 1 ? bs.filter((b) => b.id !== id) : bs));
   }
 
+  /** Multi-day events map each ticket code to its session via `ticketCodes`;
+   *  unmapped codes fall back to the first session. "description" is left to
+   *  default to the ticket type name ("รอบที่ 1") — dateDisplay already
+   *  carries the date and time. */
+  function passDisplayFor(code: string, principal?: string): PassDisplay {
+    const { sessions, venue, title } = pass;
+    const s = sessions.find((sess) => sess.ticketCodes?.includes(code)) ?? sessions[0];
+    return {
+      main: title,
+      date: `${s.date}T${s.start}:00+07:00`,
+      dateDisplay: `${formatDate(s.date)} ${s.start} · ${venue}`,
+      // "principal" is the reserved attendee-name key; gate staff search by it.
+      // Absent on the chat path: LINE collects the name if the organizer asks.
+      ...(principal ? { principal } : {}),
+    };
+  }
+
   /** Creates the chat purchase, on click only. An intent is a real record on the
    *  platform, so one is made per deliberate purchase attempt — never per
    *  stepper tweak. Cached against the current selection so clicking again
@@ -286,12 +300,25 @@ export default function TicketPurchase({ slug, color }: { slug: string; color: C
     setStartingLine(true);
     setHandoffFailed(false);
     try {
+      // Add-on ranges and per-order limits against what we fetched; the
+      // platform re-checks everything atomically when it creates the order.
+      const resolved = resolveBoxes(payload, tickets ?? [], { collectUnits: false });
+      if ("error" in resolved) {
+        setStartingLine(false);
+        return;
+      }
+      const body: IntentRequest = {
+        eventCode,
+        slug,
+        items: resolved.items.map((i) => ({ ...i, passDisplay: passDisplayFor(i.code) })),
+        theme: readTheme(),
+      };
       const res = await fetch("/api/orders/intent", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ slug, boxes: payload, theme: readTheme() }),
+        body: JSON.stringify(body),
       });
-      const data = (await res.json()) as { lineUrl?: string };
+      const data = (await res.json()) as Partial<IntentResponse>;
       if (res.ok && data.lineUrl) {
         setIntent({ sig, lineUrl: data.lineUrl });
         handoff(data.lineUrl);
@@ -335,16 +362,27 @@ export default function TicketPurchase({ slug, color }: { slug: string; color: C
         }
         return { code: b.code!, addOns: b.addOns, units: perAddOn };
       });
+      const resolved = resolveBoxes(withUnits, tickets ?? [], { collectUnits: true });
+      if ("error" in resolved) {
+        setSubmitting(false);
+        return t("ticketsUnavailable");
+      }
+      const body: OrderRequest = {
+        eventCode,
+        slug,
+        items: resolved.items.map((i) => ({
+          ...i,
+          passDisplay: passDisplayFor(i.code, answers.principal),
+        })),
+        answers,
+        theme: readTheme(),
+      };
       const res = await fetch("/api/orders", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ slug, answers, boxes: withUnits, theme: readTheme() }),
+        body: JSON.stringify(body),
       });
-      const data = (await res.json()) as {
-        checkoutUrl?: string | null;
-        error?: string;
-        ticketUrl?: string;
-      };
+      const data = (await res.json()) as Partial<OrderResponse & ErrorResponse>;
       if (!res.ok) {
         setSubmitting(false);
         return data.error ?? t("ticketsUnavailable");

@@ -1,10 +1,17 @@
-/* Server-only ticket platform client (see cow-ticket.llm.txt).
- * IMPORTANT: only import this from Route Handlers / Server Components — the API
- * key and JWT must never reach the browser. (Consider adding the `server-only`
- * package for a build-time guarantee.) */
+/* Ticket platform client (see cow-ticket.llm.txt). Runs anywhere `fetch`
+ * exists — a Cloudflare Pages Function in production, a Node script for the
+ * content sync. The caller passes the credentials in; nothing here reads
+ * process.env, so the organizer API key can never leak into browser code by
+ * an accidental import. Components may import the TYPES only. */
 
-function env(name: "TICKET_API_URL" | "TICKET_API_KEY" | "TICKET_ACCOUNT_ID"): string {
-  const value = process.env[name];
+export interface TicketEnv {
+  TICKET_API_URL: string;
+  TICKET_API_KEY: string;
+  TICKET_ACCOUNT_ID: string;
+}
+
+function env(e: TicketEnv, name: keyof TicketEnv): string {
+  const value = e[name];
   if (!value) throw new TicketApiError(503, `Ticket API not configured (missing ${name})`);
   return value;
 }
@@ -19,43 +26,51 @@ export class TicketApiError extends Error {
   }
 }
 
-let cached: { token: string; exp: number } | null = null;
+/** One cached JWT per API key. Lives as long as the isolate/process does; a
+ *  Pages Function isolate is recycled often, so expect a token exchange per
+ *  cold start — one cheap call, not one per request. */
+const cached = new Map<string, { token: string; exp: number }>();
 
-async function getToken(): Promise<string> {
-  if (cached && cached.exp - Date.now() > 60_000) return cached.token;
-  const res = await fetch(`${env("TICKET_API_URL")}/accounts/token`, {
+async function getToken(e: TicketEnv): Promise<string> {
+  const key = env(e, "TICKET_API_KEY");
+  const hit = cached.get(key);
+  if (hit && hit.exp - Date.now() > 60_000) return hit.token;
+  const res = await fetch(`${env(e, "TICKET_API_URL")}/accounts/token`, {
     method: "POST",
-    headers: { "api-key": env("TICKET_API_KEY"), "Content-Type": "application/json" },
+    headers: { "api-key": key, "Content-Type": "application/json" },
     body: JSON.stringify({
-      accountId: env("TICKET_ACCOUNT_ID"),
+      accountId: env(e, "TICKET_ACCOUNT_ID"),
       type: "customer",
     }),
-    cache: "no-store",
   });
   if (!res.ok) throw new TicketApiError(502, `token exchange failed: ${res.status}`);
   const data = (await res.json()) as { token: string; exp: string };
-  cached = { token: data.token, exp: new Date(data.exp).getTime() };
+  cached.set(key, { token: data.token, exp: new Date(data.exp).getTime() });
   return data.token;
 }
 
-async function ticketApi(path: string, init?: RequestInit, retried = false): Promise<Response> {
-  const token = await getToken();
-  const res = await fetch(`${env("TICKET_API_URL")}${path}`, {
+async function ticketApi(
+  e: TicketEnv,
+  path: string,
+  init?: RequestInit,
+  retried = false,
+): Promise<Response> {
+  const token = await getToken(e);
+  const res = await fetch(`${env(e, "TICKET_API_URL")}${path}`, {
     ...init,
     headers: { ...init?.headers, Authorization: `Bearer ${token}`, "Content-Type": "application/json" },
-    cache: "no-store",
   });
   if (res.status === 401 && !retried) {
-    cached = null; // token may have expired — refresh once
-    return ticketApi(path, init, true);
+    cached.delete(env(e, "TICKET_API_KEY")); // token may have expired — refresh once
+    return ticketApi(e, path, init, true);
   }
   return res;
 }
 
 /** The JWT is account-scoped: any request naming an accountId must name the same
- *  one as the token, or it 401s. /orders/detail additionally 400s without it. */
-function accountParam(): string {
-  return `accountId=${encodeURIComponent(env("TICKET_ACCOUNT_ID"))}`;
+ *  one as the token, or it 401s. */
+function accountParam(e: TicketEnv): string {
+  return `accountId=${encodeURIComponent(env(e, "TICKET_ACCOUNT_ID"))}`;
 }
 
 /** One add-on dimension of a ticket type: "adult", "child", "kit". Every
@@ -186,9 +201,13 @@ export interface TicketConfigsResult {
 
 const KNOWN_METHODS: PaymentMethod[] = ["STRIPE", "PROMPTPAY"];
 
-export async function getTicketConfigs(eventCode: string): Promise<TicketConfigsResult> {
+export async function getTicketConfigs(
+  e: TicketEnv,
+  eventCode: string,
+): Promise<TicketConfigsResult> {
   const res = await ticketApi(
-    `/events/ticketConfigs?eventCode=${encodeURIComponent(eventCode)}&${accountParam()}`,
+    e,
+    `/events/ticketConfigs?eventCode=${encodeURIComponent(eventCode)}&${accountParam(e)}`,
   );
   if (!res.ok) throw new TicketApiError(res.status, await res.text());
   const data = (await res.json()) as {
@@ -265,7 +284,9 @@ export interface CreateOrderResult {
   ticketUrl: string;
 }
 
-export async function createOrder(input: {
+export async function createOrder(
+  e: TicketEnv,
+  input: {
   eventCode: string;
   email: string;
   items: OrderItemInput[];
@@ -275,11 +296,12 @@ export async function createOrder(input: {
    *  the last point where the buyer can carry on shopping. */
   returnUrl: string;
   theme?: OrderTheme;
-}): Promise<CreateOrderResult> {
-  const res = await ticketApi("/orders", {
+  },
+): Promise<CreateOrderResult> {
+  const res = await ticketApi(e, "/orders", {
     method: "POST",
     body: JSON.stringify({
-      accountId: env("TICKET_ACCOUNT_ID"),
+      accountId: env(e, "TICKET_ACCOUNT_ID"),
       ...input,
     }),
   });
@@ -298,7 +320,9 @@ export interface CreateOrderIntentResult {
  *  expires — the 1-hour hold begins only when the order is created in chat, so
  *  there is nothing here to count down and nothing to release. Deliberately
  *  takes no email and no cancelUrl: the buyer fills in nothing on the web. */
-export async function createOrderIntent(input: {
+export async function createOrderIntent(
+  e: TicketEnv,
+  input: {
   eventCode: string;
   items: OrderItemInput[];
   metadata?: Record<string, string | number | boolean>;
@@ -306,11 +330,12 @@ export async function createOrderIntent(input: {
   returnUrl: string;
   /** Carried onto every order the chat creates, like returnUrl. */
   theme?: OrderTheme;
-}): Promise<CreateOrderIntentResult> {
-  const res = await ticketApi("/orders/intent", {
+  },
+): Promise<CreateOrderIntentResult> {
+  const res = await ticketApi(e, "/orders/intent", {
     method: "POST",
     body: JSON.stringify({
-      accountId: env("TICKET_ACCOUNT_ID"),
+      accountId: env(e, "TICKET_ACCOUNT_ID"),
       ...input,
     }),
   });

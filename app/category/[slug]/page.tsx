@@ -3,6 +3,7 @@ import Image from "next/image";
 import { notFound } from "next/navigation";
 import { getCategories, getCategory, getEventsByCategory, getFestivalDates } from "@/lib/content";
 import { tokenClasses } from "@/lib/colors";
+import { ogImage } from "@/lib/imageLoader";
 import { t, pick, formatWeekday } from "@/lib/i18n";
 import FestivalMap from "@/components/FestivalMap";
 import SectionHeading from "@/components/SectionHeading";
@@ -31,9 +32,9 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
       siteName: `${t("festivalName")} ${t("festivalYear")}`,
       locale: "th_TH",
       type: "website",
-      images: [{ url: category.thumbnail }],
+      images: [{ url: ogImage(category.thumbnail) }],
     },
-    twitter: { card: "summary_large_image", title, description, images: [category.thumbnail] },
+    twitter: { card: "summary_large_image", title, description, images: [ogImage(category.thumbnail)] },
   };
 }
 

@@ -4,6 +4,7 @@ import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import { getEvents, getEvent, getCategory, getSessionsByDate } from "@/lib/content";
 import { tokenClasses } from "@/lib/colors";
+import { ogImage } from "@/lib/imageLoader";
 import { t, pick, formatDate } from "@/lib/i18n";
 import TicketPurchase from "@/components/TicketPurchase";
 import WalkInNotice from "@/components/WalkInNotice";
@@ -35,10 +36,10 @@ export async function generateMetadata({
       // siteName/locale would silently vanish from these pages otherwise.
       siteName: `${t("festivalName")} ${t("festivalYear")}`,
       locale: "th_TH",
-      images: [{ url: event.thumbnail }],
+      images: [{ url: ogImage(event.thumbnail) }],
       type: "article",
     },
-    twitter: { card: "summary_large_image", title, description, images: [event.thumbnail] },
+    twitter: { card: "summary_large_image", title, description, images: [ogImage(event.thumbnail)] },
   };
 }
 
@@ -128,7 +129,18 @@ export default async function V4Event({ params }: { params: Promise<{ slug: stri
               // ticket API call — the answer to "how do I get in" is static.
               <WalkInNotice color={category?.color ?? "peach"} />
             ) : event.ticketEventCode ? (
-              <TicketPurchase slug={event.slug} color={category?.color ?? "peach"} />
+              <TicketPurchase
+                slug={event.slug}
+                eventCode={event.ticketEventCode}
+                color={category?.color ?? "peach"}
+                // Wallet-pass text comes from our content — the platform
+                // doesn't know the event's date or venue.
+                pass={{
+                  title: pick(event.title),
+                  venue: pick(event.schedule.venue),
+                  sessions: event.schedule.sessions,
+                }}
+              />
             ) : null}
           </div>
         </aside>

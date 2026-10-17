@@ -2,10 +2,10 @@
   "version": "0.0.1",
   "configurations": [
     {
-      "name": "dev",
-      "runtimeExecutable": "npm",
-      "runtimeArgs": ["run", "dev"],
-      "port": 3000
+      "name": "pages-preview",
+      "runtimeExecutable": "pnpm",
+      "runtimeArgs": ["preview", "--port", "8788"],
+      "port": 8788
     }
   ]
 }
