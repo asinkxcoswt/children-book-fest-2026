@@ -1,6 +1,7 @@
 {
   "slug": "live-drawing-demo",
   "thumbnail": "/content/categories/illustration-v4.png",
+  "mascot": "/content/mascots/girl-maracas.png",
   "title": {
     "th": "วาดสด: จากคำเป็นภาพ",
     "en": "Live drawing: from words to pictures"

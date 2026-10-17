@@ -58,6 +58,9 @@ export interface EventSchedule {
 export interface FestivalEvent {
   slug: string;
   thumbnail: string;
+  /** Optional cut-out character (transparent PNG under /content/mascots/)
+   *  that stands beside the poster on the detail page. */
+  mascot?: string;
   title: Localized;
   /** One-line teaser for cards and listings. */
   summary: Localized;
