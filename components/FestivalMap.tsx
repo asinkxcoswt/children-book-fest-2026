@@ -129,7 +129,7 @@ export default function FestivalMap({
             >
               {/* Zone character pops up on hover. */}
               <div
-                className={`pointer-events-none absolute left-1/2 z-10 -translate-x-1/2 scale-90 opacity-0 transition-all duration-150 group-hover:scale-100 group-hover:opacity-100 ${
+                className={`pointer-events-none absolute left-1/2 z-10 w-24 -translate-x-1/2 scale-90 opacity-0 transition-all duration-150 group-hover:scale-100 group-hover:opacity-100 ${
                   below ? "top-full mt-2" : "bottom-full mb-2"
                 }`}
               >
@@ -139,7 +139,7 @@ export default function FestivalMap({
                   width={100}
                   height={160}
                   sizes="6rem"
-                  className="block h-auto w-24 drop-shadow-lg"
+                  className="block h-auto w-full drop-shadow-lg"
                 />
               </div>
 
