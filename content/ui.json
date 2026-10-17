@@ -34,6 +34,7 @@
   "festivalMap": { "th": "แผนที่เทศกาล", "en": "Festival map" },
   "events": { "th": "กิจกรรม", "en": "events" },
   "tickets": { "th": "บัตรเข้าร่วม", "en": "Tickets" },
+  "ticketingBy": { "th": "ระบบบัตรโดย", "en": "Ticketing by" },
   "soldOut": { "th": "บัตรหมด", "en": "Sold out" },
   "eventFull": { "th": "ผู้เข้าร่วมเต็มจำนวนแล้ว", "en": "This event is full" },
   "ticketsLeft": { "th": "คงเหลือ", "en": "left" },

@@ -5,6 +5,7 @@ import type { Metadata } from "next";
 import { getEvents, getEvent, getCategory, getSessionsByDate } from "@/lib/content";
 import { tokenClasses } from "@/lib/colors";
 import { ogImage } from "@/lib/imageLoader";
+import { COW_TICKET_URL } from "@/lib/site";
 import { t, pick, formatDate } from "@/lib/i18n";
 import TicketPurchase from "@/components/TicketPurchase";
 import WalkInNotice from "@/components/WalkInNotice";
@@ -155,6 +156,20 @@ export default async function V4Event({ params }: { params: Promise<{ slug: stri
               />
             ) : null}
           </div>
+          {/* Ticketing credit — a quiet mark where the platform is in use. */}
+          {!event.walkIn && event.ticketEventCode && (
+            <p className="mt-5 border-t-2 border-ink/10 pt-3 text-xs text-ink/60">
+              {t("ticketingBy")}{" "}
+              <a
+                href={COW_TICKET_URL}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="font-display text-sm text-ink underline decoration-ink/30 underline-offset-4 transition-colors hover:decoration-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ink focus-visible:ring-offset-2"
+              >
+                CowTicket ↗
+              </a>
+            </p>
+          )}
         </aside>
       </div>
 
