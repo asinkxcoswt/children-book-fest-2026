@@ -63,10 +63,11 @@ export default async function V4Event({ params }: { params: Promise<{ slug: stri
       <h1 className="mt-3 font-display text-4xl text-ink sm:text-5xl">{pick(event.title)}</h1>
       <p className="mt-2 text-lg text-ink/70">{pick(event.summary)}</p>
 
-      {/* Primary poster — shown at its own aspect ratio, never cropped — with
-          the event's mascot, when it has one, standing beside it. */}
-      <div className="mt-8 flex items-end gap-4 sm:gap-8">
-        <div className="min-w-0 flex-1 overflow-hidden rounded-2xl border-2 border-ink/10 sm:max-w-xl">
+      {/* Primary poster — shown at its own aspect ratio, never cropped. The
+          event's mascot, when it has one, stands in front of the poster's
+          bottom-right corner so the two read as one picture. */}
+      <div className="relative mt-8 sm:max-w-xl">
+        <div className="overflow-hidden rounded-2xl border-2 border-ink/10">
           <Image
             src={event.thumbnail}
             alt={pick(event.title)}
@@ -83,8 +84,8 @@ export default async function V4Event({ params }: { params: Promise<{ slug: stri
             alt=""
             width={300}
             height={480}
-            sizes="(min-width: 640px) 12rem, 7rem"
-            className="h-44 w-28 shrink-0 object-contain object-bottom drop-shadow-lg sm:h-72 sm:w-48"
+            sizes="(min-width: 640px) 11rem, 7rem"
+            className="absolute -bottom-3 -right-3 h-40 w-28 object-contain object-bottom drop-shadow-lg sm:-bottom-4 sm:-right-10 sm:h-64 sm:w-44"
           />
         )}
       </div>
