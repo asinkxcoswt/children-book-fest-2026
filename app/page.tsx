@@ -8,10 +8,9 @@ import { t, pick, formatMonth } from "@/lib/i18n";
 import FestivalMap from "@/components/FestivalMap";
 import ScheduleBoard from "@/components/ScheduleBoard";
 import SectionHeading from "@/components/SectionHeading";
-import WaveEdge from "@/components/WaveEdge";
 
-/* Home — "Storybook Village": an editorial storybook UI with the playful
- * explorable festival map as the centerpiece navigation. */
+/* Home — the client's stage banner on top, then the playful explorable
+ * festival map as the centerpiece navigation. */
 
 export const metadata: Metadata = {
   alternates: { canonical: "/" },
@@ -39,72 +38,68 @@ export default function V4Home() {
   };
   // "15–20 ส.ค. 2569" — from real data so the hero never goes stale.
   const dateStamp = `${Number(dates[0].slice(-2))}–${Number(dates[dates.length - 1].slice(-2))} ${formatMonth(dates[dates.length - 1])} ${t("festivalYear")}`;
-  // Sticker-fan positions for the zone illustrations (percent-based so the
-  // cluster scales between mobile and desktop).
-  const fan = [
-    { left: "0%", top: "8%", tilt: "-rotate-6" },
-    { left: "34%", top: "0%", tilt: "rotate-3" },
-    { left: "62%", top: "16%", tilt: "rotate-6" },
-    { left: "22%", top: "42%", tilt: "-rotate-3" },
-  ];
-
   return (
     <main className="flex-1">
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(festivalJsonLd) }}
       />
-      {/* Hero — a book cover: title, dates, and the zone art fanned like a
-          hand of picture books. */}
-      <section className="bg-peach/60">
-        <div className="mx-auto grid max-w-5xl gap-10 px-6 pb-12 pt-16 sm:grid-cols-[1fr_auto] sm:items-center sm:py-16">
-          <div>
-            <p className="font-display text-lg tracking-wide text-tomato">{t("festivalName")}</p>
-            <h1 className="mt-3 max-w-2xl font-display text-5xl leading-tight text-ink sm:text-6xl">
-              {t("tagline")}
-            </h1>
-            <p className="mt-4 inline-block rounded-lg border-2 border-dashed border-ink/40 px-4 py-1.5 font-display text-lg tracking-widest text-ink">
+      {/* Hero — the client's stage banner. The lettering is painted into the
+          wide banner, so from `sm` up the heading is visually hidden and the
+          image carries it; on phones the lettering would be unreadable, so a
+          crop of the character cluster sits beside live text instead. */}
+      <section className="bg-paper">
+        <div className="mx-auto max-w-5xl">
+          <Image
+            src="/content/banner.png"
+            alt=""
+            width={3090}
+            height={1356}
+            priority
+            sizes="(min-width: 1024px) 64rem, 100vw"
+            className="hidden h-auto w-full sm:block"
+          />
+          <div className="grid grid-cols-[9rem_1fr] items-end gap-4 px-6 pt-8 sm:hidden">
+            <Image
+              src="/content/banner-mobile.png"
+              alt=""
+              width={1040}
+              height={1356}
+              priority
+              sizes="9rem"
+              className="h-auto w-full"
+            />
+            <p className="pb-4 font-display text-base leading-snug text-tomato">{t("festivalName")}</p>
+          </div>
+        </div>
+        <div className="mx-auto max-w-5xl px-6 pb-12 pt-6 sm:pt-10">
+          <p className="inline-block rounded-full bg-bubblegum px-3 py-0.5 font-display text-sm text-paper sm:hidden">
+            {t("episode")}
+          </p>
+          <h1 className="mt-2 font-display text-5xl leading-tight text-ink sm:sr-only">{t("theme")}</h1>
+          <p className="mt-3 font-display text-2xl text-ink sm:mt-0 sm:text-3xl">{t("tagline")}</p>
+          <div className="mt-4 flex flex-wrap items-center gap-x-6 gap-y-3">
+            <p className="inline-block rounded-lg border-2 border-dashed border-ink/40 px-4 py-1.5 font-display text-lg tracking-widest text-ink">
               {dateStamp}
             </p>
-            <p className="mt-4 max-w-xl text-lg text-ink/75">{t("heroBody")}</p>
-            <div className="mt-8 flex flex-wrap items-center gap-4">
-              <Link
-                href="#map"
-                className="inline-block rounded-full bg-tomato px-7 py-3 text-lg text-paper transition-transform hover:scale-105 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ink focus-visible:ring-offset-2"
-              >
-                {t("exploreEvents")} →
-              </Link>
-              <Link
-                href="#programme"
-                className="inline-block rounded-full border-2 border-ink/20 px-7 py-3 text-lg text-ink transition-colors hover:border-ink/50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ink focus-visible:ring-offset-2"
-              >
-                {t("programmeByDay")} →
-              </Link>
-            </div>
+            <p className="max-w-xl text-lg text-ink/75">{t("heroBody")}</p>
           </div>
-
-          {/* Zone illustrations fanned as pasted stickers. Decorative — the
-              zones are properly linked in the sections below. */}
-          <div aria-hidden className="relative mx-auto h-44 w-full max-w-xs sm:h-80 sm:w-72">
-            {categories.slice(0, 4).map((cat, i) => (
-              <div
-                key={cat.slug}
-                className={`absolute w-24 rounded-2xl border-2 border-ink bg-paper p-1.5 shadow-md sm:w-36 ${fan[i].tilt}`}
-                style={{ left: fan[i].left, top: fan[i].top }}
-              >
-                <Image
-                  src={cat.thumbnail}
-                  alt=""
-                  width={132}
-                  height={99}
-                  className="block h-auto w-full rounded-xl object-cover"
-                />
-              </div>
-            ))}
+          <div className="mt-8 flex flex-wrap items-center gap-4">
+            <Link
+              href="#map"
+              className="inline-block rounded-full bg-tomato px-7 py-3 text-lg text-paper transition-transform hover:scale-105 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ink focus-visible:ring-offset-2"
+            >
+              {t("exploreEvents")} →
+            </Link>
+            <Link
+              href="#programme"
+              className="inline-block rounded-full border-2 border-ink/20 px-7 py-3 text-lg text-ink transition-colors hover:border-ink/50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ink focus-visible:ring-offset-2"
+            >
+              {t("programmeByDay")} →
+            </Link>
           </div>
         </div>
       </section>
-      <WaveEdge fill="var(--color-peach)" opacity={0.6} />
 
       {/* The playful village map as primary zone navigation. */}
       <section id="map" className="mx-auto max-w-5xl px-6 pt-14">
