@@ -36,8 +36,15 @@ export default function V4Home() {
     image: [`${SITE_URL}/og/festival-share.png`],
     url: SITE_URL,
   };
-  // "15–20 ส.ค. 2569" — from real data so the hero never goes stale.
-  const dateStamp = `${Number(dates[0].slice(-2))}–${Number(dates[dates.length - 1].slice(-2))} ${formatMonth(dates[dates.length - 1])} ${t("festivalYear")}`;
+  // "28 พ.ย. – 11 ธ.ค. 2569" (or "5–11 ธ.ค. 2569" within one month) — from
+  // real data so the hero never goes stale.
+  const first = dates[0];
+  const last = dates[dates.length - 1];
+  const day = (iso: string) => Number(iso.slice(-2));
+  const dateStamp =
+    formatMonth(first) === formatMonth(last)
+      ? `${day(first)}–${day(last)} ${formatMonth(last)} ${t("festivalYear")}`
+      : `${day(first)} ${formatMonth(first)} – ${day(last)} ${formatMonth(last)} ${t("festivalYear")}`;
   return (
     <main className="flex-1">
       <script
@@ -77,14 +84,12 @@ export default function V4Home() {
             {t("episode")}
           </p>
           <h1 className="mt-2 font-display text-5xl leading-tight text-ink sm:sr-only">{t("theme")}</h1>
-          <p className="mt-3 font-display text-2xl text-ink sm:mt-0 sm:text-3xl">{t("tagline")}</p>
-          <div className="mt-4 flex flex-wrap items-center gap-x-6 gap-y-3">
-            <p className="inline-block rounded-lg border-2 border-dashed border-ink/40 px-4 py-1.5 font-display text-lg tracking-widest text-ink">
-              {dateStamp}
-            </p>
-            <p className="max-w-xl text-lg text-ink/75">{t("heroBody")}</p>
-          </div>
-          <div className="mt-8 flex flex-wrap items-center gap-4">
+          {/* The banner carries the title and theme; below it only the one fact
+              the banner lacks (the dates) and the two ways in. */}
+          <p className="mt-4 inline-block rounded-lg border-2 border-dashed border-ink/40 px-4 py-1.5 font-display text-lg tracking-widest text-ink sm:mt-0">
+            {dateStamp}
+          </p>
+          <div className="mt-6 flex flex-wrap items-center gap-4">
             <Link
               href="#map"
               className="inline-block rounded-full bg-tomato px-7 py-3 text-lg text-paper transition-transform hover:scale-105 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ink focus-visible:ring-offset-2"
