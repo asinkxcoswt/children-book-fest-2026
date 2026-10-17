@@ -121,17 +121,17 @@ export default function V4Home() {
                   i % 2 ? "hover:rotate-1" : "hover:-rotate-1"
                 }`}
               >
-                <div className="flex items-start gap-5">
-                  <div className="w-28 shrink-0 overflow-hidden rounded-2xl border-4 border-paper transition-transform group-hover:scale-105">
-                    <Image
-                      src={cat.thumbnail}
-                      alt=""
-                      width={132}
-                      height={99}
-                      className="block h-auto w-full object-cover"
-                    />
-                  </div>
-                  <div>
+                <div className="flex items-end gap-5">
+                  {/* Zone character: a cut-out standing on the card, not a framed thumbnail. */}
+                  <Image
+                    src={cat.thumbnail}
+                    alt=""
+                    width={160}
+                    height={260}
+                    sizes="7rem"
+                    className="h-40 w-28 shrink-0 object-contain object-bottom drop-shadow-md transition-transform group-hover:scale-105"
+                  />
+                  <div className="pb-2">
                     <p className={`font-display text-3xl ${c.on}`}>{pick(cat.name)}</p>
                     <p className={`text-sm ${c.on} opacity-80`}>{cat.name.en}</p>
                   </div>

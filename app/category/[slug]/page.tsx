@@ -49,8 +49,8 @@ export default async function V4Category({ params }: { params: Promise<{ slug: s
 
   return (
     <main className="flex-1">
-      {/* Chapter header as a book cover: zone art framed like a sticker on the
-          color band, plus orientation chips (event count, days this zone runs). */}
+      {/* Chapter header: the zone's character standing on the colour band,
+          plus orientation (event count, days this zone runs). */}
       <section className={`${c.bg}`}>
         <div className="mx-auto grid max-w-5xl gap-8 px-6 pb-10 pt-12 sm:grid-cols-[1fr_auto] sm:items-center sm:py-12">
           <div>
@@ -73,15 +73,15 @@ export default async function V4Category({ params }: { params: Promise<{ slug: s
             </Link>
           </div>
 
-          <div aria-hidden className="mx-auto w-40 rotate-3 rounded-2xl border-2 border-ink bg-paper p-2 shadow-md sm:w-52">
-            <Image
-              src={category.thumbnail}
-              alt=""
-              width={264}
-              height={198}
-              className="block h-auto w-full rounded-xl object-cover"
-            />
-          </div>
+          <Image
+            src={category.thumbnail}
+            alt=""
+            width={400}
+            height={640}
+            priority
+            sizes="(min-width: 640px) 14rem, 10rem"
+            className="mx-auto h-64 w-40 object-contain object-bottom drop-shadow-lg sm:h-80 sm:w-56"
+          />
         </div>
       </section>
       <WaveEdge fill={`var(--color-${category.color})`} />
