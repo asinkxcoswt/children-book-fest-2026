@@ -56,7 +56,11 @@ export default function V4Home() {
           image carries it; on phones the lettering would be unreadable, so a
           crop of the character cluster sits beside live text instead. */}
       <section className="bg-paper">
-        <div className="mx-auto max-w-5xl">
+        {/* The banner's edges are the red curtain, so a tomato band behind it
+            carries the curtains to the viewport edges; the ink rule below is
+            the stage floor continuing. Phones show the crop on plain paper. */}
+        <div className="sm:border-b-[10px] sm:border-ink/80 sm:bg-tomato">
+          <div className="mx-auto max-w-5xl">
           <Image
             src="/content/banner.png"
             alt=""
@@ -77,6 +81,7 @@ export default function V4Home() {
               className="h-auto w-full"
             />
             <p className="pb-4 font-display text-base leading-snug text-tomato">{t("festivalName")}</p>
+          </div>
           </div>
         </div>
         <div className="relative mx-auto max-w-5xl px-6 pb-12 pt-6 sm:pt-16">
