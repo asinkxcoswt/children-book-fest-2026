@@ -111,7 +111,7 @@ export default async function V4Event({ params }: { params: Promise<{ slug: stri
 
         <aside className={`relative h-fit rounded-2xl border-2 border-ink/10 bg-paper p-6 ${event.mascot ? "mt-8 sm:mt-0" : ""}`}>
           {/* The event's mascot, when it has one, peeks over the top-right
-              corner of the ticket box — behind it, so it never covers content. */}
+              corner of the ticket box, feet on its top edge. */}
           {event.mascot && (
             <Image
               src={event.mascot}
@@ -119,7 +119,7 @@ export default async function V4Event({ params }: { params: Promise<{ slug: stri
               width={300}
               height={480}
               sizes="6rem"
-              className="absolute bottom-[calc(100%-1rem)] right-5 -z-10 h-auto w-24 drop-shadow-sm"
+              className="pointer-events-none absolute bottom-[calc(100%-0.75rem)] right-4 z-10 h-auto w-24 drop-shadow-md"
             />
           )}
           {/* Zone chip (names the color coding, links back to the zone) + share. */}
