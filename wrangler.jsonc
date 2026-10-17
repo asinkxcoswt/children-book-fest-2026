@@ -17,5 +17,15 @@
     // asset store without an invocation (free, and faster).
     "run_worker_first": ["/api/*"]
   },
+  // Plain (non-secret) runtime variables. `wrangler deploy` replaces the
+  // Worker's vars with this block on every deploy, so anything set only in
+  // the dashboard is lost — keep them here. TICKET_API_KEY is a SECRET and is
+  // deliberately absent: set it once with `wrangler secret put TICKET_API_KEY`
+  // or in the dashboard; deploys never touch secrets. NEXT_PUBLIC_SITE_URL is
+  // a BUILD variable (baked into the HTML), not a runtime one.
+  "vars": {
+    "TICKET_API_URL": "https://api.cow-ticket.dev",
+    "TICKET_ACCOUNT_ID": "my-merchant"
+  },
   "observability": { "enabled": true }
 }
