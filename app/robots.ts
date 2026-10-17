@@ -6,8 +6,8 @@ export default function robots(): MetadataRoute.Robots {
     rules: {
       userAgent: "*",
       allow: "/",
-      // API routes and the post-purchase flow carry no indexable content.
-      disallow: ["/api/", "/checkout/"],
+      // API routes carry no indexable content.
+      disallow: ["/api/"],
     },
     sitemap: `${SITE_URL}/sitemap.xml`,
   };
