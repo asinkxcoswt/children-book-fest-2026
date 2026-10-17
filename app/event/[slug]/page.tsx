@@ -158,14 +158,21 @@ export default async function V4Event({ params }: { params: Promise<{ slug: stri
           </div>
           {/* Ticketing credit — a quiet mark where the platform is in use. */}
           {!event.walkIn && event.ticketEventCode && (
-            <p className="mt-5 border-t-2 border-ink/10 pt-3 text-xs text-ink/60">
-              {t("ticketingBy")}{" "}
+            <p className="mt-5 flex items-center gap-2 border-t-2 border-ink/10 pt-3 text-xs text-ink/60">
+              <span>{t("ticketingBy")}</span>
               <a
                 href={COW_TICKET_URL}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="font-display text-sm text-ink underline decoration-ink/30 underline-offset-4 transition-colors hover:decoration-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ink focus-visible:ring-offset-2"
+                className="inline-flex items-center gap-1.5 rounded-md font-display text-sm text-ink underline decoration-ink/30 underline-offset-4 transition-colors hover:decoration-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ink focus-visible:ring-offset-2"
               >
+                <Image
+                  src="/cow-ticket/cow-ticket-logo-transparent.svg"
+                  alt=""
+                  width={24}
+                  height={24}
+                  className="h-6 w-6"
+                />
                 CowTicket ↗
               </a>
             </p>
