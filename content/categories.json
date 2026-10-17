@@ -1,46 +1,70 @@
 [
   {
     "slug": "storytelling",
-    "name": { "th": "เล่านิทาน", "en": "Storytelling" },
+    "name": {
+      "th": "เล่านิทาน",
+      "en": "Storytelling"
+    },
     "description": {
       "th": "ฟังนิทานสด เล่าเรื่องด้วยเสียงและภาพ ชวนเด็ก ๆ เข้าสู่โลกของจินตนาการ",
       "en": "Live read-alouds and performances that pull children into the world of a story."
     },
     "thumbnail": "/content/zones/storytelling-reading-with-mouse.png",
-    "thumbnailLetter": { "th": "เล่า", "en": "S" },
+    "thumbnailLetter": {
+      "th": "เล่า",
+      "en": "S"
+    },
     "color": "bubblegum"
   },
   {
-    "slug": "illustration",
-    "name": { "th": "วาดภาพประกอบ", "en": "Illustration" },
-    "description": {
-      "th": "เวิร์กชอปลงมือวาด ระบายสี และสร้างตัวละครกับนักวาดภาพประกอบมืออาชีพ",
-      "en": "Hands-on workshops to draw, paint, and invent characters with working illustrators."
+    "slug": "workshop",
+    "name": {
+      "th": "เวิร์กชอป",
+      "en": "Workshop"
     },
-    "thumbnail": "/content/zones/illustration-green-crayon.png",
-    "thumbnailLetter": { "th": "วาด", "en": "I" },
+    "description": {
+      "th": "เวิร์กชอปลงมือทำ วาด ระบายสี และประดิษฐ์ กับนักวาดและนักสร้างสรรค์มืออาชีพ",
+      "en": "Hands-on workshops to draw, paint, and make things with working illustrators and makers."
+    },
+    "thumbnail": "/content/zones/workshop-green-crayon.png",
+    "thumbnailLetter": {
+      "th": "ทำ",
+      "en": "W"
+    },
     "color": "sky"
   },
   {
-    "slug": "author-talks",
-    "name": { "th": "พบนักเขียน", "en": "Author talks" },
-    "description": {
-      "th": "พบปะพูดคุยกับนักเขียนและนักวาด เบื้องหลังการสร้างหนังสือภาพเล่มโปรด",
-      "en": "Meet the authors and artists behind beloved picture books."
+    "slug": "meet-the-creators",
+    "name": {
+      "th": "พบผู้สร้างสรรค์",
+      "en": "Meet the creators"
     },
-    "thumbnail": "/content/zones/author-talks-hugging-book.png",
-    "thumbnailLetter": { "th": "พบ", "en": "A" },
+    "description": {
+      "th": "พบปะพูดคุยกับนักเขียน นักวาด และผู้สร้างสรรค์ เบื้องหลังหนังสือภาพเล่มโปรด",
+      "en": "Meet the authors, illustrators, and creators behind beloved picture books."
+    },
+    "thumbnail": "/content/zones/meet-the-creators-waving.png",
+    "thumbnailLetter": {
+      "th": "พบ",
+      "en": "M"
+    },
     "color": "tangerine"
   },
   {
-    "slug": "family-play",
-    "name": { "th": "เล่นสนุกกับครอบครัว", "en": "Family play" },
-    "description": {
-      "th": "ฐานกิจกรรมและการละเล่นที่พ่อแม่ลูกร่วมสนุกได้ตลอดทั้งวัน",
-      "en": "Drop-in activity stations the whole family can enjoy all day long."
+    "slug": "seminar",
+    "name": {
+      "th": "เสวนา",
+      "en": "Seminar"
     },
-    "thumbnail": "/content/zones/family-play-drum.png",
-    "thumbnailLetter": { "th": "เล่น", "en": "F" },
+    "description": {
+      "th": "วงเสวนาและการบรรยายสำหรับพ่อแม่ คุณครู และผู้สนใจ ว่าด้วยหนังสือภาพและการอ่านของเด็ก",
+      "en": "Talks and panel discussions for parents, teachers, and anyone curious about picture books and children's reading."
+    },
+    "thumbnail": "/content/zones/seminar-hugging-book.png",
+    "thumbnailLetter": {
+      "th": "คุย",
+      "en": "S"
+    },
     "color": "meadow"
   }
 ]
