@@ -42,3 +42,10 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 !.env.example
+
+# Client originals: multi-megabyte reference files that never ship. The
+# trimmed, downsized sources the site actually uses live in image-src/content/zones
+# and image-src/content/mascots. Keep the originals in the shared drive.
+image-src/content/characters/
+public/content/characters/
+image-src/**/*.psd
