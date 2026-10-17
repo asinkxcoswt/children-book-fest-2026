@@ -79,17 +79,18 @@ export default function V4Home() {
             <p className="pb-4 font-display text-base leading-snug text-tomato">{t("festivalName")}</p>
           </div>
         </div>
-        <div className="mx-auto max-w-5xl px-6 pb-12 pt-6 sm:pt-10">
+        <div className="relative mx-auto max-w-5xl px-6 pb-12 pt-6 sm:pt-16">
           <p className="inline-block rounded-full bg-bubblegum px-3 py-0.5 font-display text-sm text-paper sm:hidden">
             {t("episode")}
           </p>
           <h1 className="mt-2 font-display text-5xl leading-tight text-ink sm:sr-only">{t("theme")}</h1>
-          {/* The banner carries the title and theme; below it only the one fact
-              the banner lacks (the dates) and the two ways in. */}
-          <p className="mt-4 inline-block rounded-lg border-2 border-dashed border-ink/40 px-4 py-1.5 font-display text-lg tracking-widest text-ink sm:mt-0">
+          {/* The dates as a ticket stuck on the stage floor — the one fact the
+              banner lacks. From `sm` it straddles the banner's bottom edge; on
+              phones it follows the title. */}
+          <p className="mt-5 inline-block -rotate-2 rounded-xl border-2 border-ink bg-sunshine px-5 py-2 font-display text-xl tracking-wide text-ink shadow-[3px_3px_0_var(--color-ink)] sm:absolute sm:-top-6 sm:left-8 sm:mt-0 sm:text-2xl">
             {dateStamp}
           </p>
-          <div className="mt-6 flex flex-wrap items-center gap-4">
+          <div className="mt-6 flex flex-wrap items-center gap-4 sm:mt-0">
             <Link
               href="#map"
               className="inline-block rounded-full bg-tomato px-7 py-3 text-lg text-paper transition-transform hover:scale-105 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ink focus-visible:ring-offset-2"
