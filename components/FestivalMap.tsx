@@ -10,10 +10,10 @@ import { t, pick } from "@/lib/i18n";
 
 /* Pin positions on the map (percent). Order matches getCategories(). */
 const PIN_POSITIONS = [
-  { left: "12%", top: "16%" },
-  { left: "58%", top: "8%" },
-  { left: "76%", top: "52%" },
-  { left: "32%", top: "56%" },
+  { left: "12%", top: "22%" },
+  { left: "58%", top: "14%" },
+  { left: "74%", top: "55%" },
+  { left: "30%", top: "64%" },
 ];
 
 /* The trail SVG draws into this viewBox, stretched to fill (preserveAspectRatio="none"). */
@@ -60,7 +60,7 @@ export default function FestivalMap({
 
   return (
     <>
-      <div className="relative mt-8 h-[26rem] overflow-hidden rounded-3xl border-2 border-ink/10 bg-meadow/10">
+      <div className="relative mt-8 h-[22rem] overflow-hidden rounded-3xl border-2 border-ink/10 bg-meadow/10">
         {/* Decorative grid + trail. */}
         <div
           aria-hidden
@@ -106,26 +106,19 @@ export default function FestivalMap({
         {categories.map((cat, i) => {
           const c = tokenClasses(cat.color);
           const pos = PIN_POSITIONS[i % PIN_POSITIONS.length];
+          // Flip the popup below top-row pins so it isn't clipped by the rounded overflow.
+          const below = parseFloat(pos.top) < 40;
           const isCurrent = cat.slug === currentSlug;
           const badge = (
             <>
               <span
-                className={`mx-auto flex h-20 w-20 items-end justify-center rounded-full ${
-                  isCurrent ? "bg-sunshine ring-4 ring-tomato" : "bg-paper/80"
-                }`}
+                className={`mx-auto flex h-14 w-14 items-center justify-center rounded-2xl border-4 ${
+                  isCurrent ? "border-tomato" : "border-paper"
+                } ${c.bg} font-display text-2xl ${c.on}`}
               >
-                <Image
-                  src={cat.thumbnail}
-                  alt=""
-                  width={100}
-                  height={160}
-                  sizes="5rem"
-                  className="h-24 w-16 object-contain object-bottom drop-shadow-md transition-transform group-hover:-translate-y-1"
-                />
+                {pick(cat.thumbnailLetter)}
               </span>
-              <span className={`mt-1 inline-block rounded-full px-2 py-0.5 font-display text-sm ${c.bg} ${c.on}`}>
-                {pick(cat.name)}
-              </span>
+              <span className="mt-1 block text-xs text-ink/80">{pick(cat.name)}</span>
             </>
           );
           return (
@@ -134,12 +127,28 @@ export default function FestivalMap({
               className="group absolute -translate-x-1/2 text-center"
               style={{ left: pos.left, top: pos.top }}
             >
+              {/* Zone character pops up on hover. */}
+              <div
+                className={`pointer-events-none absolute left-1/2 z-10 -translate-x-1/2 scale-90 opacity-0 transition-all duration-150 group-hover:scale-100 group-hover:opacity-100 ${
+                  below ? "top-full mt-2" : "bottom-full mb-2"
+                }`}
+              >
+                <Image
+                  src={cat.thumbnail}
+                  alt=""
+                  width={100}
+                  height={160}
+                  sizes="6rem"
+                  className="h-40 w-24 object-contain object-bottom drop-shadow-lg"
+                />
+              </div>
+
               {isCurrent ? (
                 <div aria-current="page">{badge}</div>
               ) : (
                 <Link
                   href={`${basePath}/category/${cat.slug}`}
-                  className="block rounded-2xl outline-offset-4"
+                  className="block rounded-2xl outline-offset-4 transition-transform hover:-translate-y-0.5"
                 >
                   {badge}
                 </Link>
