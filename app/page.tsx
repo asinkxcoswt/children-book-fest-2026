@@ -4,7 +4,7 @@ import type { Metadata } from "next";
 import { getCategories, getEventCount, getEvents, getFestivalDates } from "@/lib/content";
 import { SITE_URL } from "@/lib/site";
 import { tokenClasses } from "@/lib/colors";
-import { t, pick, formatMonth } from "@/lib/i18n";
+import { t, pick } from "@/lib/i18n";
 import FestivalMap from "@/components/FestivalMap";
 import ScheduleBoard from "@/components/ScheduleBoard";
 import SectionHeading from "@/components/SectionHeading";
@@ -36,15 +36,6 @@ export default function V4Home() {
     image: [`${SITE_URL}/og/festival-share.png`],
     url: SITE_URL,
   };
-  // "28 พ.ย. – 11 ธ.ค. 2569" (or "5–11 ธ.ค. 2569" within one month) — from
-  // real data so the hero never goes stale.
-  const first = dates[0];
-  const last = dates[dates.length - 1];
-  const day = (iso: string) => Number(iso.slice(-2));
-  const dateStamp =
-    formatMonth(first) === formatMonth(last)
-      ? `${day(first)}–${day(last)} ${formatMonth(last)} ${t("festivalYear")}`
-      : `${day(first)} ${formatMonth(first)} – ${day(last)} ${formatMonth(last)} ${t("festivalYear")}`;
   return (
     <main className="flex-1">
       <script
@@ -82,10 +73,11 @@ export default function V4Home() {
         </div>
         <div className="relative mx-auto max-w-5xl px-6 pb-12 pt-16">
           <h1 className="sr-only">{t("theme")}</h1>
-          {/* The dates as a ticket stuck on the stage floor — the one fact the
-              banner lacks — straddling the banner's bottom edge. */}
+          {/* The festival dates as a ticket stuck on the stage floor — the one
+              fact the banner lacks. Editorial copy (content/ui.json), not derived
+              from the programme, so it can state the full run. */}
           <p className="absolute -top-6 left-6 inline-block -rotate-2 rounded-xl border-2 border-ink bg-sunshine px-5 py-2 font-display text-xl tracking-wide text-ink shadow-[3px_3px_0_var(--color-ink)] sm:left-8 sm:text-2xl">
-            {dateStamp}
+            {t("festivalDates")}
           </p>
           <div className="flex flex-wrap items-center gap-4">
             <Link
