@@ -31,14 +31,35 @@ const TAG = "children-book-fest-2026";
  *  session fields already carry. A single-session event has nothing to count,
  *  so it reads "รอบเดียว" (one round only) instead of "รอบที่ 1". */
 const ticketNameFor = (index, total) => (total === 1 ? "รอบเดียว" : `รอบที่ ${index + 1}`);
-const PRICE = 0; // satang: ฿10 = 1000
+/** Starting price for a NEW ticket only (satang: ฿10 = 1000). Real prices are
+ *  set per event in the CowTicket portal, so an existing ticket's price is
+ *  never compared or overwritten (it is absent from CONFIG_FIELDS). */
+const PRICE = 0;
 const LIMIT_PER_ORDER = 4;
-/** Every ticket admits one adult and one child; extra people are add-on units
- *  priced per unit above `included` (satang). Pushed to every session, so the
- *  storefront shows the same adult/child steppers on all events. */
+
+/** Every person takes a seat, so each unit counts against the session's
+ *  quantity, not just the ticket. The platform derives the ticket's
+ *  capacityUnit ("seats") from this itself — never send that field. */
 const ADD_ONS = [
-  { code: "adult", name: "ผู้ใหญ่", included: 1, max: 2, extraPrice: 5000 },
-  { code: "child", name: "เด็ก", included: 1, max: 4, extraPrice: 5000 },
+  {
+    code: "adult",
+    name: "ผู้ใหญ่",
+    included: 1,
+    max: 2,
+    extraPrice: 5000,
+    countsAsSeat: true,
+    // `fields` is a LIST of questions, asked once per unit.
+    fields: [{ key: "name", type: "text", required: false, labelTh: "ชื่อผู้ปกครอง", labelEn: "Adult name" }],
+  },
+  {
+    code: "child",
+    name: "เด็ก",
+    included: 1,
+    max: 4,
+    extraPrice: 5000,
+    countsAsSeat: true,
+    fields: [{ key: "name", type: "text", required: false, labelTh: "ชื่อบุตรธิดา", labelEn: "Child name" }],
+  },
 ];
 const DEFAULT_QUANTITY = 10000;
 /** One deliberately tiny event so the sold-out path is visible on the site. */
@@ -169,11 +190,11 @@ function desiredConfigs(event) {
   }));
 }
 
-/** Fields we own on an EXISTING event. Anything not listed here — including
- *  paymentMethods and purchaseForm, which are only seeded at creation — is
- *  left to the organizer's app. */
+/** Fields we own on an EXISTING event / ticket. Anything not listed here —
+ *  paymentMethods, purchaseForm and the ticket price, which are only seeded at
+ *  creation — is left to the organizer's app. */
 const EVENT_FIELDS = ["name", "refundAllowed", "refundTermTh", "refundTermEn"];
-const CONFIG_FIELDS = ["name", "group", "price", "quantity", "limitPerOrder", "addOns", "status",
+const CONFIG_FIELDS = ["name", "group", "quantity", "limitPerOrder", "addOns", "status",
                        "startSellingDate", "endSellingDate", "sessionStartAt", "sessionEndAt"];
 
 /** Timestamps: compared as instants, never as strings. We send +07:00 and the
@@ -194,7 +215,7 @@ const BLANKABLE_FIELDS = new Set(["group"]);
  *  re-PUT the same list forever. */
 const organizerFields = (form) =>
   JSON.stringify(
-    (form ?? [])
+    asList(form)
       .filter((f) => !f.auto)
       .map((f) => ({
         key: f.key,
@@ -206,6 +227,21 @@ const organizerFields = (form) =>
       })),
   );
 
+/** Form-shaped values read back from the platform are not always arrays: a
+ *  per-unit `fields` list may come back JSON-encoded, or absent. */
+function asList(value) {
+  if (Array.isArray(value)) return value;
+  if (typeof value === "string" && value.trim()) {
+    try {
+      const parsed = JSON.parse(value);
+      return Array.isArray(parsed) ? parsed : [];
+    } catch {
+      return [];
+    }
+  }
+  return [];
+}
+
 /** Add-ons read back carry platform-side extras (ids, countsAsSeat defaults,
  *  per-unit fields), so compare only what we push, in order. */
 const ownedAddOns = (list) =>
@@ -216,6 +252,8 @@ const ownedAddOns = (list) =>
       included: a.included,
       max: a.max,
       extraPrice: a.extraPrice,
+      countsAsSeat: !!a.countsAsSeat,
+      fields: organizerFields(a.fields),
     })),
   );
 
