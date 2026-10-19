@@ -28,7 +28,7 @@
   // a BUILD variable (baked into the HTML), not a runtime one.
   "vars": {
     "TICKET_API_URL": "https://api.cow-ticket.dev",
-    "TICKET_ACCOUNT_ID": "my-merchant"
+    "TICKET_ACCOUNT_ID": "kwanjaoei-c89033"
   },
   "observability": { "enabled": true }
 }
