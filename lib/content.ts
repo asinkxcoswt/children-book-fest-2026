@@ -54,11 +54,20 @@ export function getSessionsByDate(event: FestivalEvent): { date: string; session
   return groups;
 }
 
-/** Every date the festival runs on — unique, sorted. Drives date-primary
- *  displays (schedule board columns, per-card day strips). */
+/** The festival's fixed run (inclusive ISO dates). Keep in sync with the
+ *  editorial hero dates in content/ui.json. */
+export const FESTIVAL_START = "2026-11-28";
+export const FESTIVAL_END = "2026-12-13";
+
+/** Every date the festival runs on, in order — the fixed run above, not the
+ *  dates events happen to be scheduled on, so the schedule board and per-card
+ *  day strips keep their full width while the programme is still filling in. */
 export function getFestivalDates(): string[] {
-  const dates = new Set(events.flatMap((e) => e.schedule.sessions.map((s) => s.date)));
-  return [...dates].sort();
+  const dates: string[] = [];
+  const d = new Date(`${FESTIVAL_START}T00:00:00Z`);
+  const end = new Date(`${FESTIVAL_END}T00:00:00Z`);
+  for (; d <= end; d.setUTCDate(d.getUTCDate() + 1)) dates.push(d.toISOString().slice(0, 10));
+  return dates;
 }
 
 /** Count of events per category slug — handy for category tiles. */

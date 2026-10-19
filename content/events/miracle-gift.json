@@ -1,0 +1,46 @@
+{
+  "slug": "miracle-gift",
+  "thumbnail": "/content/events/miracle-gift.jpeg",
+  "mascot": "/content/mascots/two-friends-trading.png",
+  "title": {
+    "th": "ของขวัญมหัศจรรย์",
+    "en": "The Miracle Gift"
+  },
+  "summary": {
+    "th": "นิทานเล่าสดจากหนังสือ \"ของขวัญมหัศจรรย์\" โดย พี่พริม จาก Barefoot Banana",
+    "en": "A live read-aloud of the picture book The Miracle Gift with Phi Prim from Barefoot Banana."
+  },
+  "description": {
+    "th": "ร่วมฟังนิทาน \"ของขวัญมหัศจรรย์\" เล่าสดโดยพี่พริม จาก Barefoot Banana พร้อมตุ๊กตาและภาพประกอบจากหนังสือ ชวนเด็ก ๆ และครอบครัวมาค้นหาว่าของขวัญที่มหัศจรรย์ที่สุดคืออะไร",
+    "en": "Join Phi Prim from Barefoot Banana for a live telling of The Miracle Gift, complete with puppets and artwork from the book, as children and families discover what the most wonderful gift of all might be."
+  },
+  "category": "storytelling",
+  "schedule": {
+    "venue": {
+      "th": "Main Stage ห้องแกลลอรี",
+      "en": "Main Stage, Gallery Room"
+    },
+    "sessions": [
+      {
+        "date": "2026-11-28",
+        "start": "15:00",
+        "end": "15:50",
+        "ticketCodes": [
+          "20261128-1500"
+        ]
+      }
+    ]
+  },
+  "ageRange": "เด็กๆ | ครอบครัว | ผู้สนใจทั่วไป",
+  "gallery": [
+    {
+      "src": "/content/events/miracle-gift.jpeg",
+      "alt": {
+        "th": "นักเล่านิทานเปิดหนังสือภาพให้เด็ก ๆ ดูข้างบ่อบอลสีขาว",
+        "en": "A storyteller holding open a picture book for children beside a white ball pit"
+      }
+    }
+  ],
+  "ticketEventCode": "cbf2026-miracle-gift",
+  "walkIn": true
+}

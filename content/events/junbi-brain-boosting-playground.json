@@ -1,0 +1,46 @@
+{
+  "slug": "junbi-brain-boosting-playground",
+  "thumbnail": "/content/events/junbi-brain-boosting-playground.jpeg",
+  "mascot": "/content/mascots/boy-magnifier.png",
+  "title": {
+    "th": "Junbi Brain Boosting Playground",
+    "en": "Junbi Brain Boosting Playground"
+  },
+  "summary": {
+    "th": "สนามเด็กเล่นเสริมพัฒนาการสมอง กับ Junbi Taekwondo Studio",
+    "en": "A brain-boosting play session for young children with Junbi Taekwondo Studio."
+  },
+  "description": {
+    "th": "พื้นที่เล่นที่ออกแบบมาเพื่อกระตุ้นพัฒนาการสมองของเด็กเล็ก ผ่านของเล่นต่อประกอบ บล็อก และกิจกรรมที่ชวนให้เด็กได้ลงมือคิด แก้ปัญหา และเล่นอย่างมีสมาธิ จัดโดย Junbi Taekwondo Studio",
+    "en": "A play space designed to spark young brains with building toys, blocks, and activities that invite children to think, solve problems, and play with focus. Run by Junbi Taekwondo Studio."
+  },
+  "category": "workshop",
+  "schedule": {
+    "venue": {
+      "th": "ห้อง MDIC",
+      "en": "MDIC Room"
+    },
+    "sessions": [
+      {
+        "date": "2026-11-29",
+        "start": "16:00",
+        "end": "17:50",
+        "ticketCodes": [
+          "20261129-1600"
+        ]
+      }
+    ]
+  },
+  "ageRange": "เด็กๆ | ครอบครัว | ผู้สนใจทั่วไป",
+  "gallery": [
+    {
+      "src": "/content/events/junbi-brain-boosting-playground.jpeg",
+      "alt": {
+        "th": "เด็กชายนั่งประกอบของเล่นสีฟ้าอย่างตั้งใจ",
+        "en": "A boy concentrating on assembling a blue toy"
+      }
+    }
+  ],
+  "ticketEventCode": "cbf2026-junbi-brain-boosting-playground",
+  "walkIn": false
+}

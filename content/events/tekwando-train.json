@@ -1,0 +1,46 @@
+{
+  "slug": "tekwando-train",
+  "thumbnail": "/content/events/tekwando-train.jpeg",
+  "mascot": "/content/mascots/girl-smelling-flower.png",
+  "title": {
+    "th": "ตะลุยโลกเทควันโดนิทาน ตอน \"ต่อทางรถไฟ\"",
+    "en": "Taekwondo Story Adventure: Build the Railway"
+  },
+  "summary": {
+    "th": "กิจกรรมเทควันโดผสานนิทาน กับ Junbi Taekwondo Studio",
+    "en": "Taekwondo meets storytelling in an active session with Junbi Taekwondo Studio."
+  },
+  "description": {
+    "th": "ผจญภัยในโลกนิทานผ่านการเคลื่อนไหวแบบเทควันโด เด็ก ๆ จะได้ออกกำลัง ฝึกสมาธิ และช่วยกัน \"ต่อทางรถไฟ\" ให้เรื่องราวเดินทางต่อไปได้ จัดโดย Junbi Taekwondo Studio",
+    "en": "An adventure through a storybook world powered by taekwondo movement. Children exercise, practise focus, and work together to build the railway that keeps the story moving. Run by Junbi Taekwondo Studio."
+  },
+  "category": "workshop",
+  "schedule": {
+    "venue": {
+      "th": "ห้อง MDIC",
+      "en": "MDIC Room"
+    },
+    "sessions": [
+      {
+        "date": "2026-11-29",
+        "start": "16:00",
+        "end": "17:50",
+        "ticketCodes": [
+          "20261129-1600"
+        ]
+      }
+    ]
+  },
+  "ageRange": "เด็กๆ | ครอบครัว | ผู้สนใจทั่วไป",
+  "gallery": [
+    {
+      "src": "/content/events/tekwando-train.jpeg",
+      "alt": {
+        "th": "เด็ก ๆ และครูเทควันโดถ่ายรูปหมู่กับกล่องกระดาษหน้าจอฉาย",
+        "en": "Children and taekwondo instructors posing with cardboard boxes in front of a projector screen"
+      }
+    }
+  ],
+  "ticketEventCode": "cbf2026-tekwando-train",
+  "walkIn": false
+}

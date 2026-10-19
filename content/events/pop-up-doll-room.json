@@ -1,0 +1,54 @@
+{
+  "slug": "pop-up-doll-room",
+  "thumbnail": "/content/events/pop-up-doll-room.jpeg",
+  "mascot": "/content/mascots/girl-glasses-reading.png",
+  "title": {
+    "th": "Pop-up doll room \"ธรรมชาติวิวไหน Rizz ใจ\" สุดๆ",
+    "en": "Pop-up Doll Room: Nature Scenes That Steal Your Heart"
+  },
+  "summary": {
+    "th": "เวิร์กชอปสร้างห้องตุ๊กตาป๊อปอัปธีมธรรมชาติ กับ Kiass Matt",
+    "en": "Build a pop-up doll room with a nature theme, with Kiass Matt."
+  },
+  "description": {
+    "th": "สร้างห้องตุ๊กตาป๊อปอัปในธีมธรรมชาติที่คุณประทับใจ ไม่ว่าจะเป็นโลกใต้ทะเล ทุ่งดอกไม้ หรือป่าเขียว ด้วยเทคนิคตัดกระดาษหลายชั้น นำกิจกรรมโดย Kiass Matt",
+    "en": "Build a pop-up doll room around the natural scene you love most, from an undersea world to a flower meadow or a green forest, using layered paper-cutting techniques. Led by Kiass Matt."
+  },
+  "category": "workshop",
+  "schedule": {
+    "venue": {
+      "th": "ห้อง Auditorium",
+      "en": "Auditorium"
+    },
+    "sessions": [
+      {
+        "date": "2026-11-28",
+        "start": "14:00",
+        "end": "16:50",
+        "ticketCodes": [
+          "20261128-1400"
+        ]
+      },
+      {
+        "date": "2026-12-10",
+        "start": "14:00",
+        "end": "16:50",
+        "ticketCodes": [
+          "20261128-1400"
+        ]
+      }
+    ]
+  },
+  "ageRange": "เด็กๆ | ครอบครัว | ผู้สนใจทั่วไป",
+  "gallery": [
+    {
+      "src": "/content/events/pop-up-doll-room.jpeg",
+      "alt": {
+        "th": "หนังสือป๊อปอัปกระดาษตัดเป็นฉากใต้ทะเลมีเต่าและแมงกะพรุน",
+        "en": "A paper pop-up book opened to an undersea scene with a turtle and jellyfish"
+      }
+    }
+  ],
+  "ticketEventCode": "cbf2026-pop-up-doll-room",
+  "walkIn": false
+}

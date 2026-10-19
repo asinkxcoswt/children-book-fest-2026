@@ -1,0 +1,46 @@
+{
+  "slug": "never-fly-owl",
+  "thumbnail": "/content/events/never-fly-owl.jpeg",
+  "mascot": "/content/mascots/girl-bunny-ears.png",
+  "title": {
+    "th": "Pop-up workshop กับ \"นกฮูกที่ไม่เคยบิน\"",
+    "en": "Pop-up Workshop with The Owl Who Never Flew"
+  },
+  "summary": {
+    "th": "ประดิษฐ์การ์ดป๊อปอัปจากหนังสือ \"นกฮูกที่ไม่เคยบิน\" กับครูแจนแจน จาก Barefoot Banana",
+    "en": "Make a pop-up card inspired by The Owl Who Never Flew with Kru Janjan from Barefoot Banana."
+  },
+  "description": {
+    "th": "เวิร์กชอปประดิษฐ์ป๊อปอัปจากหนังสือภาพ \"นกฮูกที่ไม่เคยบิน\" เด็ก ๆ จะได้วาด ตัด และประกอบตัวละครจากเรื่องให้โผล่ขึ้นมาจากหน้ากระดาษ นำกิจกรรมโดยครูแจนแจน จาก Barefoot Banana",
+    "en": "A pop-up craft workshop based on the picture book The Owl Who Never Flew. Children draw, cut, and assemble the story's characters so they leap off the page. Led by Kru Janjan from Barefoot Banana."
+  },
+  "category": "workshop",
+  "schedule": {
+    "venue": {
+      "th": "ห้อง MDIC",
+      "en": "MDIC Room"
+    },
+    "sessions": [
+      {
+        "date": "2026-11-28",
+        "start": "13:00",
+        "end": "13:50",
+        "ticketCodes": [
+          "20261128-1300"
+        ]
+      }
+    ]
+  },
+  "ageRange": "เด็กๆ | ครอบครัว | ผู้สนใจทั่วไป",
+  "gallery": [
+    {
+      "src": "/content/events/never-fly-owl.jpeg",
+      "alt": {
+        "th": "การ์ดป๊อปอัปรูปนกฮูก หมูมีปีก และกระต่ายปั่นจักรยานบนพื้นหลังท้องฟ้า",
+        "en": "A pop-up card with an owl, a winged pig, and a cycling rabbit against a painted sky"
+      }
+    }
+  ],
+  "ticketEventCode": "cbf2026-never-fly-owl",
+  "walkIn": false
+}

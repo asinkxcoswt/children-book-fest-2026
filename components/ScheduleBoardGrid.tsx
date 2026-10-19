@@ -17,12 +17,17 @@ export interface BoardBlock {
   color: ColorToken;
 }
 
-interface Props {
+export interface BoardWeek {
   /** Column headers, chronological. Labels are preformatted on the server —
    *  Intl output can differ between Node and the browser and would break hydration. */
   days: { date: string; label: string; weekday: string; dayNum: number; month: string }[];
   /** Row per time band; cells align with `days` order. */
   bands: { label: string; cells: BoardBlock[][] }[];
+}
+
+interface Props {
+  /** One day × band grid per week of the festival, stacked in order. */
+  weeks: BoardWeek[];
   /** Category legend for the color-coded blocks. */
   legend: { label: string; color: ColorToken }[];
   /** Brief details per event slug, for the mobile drawer. */
@@ -32,33 +37,35 @@ interface Props {
 /** Presentational half of the schedule board: a printed-programme outline
  *  (typographic day headers — big numeral over a peach rule — and dashed
  *  hairlines for empty slots) holding solid zone-colored event blocks.
- *  - ≥sm: day-column grid; when it overflows, edge fades + prev/next buttons
+ *  - ≥lg: day-column grid; when it overflows, edge fades + prev/next buttons
  *    make the hidden days obvious. Hovering/focusing a block fades every other
  *    event so all sessions of the same event stand out.
- *  - <sm: the same grid compressed to fit the viewport, mini blocks.
- *  Touch has no hover, so on any no-hover device (phones *and* tablets, which
- *  get the ≥sm grid) tapping a block selects it instead of navigating: it
+ *  - <lg: the same grid compressed to fit the viewport, mini blocks
+ *    (phones and tablets alike).
+ *  Touch has no hover, so on any no-hover device (a large tablet in the ≥lg
+ *  grid, or the compact grid) tapping a block selects it instead of navigating: it
  *  applies the same cross-highlight and opens a brief-detail drawer, keeping
  *  the visitor on the board while they compare events. */
-export default function ScheduleBoardGrid({ days, bands, legend, details }: Props) {
+export default function ScheduleBoardGrid({ weeks, legend, details }: Props) {
   const [hovered, setHovered] = useState<string | null>(null);
   const [selected, setSelected] = useState<{ slug: string; session: string } | null>(null);
-  // No-hover device (phone/tablet): blocks in the ≥sm grid open the drawer
+  // No-hover device (e.g. a large tablet): blocks in the ≥lg grid open the drawer
   // instead of navigating. false during SSR/hydration so the server-rendered
   // links match; flips right after mount on touch devices.
   const [touchUI, setTouchUI] = useState(false);
-  const scrollerRef = useRef<HTMLDivElement>(null);
+  const scrollerRefs = useRef<(HTMLDivElement | null)[]>([]);
   // The block that opened the drawer, so closing can hand focus back to it.
   const triggerRef = useRef<HTMLButtonElement | null>(null);
-  const [canScroll, setCanScroll] = useState({ left: false, right: false });
+  const [canScroll, setCanScroll] = useState<{ left: boolean; right: boolean }[]>([]);
 
   const updateScrollState = useCallback(() => {
-    const el = scrollerRef.current;
-    if (!el) return;
-    setCanScroll({
-      left: el.scrollLeft > 4,
-      right: el.scrollLeft < el.scrollWidth - el.clientWidth - 4,
-    });
+    setCanScroll(
+      scrollerRefs.current.map((el) =>
+        el
+          ? { left: el.scrollLeft > 4, right: el.scrollLeft < el.scrollWidth - el.clientWidth - 4 }
+          : { left: false, right: false },
+      ),
+    );
   }, []);
 
   useEffect(() => {
@@ -75,8 +82,8 @@ export default function ScheduleBoardGrid({ days, bands, legend, details }: Prop
     return () => mq.removeEventListener("change", update);
   }, []);
 
-  const scrollByColumn = (direction: 1 | -1) => {
-    const el = scrollerRef.current;
+  const scrollByColumn = (week: number, direction: 1 | -1) => {
+    const el = scrollerRefs.current[week];
     if (!el) return;
     el.scrollBy({ left: direction * el.clientWidth * 0.6, behavior: "smooth" });
   };
@@ -176,115 +183,126 @@ export default function ScheduleBoardGrid({ days, bands, legend, details }: Prop
 
   return (
     <>
-      {/* Mobile: the grid squeezed to the viewport — all days visible, mini tickets. */}
-      <div className="sm:hidden">
+      {/* Mobile: each week's grid squeezed to the viewport — all days visible, mini tickets. */}
+      <div className="lg:hidden">
         <p className="mb-2 text-xs text-ink/50">{t("tapEventHint")}</p>
-        <div
-          className="grid gap-x-1.5"
-          style={{ gridTemplateColumns: `1.75rem repeat(${days.length}, minmax(0, 1fr))` }}
-        >
-          <div />
-          {days.map((day) => (
-            <div key={day.date} className="border-b-[3px] border-peach pb-1 text-center text-ink">
-              <span className="block text-[10px] leading-tight text-ink/55">{day.weekday}</span>
-              <span className="block font-display text-base leading-tight">{day.dayNum}</span>
-            </div>
-          ))}
-
-          {bands.map((band, bandIdx) => (
-            <div key={band.label} className="contents">
-              <div
-                className={`pt-2 text-[10px] leading-tight text-ink/50 ${
-                  bandIdx > 0 ? "border-t border-dashed border-ink/15" : ""
-                }`}
-              >
-                {band.label}
+        {weeks.map(({ days, bands }, w) => (
+          <div
+            key={days[0].date}
+            className={`grid gap-x-1.5 ${w > 0 ? "mt-6" : ""}`}
+            style={{ gridTemplateColumns: `1.75rem repeat(${days.length}, minmax(0, 1fr))` }}
+          >
+            <div />
+            {days.map((day) => (
+              <div key={day.date} className="border-b-[3px] border-peach pb-1 text-center text-ink">
+                <span className="block text-[10px] leading-tight text-ink/55">{day.weekday}</span>
+                <span className="block font-display text-base leading-tight">{day.dayNum}</span>
               </div>
-              {band.cells.map((blocks, i) => (
+            ))}
+
+            {bands.map((band, bandIdx) => (
+              <div key={band.label} className="contents">
                 <div
-                  key={days[i].date}
-                  className={`flex min-h-12 flex-col gap-1.5 py-1.5 ${
+                  className={`pt-2 text-[10px] leading-tight text-ink/50 ${
                     bandIdx > 0 ? "border-t border-dashed border-ink/15" : ""
                   }`}
                 >
-                  {blocks.map((b) => ticket(b, true))}
+                  {band.label}
                 </div>
-              ))}
-            </div>
-          ))}
-        </div>
-        {legendRow}
-      </div>
-
-      {/* ≥sm: day × time-band grid with overflow affordances. */}
-      <div className="hidden sm:block">
-        {touchUI && <p className="mb-2 text-xs text-ink/50">{t("tapEventHint")}</p>}
-        <div className="relative">
-          <div ref={scrollerRef} onScroll={updateScrollState} className="overflow-x-auto">
-            <div
-              className="grid gap-x-3"
-              style={{ gridTemplateColumns: `4.5rem repeat(${days.length}, minmax(11rem, 1fr))` }}
-            >
-              <div />
-              {days.map((day) => (
-                <div key={day.date} className="flex items-baseline gap-2 border-b-[3px] border-peach px-1 pb-2">
-                  <span className="font-display text-3xl leading-none text-ink">{day.dayNum}</span>
-                  <span className="text-xs leading-tight text-ink/55">
-                    <span className="block text-sm text-ink">{day.weekday}</span>
-                    {day.month}
-                  </span>
-                </div>
-              ))}
-
-              {bands.map((band, bandIdx) => (
-                <div key={band.label} className="contents">
+                {band.cells.map((blocks, i) => (
                   <div
-                    className={`pt-3 text-sm text-ink/50 ${
+                    key={days[i].date}
+                    className={`flex min-h-12 flex-col gap-1.5 py-1.5 ${
                       bandIdx > 0 ? "border-t border-dashed border-ink/15" : ""
                     }`}
                   >
-                    {band.label}
+                    {blocks.map((b) => ticket(b, true))}
                   </div>
-                  {band.cells.map((blocks, i) => (
+                ))}
+              </div>
+            ))}
+          </div>
+        ))}
+        {legendRow}
+      </div>
+
+      {/* ≥lg: one day × time-band grid per week, each with overflow affordances. */}
+      <div className="hidden lg:block">
+        {touchUI && <p className="mb-2 text-xs text-ink/50">{t("tapEventHint")}</p>}
+        {weeks.map(({ days, bands }, w) => (
+          <div key={days[0].date} className={`relative ${w > 0 ? "mt-10" : ""}`}>
+            <div
+              ref={(el) => {
+                scrollerRefs.current[w] = el;
+              }}
+              onScroll={updateScrollState}
+              className="overflow-x-auto"
+            >
+              <div
+                className="grid gap-x-3"
+                style={{ gridTemplateColumns: `4.5rem repeat(${days.length}, minmax(7.5rem, 1fr))` }}
+              >
+                <div />
+                {days.map((day) => (
+                  <div key={day.date} className="flex items-baseline gap-2 border-b-[3px] border-peach px-1 pb-2">
+                    <span className="font-display text-3xl leading-none text-ink">{day.dayNum}</span>
+                    <span className="text-xs leading-tight text-ink/55">
+                      <span className="block text-sm text-ink">{day.weekday}</span>
+                      {day.month}
+                    </span>
+                  </div>
+                ))}
+
+                {bands.map((band, bandIdx) => (
+                  <div key={band.label} className="contents">
                     <div
-                      key={days[i].date}
-                      className={`flex min-h-16 flex-col gap-3 px-1 py-3 ${
+                      className={`pt-3 text-sm text-ink/50 ${
                         bandIdx > 0 ? "border-t border-dashed border-ink/15" : ""
                       }`}
                     >
-                      {blocks.map((b) => ticket(b, false))}
+                      {band.label}
                     </div>
-                  ))}
-                </div>
-              ))}
+                    {band.cells.map((blocks, i) => (
+                      <div
+                        key={days[i].date}
+                        className={`flex min-h-16 flex-col gap-3 px-1 py-3 ${
+                          bandIdx > 0 ? "border-t border-dashed border-ink/15" : ""
+                        }`}
+                      >
+                        {blocks.map((b) => ticket(b, false))}
+                      </div>
+                    ))}
+                  </div>
+                ))}
+              </div>
             </div>
-          </div>
 
-          {canScroll.left && (
-            <div className="pointer-events-none absolute inset-y-0 left-0 flex w-16 items-center bg-gradient-to-r from-paper to-transparent">
-              <button
-                type="button"
-                aria-label={t("earlierDays")}
-                onClick={() => scrollByColumn(-1)}
-                className="pointer-events-auto flex h-10 w-10 items-center justify-center rounded-full border-2 border-ink/15 bg-paper text-lg text-ink shadow-sm transition-transform hover:scale-110 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ink focus-visible:ring-offset-2"
-              >
-                ←
-              </button>
-            </div>
-          )}
-          {canScroll.right && (
-            <div className="pointer-events-none absolute inset-y-0 right-0 flex w-16 items-center justify-end bg-gradient-to-l from-paper to-transparent">
-              <button
-                type="button"
-                aria-label={t("laterDays")}
-                onClick={() => scrollByColumn(1)}
-                className="pointer-events-auto flex h-10 w-10 items-center justify-center rounded-full border-2 border-ink/15 bg-paper text-lg text-ink shadow-sm transition-transform hover:scale-110 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ink focus-visible:ring-offset-2"
-              >
-                →
-              </button>
-            </div>
-          )}
-        </div>
+            {canScroll[w]?.left && (
+              <div className="pointer-events-none absolute inset-y-0 left-0 flex w-16 items-center bg-gradient-to-r from-paper to-transparent">
+                <button
+                  type="button"
+                  aria-label={t("earlierDays")}
+                  onClick={() => scrollByColumn(w, -1)}
+                  className="pointer-events-auto flex h-10 w-10 items-center justify-center rounded-full border-2 border-ink/15 bg-paper text-lg text-ink shadow-sm transition-transform hover:scale-110 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ink focus-visible:ring-offset-2"
+                >
+                  ←
+                </button>
+              </div>
+            )}
+            {canScroll[w]?.right && (
+              <div className="pointer-events-none absolute inset-y-0 right-0 flex w-16 items-center justify-end bg-gradient-to-l from-paper to-transparent">
+                <button
+                  type="button"
+                  aria-label={t("laterDays")}
+                  onClick={() => scrollByColumn(w, 1)}
+                  className="pointer-events-auto flex h-10 w-10 items-center justify-center rounded-full border-2 border-ink/15 bg-paper text-lg text-ink shadow-sm transition-transform hover:scale-110 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ink focus-visible:ring-offset-2"
+                >
+                  →
+                </button>
+              </div>
+            )}
+          </div>
+        ))}
         {legendRow}
       </div>
 

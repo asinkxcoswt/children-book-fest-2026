@@ -1,0 +1,46 @@
+{
+  "slug": "lighthouse-firefly",
+  "thumbnail": "/content/events/lighthouse-firefly.jpeg",
+  "mascot": "/content/mascots/boy-reading-lion-book.png",
+  "title": {
+    "th": "นิทานหรรษา by ประภาคาร: ประภาคารกับหิ่งห้อยตัวน้อย",
+    "en": "Story Fun by Prapakarn: The Lighthouse and the Little Firefly"
+  },
+  "summary": {
+    "th": "นิทานและกิจกรรมสร้างสรรค์จากหนังสือ \"ประภาคารกับหิ่งห้อยตัวน้อย\" โดย สุคนธา สินธพ และคณะ",
+    "en": "Storytelling and creative activities from the picture book The Lighthouse and the Little Firefly, with Sukhontha Sinthop and team."
+  },
+  "description": {
+    "th": "ฟังนิทานเรื่อง \"ประภาคารกับหิ่งห้อยตัวน้อย\" แล้วต่อด้วยกิจกรรมสร้างสรรค์ที่ชวนเด็ก ๆ ออกเดินทางไปกับประภาคารและเหล่าหิ่งห้อยในค่ำคืนแสนสวย นำกิจกรรมโดย สุคนธา สินธพ และคณะ จาก Prapakarn Education",
+    "en": "Listen to the story of The Lighthouse and the Little Firefly, then join creative activities that take children on a night-time journey with the lighthouse and its firefly friends. Led by Sukhontha Sinthop and team from Prapakarn Education."
+  },
+  "category": "storytelling",
+  "schedule": {
+    "venue": {
+      "th": "Main Stage ห้องแกลลอรี",
+      "en": "Main Stage, Gallery Room"
+    },
+    "sessions": [
+      {
+        "date": "2026-12-10",
+        "start": "11:00",
+        "end": "11:50",
+        "ticketCodes": [
+          "20261210-1100"
+        ]
+      }
+    ]
+  },
+  "ageRange": "เด็กๆ | ครอบครัว | ผู้สนใจทั่วไป",
+  "gallery": [
+    {
+      "src": "/content/events/lighthouse-firefly.jpeg",
+      "alt": {
+        "th": "ประภาคารสีแดงขาวยิ้มแย้มท่ามกลางหิ่งห้อยในคืนพระจันทร์เสี้ยว",
+        "en": "A smiling red-and-white lighthouse surrounded by fireflies under a crescent moon"
+      }
+    }
+  ],
+  "ticketEventCode": "cbf2026-lighthouse-firefly",
+  "walkIn": true
+}

@@ -21,6 +21,8 @@ function bandOf(start: string): (typeof BANDS)[number]["key"] {
   return (BANDS.find((b) => hour >= b.from && hour < b.to) ?? BANDS[0]).key;
 }
 
+const DAYS_PER_ROW = 8;
+
 export default function ScheduleBoard({ events }: { events: FestivalEvent[] }) {
   const dates = getFestivalDates();
 
@@ -66,20 +68,27 @@ export default function ScheduleBoard({ events }: { events: FestivalEvent[] }) {
     };
   }
 
+  // The 16-day run is split into rows of a week each so every day stays
+  // visible without 16 cramped columns. Rows start on the festival's first day.
+  const weeks: string[][] = [];
+  for (let i = 0; i < dates.length; i += DAYS_PER_ROW) weeks.push(dates.slice(i, i + DAYS_PER_ROW));
+
   return (
     <ScheduleBoardGrid
       details={details}
-      days={dates.map((date) => ({
-        date,
-        label: formatDate(date),
-        weekday: formatWeekday(date),
-        dayNum: Number(date.slice(-2)),
-        month: formatMonth(date),
-      }))}
       legend={getCategories().map((cat) => ({ label: pick(cat.name), color: cat.color }))}
-      bands={BANDS.map((band) => ({
-        label: t(band.key),
-        cells: dates.map((date) => blocks.get(date)?.get(band.key) ?? []),
+      weeks={weeks.map((week) => ({
+        days: week.map((date) => ({
+          date,
+          label: formatDate(date),
+          weekday: formatWeekday(date),
+          dayNum: Number(date.slice(-2)),
+          month: formatMonth(date),
+        })),
+        bands: BANDS.map((band) => ({
+          label: t(band.key),
+          cells: week.map((date) => blocks.get(date)?.get(band.key) ?? []),
+        })),
       }))}
     />
   );

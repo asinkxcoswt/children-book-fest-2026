@@ -1,7 +1,7 @@
 import Link from "next/link";
 import Image from "next/image";
 import { notFound } from "next/navigation";
-import { getCategories, getCategory, getEventsByCategory, getFestivalDates } from "@/lib/content";
+import { getCategories, getCategory, getEventsByCategory, getSessionsByDate } from "@/lib/content";
 import { tokenClasses } from "@/lib/colors";
 import { ogImage } from "@/lib/imageLoader";
 import { t, pick, formatWeekday } from "@/lib/i18n";
@@ -45,7 +45,6 @@ export default async function V4Category({ params }: { params: Promise<{ slug: s
 
   const events = getEventsByCategory(slug);
   const c = tokenClasses(category.color);
-  const festivalDates = getFestivalDates();
 
   return (
     <main className="flex-1">
@@ -93,6 +92,11 @@ export default async function V4Category({ params }: { params: Promise<{ slug: s
 
       <section id="events" className="mx-auto max-w-5xl scroll-mt-6 px-6 py-12">
         <SectionHeading title={t("eventsInZone")} caption={t("eventsInZone", "en")} />
+        {events.length === 0 && (
+          <p className="mt-6 rounded-2xl border-2 border-dashed border-ink/15 px-4 py-10 text-center font-display text-xl text-ink/60">
+            {t("zoneComingSoon")}
+          </p>
+        )}
         <ul className="mt-6 space-y-5">
           {events.map((ev) => (
             <li key={ev.slug}>
@@ -114,33 +118,21 @@ export default async function V4Category({ params }: { params: Promise<{ slug: s
                   <span className="block font-display text-2xl text-ink">{pick(ev.title)}</span>
                   <span className="block text-ink/70">{pick(ev.summary)}</span>
                   <span className="mt-1 block text-sm text-ink/60">{pick(ev.schedule.venue)}</span>
-                  {/* Mini calendar strip — every card shares the same 3-day shape;
-                      days this event runs light up with their start times. */}
+                  {/* Day chips — one per day this event runs, with its start time.
+                      The festival spans 16 days, so empty days are not drawn. */}
                   <span className="mt-3 flex flex-wrap gap-2">
-                    {festivalDates.map((date) => {
-                      const daySessions = ev.schedule.sessions.filter((s) => s.date === date);
-                      const active = daySessions.length > 0;
-                      return (
-                        <span
-                          key={date}
-                          className={`w-16 min-w-16 shrink-0 rounded-xl border-2 py-1.5 text-center ${
-                            active ? `${c.bg} ${c.border} ${c.on}` : "border-ink/10 text-ink/30"
-                          }`}
-                        >
-                          <span className="block text-[10px] leading-tight opacity-75">{formatWeekday(date)}</span>
-                          <span className="block font-display text-lg leading-tight">
-                            {Number(date.slice(-2))}
-                          </span>
-                          <span className="block text-[11px] font-bold leading-tight tabular-nums">
-                            {active
-                              ? daySessions.length > 1
-                                ? `${daySessions[0].start} +${daySessions.length - 1}`
-                                : daySessions[0].start
-                              : " "}
-                          </span>
+                    {getSessionsByDate(ev).map(({ date, sessions }) => (
+                      <span
+                        key={date}
+                        className={`w-16 min-w-16 shrink-0 rounded-xl border-2 py-1.5 text-center ${c.bg} ${c.border} ${c.on}`}
+                      >
+                        <span className="block text-[10px] leading-tight opacity-75">{formatWeekday(date)}</span>
+                        <span className="block font-display text-lg leading-tight">{Number(date.slice(-2))}</span>
+                        <span className="block text-[11px] font-bold leading-tight tabular-nums">
+                          {sessions.length > 1 ? `${sessions[0].start} +${sessions.length - 1}` : sessions[0].start}
                         </span>
-                      );
-                    })}
+                      </span>
+                    ))}
                   </span>
                 </span>
                 <span aria-hidden className={`font-display text-lg ${c.text}`}>

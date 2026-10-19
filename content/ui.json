@@ -19,6 +19,7 @@
   "evening": { "th": "เย็น", "en": "Evening" },
   "allEvents": { "th": "กิจกรรมทั้งหมด", "en": "All events" },
   "eventsInZone": { "th": "กิจกรรมในโซนนี้", "en": "Events in this zone" },
+  "zoneComingSoon": { "th": "รอพบกิจกรรมเร็ว ๆ นี้", "en": "Events coming soon" },
   "viewEvent": { "th": "ดูรายละเอียด", "en": "View details" },
   "close": { "th": "ปิด", "en": "Close" },
   "allSessions": { "th": "รอบทั้งหมด", "en": "All sessions" },
