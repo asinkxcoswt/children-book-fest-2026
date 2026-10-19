@@ -1,10 +1,10 @@
 import Link from "next/link";
 import Image from "next/image";
 import { notFound } from "next/navigation";
-import { getCategories, getCategory, getEventsByCategory, getSessionsByDate } from "@/lib/content";
+import { getCategories, getCategory, getEventsByCategory, getSessionsByDate, hasSessionVenues } from "@/lib/content";
 import { tokenClasses } from "@/lib/colors";
 import { ogImage } from "@/lib/imageLoader";
-import { t, pick, formatWeekday } from "@/lib/i18n";
+import { t, pick, formatDate, formatWeekday } from "@/lib/i18n";
 import FestivalMap from "@/components/FestivalMap";
 import SectionHeading from "@/components/SectionHeading";
 import WaveEdge from "@/components/WaveEdge";
@@ -117,7 +117,14 @@ export default async function V4Category({ params }: { params: Promise<{ slug: s
                 <span className="flex-1">
                   <span className="block font-display text-2xl text-ink">{pick(ev.title)}</span>
                   <span className="block text-ink/70">{pick(ev.summary)}</span>
-                  <span className="mt-1 block text-sm text-ink/60">{pick(ev.schedule.venue)}</span>
+                  <span className="mt-1 block text-sm text-ink/60">
+                    {hasSessionVenues(ev)
+                      ? // Rooms differ by date, so name each: "ห้อง A (28 พ.ย.), ห้อง B (10 ธ.ค.)"
+                        getSessionsByDate(ev)
+                          .map(({ date, venue }) => `${pick(venue)} (${formatDate(date)})`)
+                          .join(", ")
+                      : pick(ev.schedule.venue)}
+                  </span>
                   {/* Day chips — one per day this event runs, with its start time.
                       The festival spans 16 days, so empty days are not drawn. */}
                   <span className="mt-3 flex flex-wrap gap-2">

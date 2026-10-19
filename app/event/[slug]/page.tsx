@@ -2,7 +2,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
-import { getEvents, getEvent, getCategory, getSessionsByDate } from "@/lib/content";
+import { getCategory, getEvent, getEvents, getSessionsByDate, hasSessionVenues, sessionVenue } from "@/lib/content";
 import { tokenClasses } from "@/lib/colors";
 import { ogImage } from "@/lib/imageLoader";
 import { COW_TICKET_URL } from "@/lib/site";
@@ -50,6 +50,7 @@ export default async function V4Event({ params }: { params: Promise<{ slug: stri
   if (!event) notFound();
 
   const category = getCategory(event.category);
+  const perSessionVenue = hasSessionVenues(event);
   const c = tokenClasses(category?.color ?? "peach");
   // The poster sits at the top; anything else in the gallery goes below the details.
   const gallery = event.gallery.filter((img) => img.src !== event.thumbnail);
@@ -85,16 +86,20 @@ export default async function V4Event({ params }: { params: Promise<{ slug: stri
           <dl className="mt-8 grid gap-x-8 gap-y-5 border-t-[3px] border-peach pt-5 text-sm sm:grid-cols-2">
             <div>
               <dt className="font-display text-ink/60">{t("when")}</dt>
-              {getSessionsByDate(event).map(({ date, sessions }) => (
-                <dd key={date} className="text-ink">
+              {getSessionsByDate(event).map(({ date, venue, sessions }) => (
+                <dd key={`${date}${venue.th}`} className="text-ink">
                   {formatDate(date)} · {sessions.map((s) => `${s.start}–${s.end}`).join(", ")}
+                  {/* Rooms are spelled out per date only when they differ. */}
+                  {perSessionVenue && ` · ${pick(venue)}`}
                 </dd>
               ))}
             </div>
-            <div>
-              <dt className="font-display text-ink/60">{t("where")}</dt>
-              <dd className="text-ink">{pick(event.schedule.venue)}</dd>
-            </div>
+            {!perSessionVenue && (
+              <div>
+                <dt className="font-display text-ink/60">{t("where")}</dt>
+                <dd className="text-ink">{pick(event.schedule.venue)}</dd>
+              </div>
+            )}
             <div>
               <dt className="font-display text-ink/60">{t("ages")}</dt>
               <dd className="text-ink">{event.ageRange}</dd>
@@ -150,8 +155,10 @@ export default async function V4Event({ params }: { params: Promise<{ slug: stri
                 // doesn't know the event's date or venue.
                 pass={{
                   title: pick(event.title),
-                  venue: pick(event.schedule.venue),
-                  sessions: event.schedule.sessions,
+                  sessions: event.schedule.sessions.map((s) => ({
+                    ...s,
+                    venueText: pick(sessionVenue(event, s)),
+                  })),
                 }}
               />
             ) : null}

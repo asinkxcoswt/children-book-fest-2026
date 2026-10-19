@@ -1,6 +1,6 @@
 import { readFileSync, readdirSync } from "node:fs";
 import { join } from "node:path";
-import type { Category, EventSession, FestivalEvent } from "@/types/content";
+import type { Category, EventSession, FestivalEvent, Localized } from "@/types/content";
 import categoriesData from "@/content/categories.json";
 
 const categories = categoriesData as Category[];
@@ -42,14 +42,30 @@ export function firstSession(event: FestivalEvent): EventSession {
   return event.schedule.sessions[0];
 }
 
-/** Sessions grouped by date, preserving chronological order — for "When"
- *  displays where two same-day time slots read as one line. */
-export function getSessionsByDate(event: FestivalEvent): { date: string; sessions: EventSession[] }[] {
-  const groups: { date: string; sessions: EventSession[] }[] = [];
+/** The room a session is held in: its own `venue` when set, else the event's
+ *  default. Always read venues through this so overrides are never missed. */
+export function sessionVenue(event: FestivalEvent, session: EventSession): Localized {
+  return session.venue ?? event.schedule.venue;
+}
+
+/** Whether any session is held somewhere other than the event's default room —
+ *  the cue for displays to spell out the room per date. */
+export function hasSessionVenues(event: FestivalEvent): boolean {
+  return event.schedule.sessions.some((s) => s.venue !== undefined);
+}
+
+/** Sessions grouped by date (and room, when a day's sessions are split across
+ *  rooms), preserving chronological order — for "When" displays where two
+ *  same-day time slots read as one line. */
+export function getSessionsByDate(
+  event: FestivalEvent,
+): { date: string; venue: Localized; sessions: EventSession[] }[] {
+  const groups: { date: string; venue: Localized; sessions: EventSession[] }[] = [];
   for (const s of event.schedule.sessions) {
+    const venue = sessionVenue(event, s);
     const last = groups[groups.length - 1];
-    if (last?.date === s.date) last.sessions.push(s);
-    else groups.push({ date: s.date, sessions: [s] });
+    if (last?.date === s.date && last.venue.th === venue.th) last.sessions.push(s);
+    else groups.push({ date: s.date, venue, sessions: [s] });
   }
   return groups;
 }

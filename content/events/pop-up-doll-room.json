@@ -25,17 +25,15 @@
         "date": "2026-11-28",
         "start": "14:00",
         "end": "16:50",
-        "ticketCodes": [
-          "20261128-1400"
-        ]
+        "venue": { "th": "ห้อง Auditorium", "en": "Auditorium" },
+        "ticketCodes": ["20261128-1400"]
       },
       {
         "date": "2026-12-10",
         "start": "14:00",
         "end": "16:50",
-        "ticketCodes": [
-          "20261128-1400"
-        ]
+        "venue": { "th": "ห้อง MDIC", "en": "MDIC Room" },
+        "ticketCodes": ["20261210-1400"]
       }
     ]
   },

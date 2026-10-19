@@ -31,9 +31,16 @@ const TAG = "children-book-fest-2026";
  *  session fields already carry. A single-session event has nothing to count,
  *  so it reads "รอบเดียว" (one round only) instead of "รอบที่ 1". */
 const ticketNameFor = (index, total) => (total === 1 ? "รอบเดียว" : `รอบที่ ${index + 1}`);
-const PRICE = 1000; // satang = ฿10
+const PRICE = 0; // satang: ฿10 = 1000
 const LIMIT_PER_ORDER = 4;
-const DEFAULT_QUANTITY = 200;
+/** Every ticket admits one adult and one child; extra people are add-on units
+ *  priced per unit above `included` (satang). Pushed to every session, so the
+ *  storefront shows the same adult/child steppers on all events. */
+const ADD_ONS = [
+  { code: "adult", name: "ผู้ใหญ่", included: 1, max: 2, extraPrice: 5000 },
+  { code: "child", name: "เด็ก", included: 1, max: 4, extraPrice: 5000 },
+];
+const DEFAULT_QUANTITY = 10000;
 /** One deliberately tiny event so the sold-out path is visible on the site. */
 const QUANTITY_BY_SLUG = { "how-stories-grow": 1 };
 const REFUND = {
@@ -155,6 +162,7 @@ function desiredConfigs(event) {
     price: PRICE,
     quantity: QUANTITY_BY_SLUG[event.slug] ?? DEFAULT_QUANTITY,
     limitPerOrder: LIMIT_PER_ORDER,
+    addOns: ADD_ONS,
     startSellingDate: null,
     endSellingDate: null,
     status: "ACTIVE",
@@ -165,7 +173,7 @@ function desiredConfigs(event) {
  *  paymentMethods and purchaseForm, which are only seeded at creation — is
  *  left to the organizer's app. */
 const EVENT_FIELDS = ["name", "refundAllowed", "refundTermTh", "refundTermEn"];
-const CONFIG_FIELDS = ["name", "group", "price", "quantity", "limitPerOrder", "status",
+const CONFIG_FIELDS = ["name", "group", "price", "quantity", "limitPerOrder", "addOns", "status",
                        "startSellingDate", "endSellingDate", "sessionStartAt", "sessionEndAt"];
 
 /** Timestamps: compared as instants, never as strings. We send +07:00 and the
@@ -198,8 +206,22 @@ const organizerFields = (form) =>
       })),
   );
 
+/** Add-ons read back carry platform-side extras (ids, countsAsSeat defaults,
+ *  per-unit fields), so compare only what we push, in order. */
+const ownedAddOns = (list) =>
+  JSON.stringify(
+    (list ?? []).map((a) => ({
+      code: a.code,
+      name: a.name,
+      included: a.included,
+      max: a.max,
+      extraPrice: a.extraPrice,
+    })),
+  );
+
 function same(field, a, b) {
   if (field === "purchaseForm") return organizerFields(a) === organizerFields(b);
+  if (field === "addOns") return ownedAddOns(a) === ownedAddOns(b);
   if (BLANKABLE_FIELDS.has(field)) return (a ?? "") === (b ?? "");
   if (a === null || b === null) return a === b;
   if (INSTANT_FIELDS.has(field)) return Date.parse(a) === Date.parse(b);
@@ -239,7 +261,7 @@ async function syncEvent(event, existingEvents) {
     tags: [TAG],
     ...REFUND,
     paymentMethods: PAYMENT_METHODS,
-    purchaseForm: PURCHASE_FORM,
+    // purchaseForm: PURCHASE_FORM,
   };
   const current = existingEvents.get(eventCode);
 

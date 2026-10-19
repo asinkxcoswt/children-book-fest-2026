@@ -63,6 +63,8 @@
   "cancel": { "th": "ยกเลิก", "en": "Cancel" },
   "ticketNo": { "th": "บัตรใบที่", "en": "Ticket" },
   "addTicket": { "th": "เพิ่มบัตร", "en": "Add a ticket" },
+  "perOrderLimitReached": { "th": "ครบจำนวนบัตรสูงสุดต่อคำสั่งซื้อแล้ว", "en": "You've reached the maximum number of tickets per order" },
+  "noMoreSeats": { "th": "ที่นั่งที่เหลือไม่พอสำหรับบัตรเพิ่มเติม", "en": "Not enough seats left to add another ticket" },
   "removeTicket": { "th": "ลบบัตร", "en": "Remove ticket" },
   "chooseSession": { "th": "เลือกรอบ", "en": "Choose a session" },
   "tapToChangeSession": { "th": "แตะเพื่อเปลี่ยนรอบ", "en": "Tap to change session" },

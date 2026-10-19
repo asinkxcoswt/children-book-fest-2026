@@ -1,5 +1,5 @@
 import type { FestivalEvent } from "@/types/content";
-import { getCategories, getCategory, getFestivalDates } from "@/lib/content";
+import { getCategories, getCategory, getFestivalDates, hasSessionVenues, sessionVenue } from "@/lib/content";
 import { t, pick, formatDate, formatWeekday, formatMonth } from "@/lib/i18n";
 import ScheduleBoardGrid, { type BoardBlock } from "@/components/ScheduleBoardGrid";
 import type { BoardEventDetail } from "@/components/ScheduleEventDrawer";
@@ -62,7 +62,10 @@ export default function ScheduleBoard({ events }: { events: FestivalEvent[] }) {
       ageRange: event.ageRange,
       sessions: event.schedule.sessions.map((s) => ({
         key: `${s.date}${s.start}`,
-        label: formatDate(s.date),
+        // Room per session only when the event moves between rooms.
+        label: hasSessionVenues(event)
+          ? `${formatDate(s.date)} · ${pick(sessionVenue(event, s))}`
+          : formatDate(s.date),
         time: `${s.start}–${s.end}`,
       })),
     };

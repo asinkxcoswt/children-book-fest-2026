@@ -47,9 +47,13 @@ export interface EventSession {
   end: string;
   /** TicketConfig codes (from the ticket platform) belonging to this session. */
   ticketCodes?: string[];
+  /** Room for this session only, when it differs from the event's default
+   *  `schedule.venue` (e.g. a workshop that moves rooms between dates). */
+  venue?: Localized;
 }
 
 export interface EventSchedule {
+  /** Default room. A session may override it with its own `venue`. */
   venue: Localized;
   /** All occurrences, in chronological order. Single-day events have one. */
   sessions: EventSession[];

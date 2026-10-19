@@ -88,8 +88,8 @@ function describe(tk: TicketOption): string {
 /** Display text for the wallet pass / ticket page, from our content. */
 export interface PassSource {
   title: string;
-  venue: string;
-  sessions: EventSession[];
+  /** Each session carries its own resolved room text, since rooms can differ per date. */
+  sessions: (EventSession & { venueText: string })[];
 }
 
 export default function TicketPurchase({
@@ -191,6 +191,11 @@ export default function TicketPurchase({
     stockUsedBy(tk, box.id) + seatsOf(tk, defaultAddOns(tk)) <= tk.available;
   /** Another card is only offered while some session can still take one. */
   const canAdd = (tickets ?? []).some((tk) => canPick(tk, { id: -1, code: null, addOns: {} }));
+  /** Why not: the per-order cap on every session versus simply no seats left.
+   *  The cap is per session, so the hint names no number — "4 tickets" would
+   *  mislead on a multi-session event. */
+  const limitReached =
+    !canAdd && (tickets ?? []).some((tk) => othersOn(tk.code, -1) >= tk.limitPerOrder);
 
   const chosen = boxes.filter((b) => b.code !== null);
   const total = chosen.reduce((sum, b) => {
@@ -278,12 +283,12 @@ export default function TicketPurchase({
    *  default to the ticket type name ("รอบที่ 1") — dateDisplay already
    *  carries the date and time. */
   function passDisplayFor(code: string, principal?: string): PassDisplay {
-    const { sessions, venue, title } = pass;
+    const { sessions, title } = pass;
     const s = sessions.find((sess) => sess.ticketCodes?.includes(code)) ?? sessions[0];
     return {
       main: title,
       date: `${s.date}T${s.start}:00+07:00`,
-      dateDisplay: `${formatDate(s.date)} ${s.start} · ${venue}`,
+      dateDisplay: `${formatDate(s.date)} ${s.start} · ${s.venueText}`,
       // "principal" is the reserved attendee-name key; gate staff search by it.
       // Absent on the chat path: LINE collects the name if the organizer asks.
       ...(principal ? { principal } : {}),
@@ -638,6 +643,11 @@ export default function TicketPurchase({
       >
         <span aria-hidden>+</span> {t("addTicket")}
       </button>
+      {!canAdd && (
+        <p className="mt-2 text-xs text-ink/60" role="status">
+          {limitReached ? t("perOrderLimitReached") : t("noMoreSeats")}
+        </p>
+      )}
 
       <div className="mt-4 flex items-baseline justify-between">
         <span className="text-sm text-ink/60">{t("total")}</span>
