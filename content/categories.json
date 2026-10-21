@@ -5,9 +5,13 @@
       "th": "เล่านิทาน",
       "en": "Storytelling"
     },
+    "tagline": {
+      "th": "เปิดเล่มโปรด แล้วโลดแล่นไปด้วยกัน",
+      "en": "Open a favourite book and run wild together"
+    },
     "description": {
-      "th": "ฟังนิทานสด เล่าเรื่องด้วยเสียงและภาพ ชวนเด็ก ๆ เข้าสู่โลกของจินตนาการ",
-      "en": "Live read-alouds and performances that pull children into the world of a story."
+      "th": "ชวนเด็ก ๆ มาฟังนิทานเรื่องโปรดกับนักเล่านิทานหลากหลายคน ที่ขนเทคนิคการเล่าสนุก ๆ มาเติมชีวิตให้ตัวละคร และพาจินตนาการออกเดินทางไปด้วยกัน",
+      "en": "Children are invited to hear their favourite stories from a cast of storytellers, each bringing playful techniques that bring characters to life and send imaginations travelling together."
     },
     "thumbnail": "/content/zones/storytelling-reading-with-mouse.png",
     "thumbnailLetter": {
@@ -22,9 +26,13 @@
       "th": "เวิร์กชอป",
       "en": "Workshop"
     },
+    "tagline": {
+      "th": "ชวนคิด ชวนทำ สนุกกับหนังสือภาพ",
+      "en": "Think it, make it, have fun with picture books"
+    },
     "description": {
-      "th": "เวิร์กชอปลงมือทำ วาด ระบายสี และประดิษฐ์ กับนักวาดและนักสร้างสรรค์มืออาชีพ",
-      "en": "Hands-on workshops to draw, paint, and make things with working illustrators and makers."
+      "th": "เปิดโลกหนังสือภาพตั้งแต่คิดเรื่อง เขียน วาด ไปจนถึงการนำไปใช้และออกแบบกิจกรรมส่งเสริมการอ่าน พร้อมไอเดียอีกมากมายให้ลองลงมือ แล้วหอบแรงบันดาลใจกลับบ้าน",
+      "en": "Explore the world of picture books from dreaming up a story, writing and drawing it, through to using books and designing activities that encourage reading, with plenty of ideas to try hands-on and take inspiration home."
     },
     "thumbnail": "/content/zones/workshop-green-crayon.png",
     "thumbnailLetter": {
@@ -36,12 +44,16 @@
   {
     "slug": "meet-the-creators",
     "name": {
-      "th": "พบผู้สร้างสรรค์",
+      "th": "พบปะนักสร้างสรรค์",
       "en": "Meet the creators"
     },
+    "tagline": {
+      "th": "เจอคนเบื้องหลังเล่มที่รัก",
+      "en": "Meet the people behind the books you love"
+    },
     "description": {
-      "th": "พบปะพูดคุยกับนักเขียน นักวาด และผู้สร้างสรรค์ เบื้องหลังหนังสือภาพเล่มโปรด",
-      "en": "Meet the authors, illustrators, and creators behind beloved picture books."
+      "th": "พบกับนักเขียนและนักวาดทั้งชาวไทยและต่างชาติ มาฟังเรื่องราวเบื้องหลังหนังสือภาพ พูดคุยถึงแรงบันดาลใจ และทำความรู้จักคนที่เปลี่ยนตัวอักษรกับภาพวาดให้กลายเป็นโลกแสนสนุกของเด็ก ๆ",
+      "en": "Meet authors and illustrators from Thailand and abroad, hear the stories behind their picture books, talk about inspiration, and get to know the people who turn words and pictures into a world of fun for children."
     },
     "thumbnail": "/content/zones/meet-the-creators-waving.png",
     "thumbnailLetter": {
@@ -56,9 +68,13 @@
       "th": "เสวนา",
       "en": "Seminar"
     },
+    "tagline": {
+      "th": "ล้อมวงคุย เปิดมุมมอง",
+      "en": "Gather round and open up new perspectives"
+    },
     "description": {
-      "th": "วงเสวนาและการบรรยายสำหรับพ่อแม่ คุณครู และผู้สนใจ ว่าด้วยหนังสือภาพและการอ่านของเด็ก",
-      "en": "Talks and panel discussions for parents, teachers, and anyone curious about picture books and children's reading."
+      "th": "ชวนคนรักหนังสือภาพมาเติมความรู้ แลกเปลี่ยนประสบการณ์ และสำรวจประเด็นน่าสนใจในแวดวงหนังสือภาพสำหรับเด็ก ผ่านวงสนทนาที่ชวนคิดและต่อยอดไอเดียไปด้วยกัน",
+      "en": "Picture book lovers come together to learn, share experiences, and explore interesting topics in the world of children's picture books through conversations that spark thinking and build on ideas together."
     },
     "thumbnail": "/content/zones/seminar-hugging-book.png",
     "thumbnailLetter": {

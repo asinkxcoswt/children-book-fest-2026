@@ -131,7 +131,8 @@ export default function V4Home() {
                     <p className={`text-sm ${c.on} opacity-80`}>{cat.name.en}</p>
                   </div>
                 </div>
-                <p className={`mt-4 ${c.on} opacity-90`}>{pick(cat.description)}</p>
+                <p className={`mt-4 text-lg ${c.on}`}>{pick(cat.tagline)}</p>
+                <p className={`mt-2 ${c.on} opacity-90`}>{pick(cat.description)}</p>
                 <p className={`mt-4 text-sm ${c.on} opacity-90`}>
                   {getEventCount(cat.slug)} {t("events")} · {t("enterZone")} →
                 </p>

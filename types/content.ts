@@ -22,6 +22,8 @@ export type ColorToken =
 export interface Category {
   slug: string;
   name: Localized;
+  /** One-line hook shown under the zone name. */
+  tagline: Localized;
   description: Localized;
   /** Zone illustration, path under /public. */
   thumbnail: string;

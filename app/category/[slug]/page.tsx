@@ -63,7 +63,8 @@ export default async function V4Category({ params }: { params: Promise<{ slug: s
             <p className={`mt-1 text-xs uppercase tracking-[0.18em] ${c.on} opacity-70`}>
               {category.name.en}
             </p>
-            <p className={`mt-4 max-w-xl text-lg ${c.on} opacity-90`}>{pick(category.description)}</p>
+            <p className={`mt-4 max-w-xl text-2xl ${c.on}`}>{pick(category.tagline)}</p>
+            <p className={`mt-3 max-w-xl text-lg ${c.on} opacity-90`}>{pick(category.description)}</p>
             <Link
               href="#events"
               className="mt-6 inline-block rounded-full bg-paper px-7 py-3 text-lg text-ink transition-transform hover:scale-105 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ink focus-visible:ring-offset-2"
