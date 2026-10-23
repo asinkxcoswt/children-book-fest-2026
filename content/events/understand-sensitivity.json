@@ -43,5 +43,5 @@
     }
   ],
   "ticketEventCode": "cbf2026-understand-sensitivity",
-  "walkIn": false
+  "admission": "ticket"
 }

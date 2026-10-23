@@ -142,10 +142,10 @@ export default async function V4Event({ params }: { params: Promise<{ slug: stri
             <ShareButton title={pick(event.title)} text={pick(event.summary)} />
           </div>
           <div>
-            {event.walkIn ? (
-              // Free walk-in event: nothing to sell, so no purchase UI and no
-              // ticket API call — the answer to "how do I get in" is static.
-              <WalkInNotice color={category?.color ?? "peach"} />
+            {event.admission !== "ticket" ? (
+              // Free or donation-box event: nothing to sell, so no purchase UI
+              // and no ticket API call — "how do I get in" is static content.
+              <WalkInNotice admission={event.admission} color={category?.color ?? "peach"} />
             ) : event.ticketEventCode ? (
               <TicketPurchase
                 slug={event.slug}
@@ -164,7 +164,7 @@ export default async function V4Event({ params }: { params: Promise<{ slug: stri
             ) : null}
           </div>
           {/* Ticketing credit — a quiet mark where the platform is in use. */}
-          {!event.walkIn && event.ticketEventCode && (
+          {event.admission === "ticket" && event.ticketEventCode && (
             <p className="mt-5 flex items-center gap-2 border-t-2 border-ink/10 pt-3 text-xs text-ink/60">
               <span>{t("ticketingBy")}</span>
               <a

@@ -43,5 +43,5 @@
     }
   ],
   "ticketEventCode": "cbf2026-look-closer-read-picture",
-  "walkIn": false
+  "admission": "ticket"
 }

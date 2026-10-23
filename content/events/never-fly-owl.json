@@ -43,5 +43,5 @@
     }
   ],
   "ticketEventCode": "cbf2026-never-fly-owl",
-  "walkIn": false
+  "admission": "ticket"
 }

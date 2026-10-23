@@ -77,6 +77,11 @@
   "walkInBody": {
     "th": "เดินเข้ามาร่วมสนุกได้เลย ไม่ต้องจองบัตรหรือลงทะเบียนล่วงหน้า",
     "en": "Just walk in and join — no booking or registration needed." },
+  "donationTitle": { "th": "หยอดกล่องหน้างาน", "en": "Donation at the door" },
+  "donationPill": { "th": "ตามศรัทธา", "en": "Pay what you wish" },
+  "donationBody": {
+    "th": "เดินเข้ามาร่วมสนุกได้เลย ไม่ต้องจองบัตรล่วงหน้า มีกล่องรับบริจาคตามศรัทธาที่หน้างาน",
+    "en": "Just walk in and join — no booking needed. There is a donation box at the door; give what you wish." },
   "notOnSale": {
     "th": "ยังไม่เปิดจำหน่ายบัตรสำหรับกิจกรรมนี้",
     "en": "Tickets for this event are not on sale right now." },

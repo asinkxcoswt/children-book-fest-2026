@@ -87,10 +87,13 @@ export interface FestivalEvent {
   /** Event code registered in the ticket platform. When set, the site sells tickets
    *  in-app through the ticket API instead of linking out. */
   ticketEventCode?: string;
-  /** Free walk-in event: nothing is sold and the platform returns no ticket
-   *  options, so the detail page renders a walk-in notice instead of the
-   *  purchase UI (and never calls the ticket API). Deliberately an explicit
-   *  editorial flag — an empty ticket response alone also means "sales paused",
-   *  which must NOT read as "free, walk in". */
-  walkIn?: boolean;
+  /** How visitors get in. "ticket": sold in-app through the ticket API.
+   *  "free": walk in, nothing sold. "donation": walk in, pay what you wish at
+   *  the door. For the last two the detail page renders an admission notice
+   *  instead of the purchase UI and never calls the ticket API. Deliberately
+   *  explicit editorial content — an empty ticket response alone also means
+   *  "sales paused", which must NOT read as "free, walk in". */
+  admission: Admission;
 }
+
+export type Admission = "ticket" | "free" | "donation";
