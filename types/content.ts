@@ -77,6 +77,10 @@ export interface FestivalEvent {
   schedule: EventSchedule;
   /** Recommended age range, e.g. "4–8". */
   ageRange: string;
+  /** Ticket price in Thai baht, as printed on the poster. 0 = free (walk-in
+   *  or donation box). The sync script pushes it to the ticket platform in
+   *  satang; the site itself reads prices back from the platform. */
+  price: number;
   /** Seats, if shown. */
   capacity?: number;
   gallery: GalleryImage[];

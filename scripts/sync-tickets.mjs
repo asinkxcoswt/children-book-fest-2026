@@ -31,10 +31,10 @@ const TAG = "children-book-fest-2026";
  *  session fields already carry. A single-session event has nothing to count,
  *  so it reads "รอบเดียว" (one round only) instead of "รอบที่ 1". */
 const ticketNameFor = (index, total) => (total === 1 ? "รอบเดียว" : `รอบที่ ${index + 1}`);
-/** Starting price for a NEW ticket only (satang: ฿10 = 1000). Real prices are
- *  set per event in the CowTicket portal, so an existing ticket's price is
- *  never compared or overwritten (it is absent from CONFIG_FIELDS). */
-const PRICE = 0;
+/** Ticket price comes from content (`price`, in baht, off the poster) and is
+ *  pushed in satang (฿10 = 1000) on create AND reconcile, so the JSON is the
+ *  source of truth for the base price. Add-on extras stay in ADD_ONS below. */
+const satang = (baht) => Math.round(baht * 100);
 const LIMIT_PER_ORDER = 4;
 
 /** Every person takes a seat, so each unit counts against the session's
@@ -180,7 +180,7 @@ function desiredConfigs(event) {
     // section heading now that the day sits on the ticket itself.
     ...sessionRange(s),
     group: null,
-    price: PRICE,
+    price: satang(event.price),
     quantity: QUANTITY_BY_SLUG[event.slug] ?? DEFAULT_QUANTITY,
     limitPerOrder: LIMIT_PER_ORDER,
     addOns: ADD_ONS,
@@ -191,10 +191,10 @@ function desiredConfigs(event) {
 }
 
 /** Fields we own on an EXISTING event / ticket. Anything not listed here —
- *  paymentMethods, purchaseForm and the ticket price, which are only seeded at
- *  creation — is left to the organizer's app. */
+ *  paymentMethods and purchaseForm, which are only seeded at creation — is
+ *  left to the organizer's app. */
 const EVENT_FIELDS = ["name", "refundAllowed", "refundTermTh", "refundTermEn"];
-const CONFIG_FIELDS = ["name", "group", "quantity", "limitPerOrder", "addOns", "status",
+const CONFIG_FIELDS = ["name", "group", "price", "quantity", "limitPerOrder", "addOns", "status",
                        "startSellingDate", "endSellingDate", "sessionStartAt", "sessionEndAt"];
 
 /** Timestamps: compared as instants, never as strings. We send +07:00 and the
@@ -338,7 +338,7 @@ async function syncEvent(event, existingEvents) {
     const have = existing.get(want.code);
     try {
       if (!have) {
-        plan("create", `ticket ${want.code}  ${want.sessionStartAt}  qty ${want.quantity}`);
+        plan("create", `ticket ${want.code}  ${want.sessionStartAt}  qty ${want.quantity}  ฿${want.price / 100}`);
         if (!DRY_RUN) await api("/ticketConfigs", { method: "POST", body: { eventCode, ...want } });
       } else {
         const changed = diff(have, want, CONFIG_FIELDS);
