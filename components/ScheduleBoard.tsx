@@ -1,37 +1,53 @@
 import type { FestivalEvent } from "@/types/content";
 import { getCategories, getCategory, getFestivalDates, hasSessionVenues, sessionVenue } from "@/lib/content";
-import { t, pick, formatDate, formatWeekday, formatMonth } from "@/lib/i18n";
-import ScheduleBoardGrid, { type BoardBlock } from "@/components/ScheduleBoardGrid";
+import { pick, formatDate, formatWeekday, formatMonth } from "@/lib/i18n";
+import ScheduleBoardGrid, { type BoardBlock, type BoardDay } from "@/components/ScheduleBoardGrid";
 import type { BoardEventDetail } from "@/components/ScheduleEventDrawer";
 
-/** Day × time-of-day schedule board (home page). Every session of every event
- *  appears as a colored block in its day column, so visitors see the whole
- *  festival at a glance with the date as the primary axis. This server half
- *  resolves content into plain props; ScheduleBoardGrid renders them with
- *  hover cross-highlighting. */
+/** Day × hour schedule board (home page). Every session of every event is a
+ *  block placed on a real time axis: its row span is its duration, and
+ *  sessions that overlap on the same day sit side by side in lanes. Row
+ *  height therefore follows the clock, not the busiest day, so a packed
+ *  Saturday never stretches an empty Tuesday. This server half resolves
+ *  content into plain props; ScheduleBoardGrid renders them. */
 
-const BANDS = [
-  { key: "morning", from: 0, to: 12 },
-  { key: "afternoon", from: 12, to: 17 },
-  { key: "evening", from: 17, to: 24 },
-] as const;
+/** The time axis is sliced into half-hour slots so a session that ends at
+ *  :50 still fills its full hour visually. */
+const SLOT_MINUTES = 30;
+const DAYS_PER_ROW = 8;
 
-function bandOf(start: string): (typeof BANDS)[number]["key"] {
-  const hour = Number(start.slice(0, 2));
-  return (BANDS.find((b) => hour >= b.from && hour < b.to) ?? BANDS[0]).key;
+function minutesOf(time: string): number {
+  return Number(time.slice(0, 2)) * 60 + Number(time.slice(3, 5));
 }
 
-const DAYS_PER_ROW = 8;
+/** Greedy interval colouring: each session takes the first lane whose last
+ *  session has already ended. Sessions arrive sorted by start time. */
+function assignLanes(sessions: { startMin: number; endMin: number }[]): number[] {
+  const laneEnds: number[] = [];
+  return sessions.map((s) => {
+    let lane = laneEnds.findIndex((end) => end <= s.startMin);
+    if (lane === -1) lane = laneEnds.push(0) - 1;
+    laneEnds[lane] = s.endMin;
+    return lane;
+  });
+}
 
 export default function ScheduleBoard({ events }: { events: FestivalEvent[] }) {
   const dates = getFestivalDates();
 
-  // blocks[date][band] → sessions starting in that slot, sorted by start time.
-  const blocks = new Map<string, Map<string, BoardBlock[]>>();
+  // Raw sessions per date, then the axis is sized from the data so the board
+  // never shows hours with nothing in them.
+  type Raw = Omit<BoardBlock, "rowStart" | "rowEnd" | "lane"> & { startMin: number; endMin: number };
+  const byDate = new Map<string, Raw[]>();
+  let firstMin = Infinity;
+  let lastMin = -Infinity;
   for (const event of events) {
     for (const s of event.schedule.sessions) {
-      const byBand = blocks.get(s.date) ?? new Map<string, BoardBlock[]>();
-      const list = byBand.get(bandOf(s.start)) ?? [];
+      const startMin = minutesOf(s.start);
+      const endMin = Math.max(minutesOf(s.end), startMin + SLOT_MINUTES);
+      firstMin = Math.min(firstMin, startMin);
+      lastMin = Math.max(lastMin, endMin);
+      const list = byDate.get(s.date) ?? [];
       list.push({
         slug: event.slug,
         title: pick(event.title),
@@ -39,17 +55,47 @@ export default function ScheduleBoard({ events }: { events: FestivalEvent[] }) {
         start: s.start,
         end: s.end,
         color: getCategory(event.category)?.color ?? "peach",
+        startMin,
+        endMin,
       });
-      byBand.set(bandOf(s.start), list);
-      blocks.set(s.date, byBand);
+      byDate.set(s.date, list);
     }
   }
-  for (const byBand of blocks.values()) {
-    for (const list of byBand.values()) list.sort((a, b) => a.start.localeCompare(b.start));
-  }
+  // Axis snaps outward to whole hours so the gutter labels read cleanly.
+  const axisStart = events.length ? Math.floor(firstMin / 60) * 60 : 10 * 60;
+  const axisEnd = events.length ? Math.ceil(lastMin / 60) * 60 : 18 * 60;
+  const slotCount = (axisEnd - axisStart) / SLOT_MINUTES;
+  const hours: string[] = [];
+  for (let m = axisStart; m < axisEnd; m += 60) hours.push(`${String(m / 60).padStart(2, "0")}:00`);
 
-  // Brief-detail lookup for the mobile drawer, keyed by slug. Resolved here so
-  // the client component never touches the content layer.
+  const days: BoardDay[] = dates.map((date) => {
+    const raw = (byDate.get(date) ?? []).sort((a, b) => a.startMin - b.startMin || a.endMin - b.endMin);
+    const lanes = assignLanes(raw);
+    const blocks: BoardBlock[] = raw.map((r, i) => ({
+      slug: r.slug,
+      title: r.title,
+      date: r.date,
+      start: r.start,
+      end: r.end,
+      color: r.color,
+      // CSS grid lines are 1-based.
+      rowStart: (r.startMin - axisStart) / SLOT_MINUTES + 1,
+      rowEnd: Math.ceil((r.endMin - axisStart) / SLOT_MINUTES) + 1,
+      lane: lanes[i],
+    }));
+    return {
+      date,
+      label: formatDate(date),
+      weekday: formatWeekday(date),
+      dayNum: Number(date.slice(-2)),
+      month: formatMonth(date),
+      lanes: Math.max(1, ...lanes.map((l) => l + 1)),
+      blocks,
+    };
+  });
+
+  // Brief-detail lookup for the drawer, keyed by slug. Resolved here so the
+  // client component never touches the content layer.
   const details: Record<string, BoardEventDetail> = {};
   for (const event of events) {
     details[event.slug] = {
@@ -73,26 +119,15 @@ export default function ScheduleBoard({ events }: { events: FestivalEvent[] }) {
 
   // The 16-day run is split into rows of a week each so every day stays
   // visible without 16 cramped columns. Rows start on the festival's first day.
-  const weeks: string[][] = [];
-  for (let i = 0; i < dates.length; i += DAYS_PER_ROW) weeks.push(dates.slice(i, i + DAYS_PER_ROW));
+  const weeks: BoardDay[][] = [];
+  for (let i = 0; i < days.length; i += DAYS_PER_ROW) weeks.push(days.slice(i, i + DAYS_PER_ROW));
 
   return (
     <ScheduleBoardGrid
       details={details}
       legend={getCategories().map((cat) => ({ label: pick(cat.name), color: cat.color }))}
-      weeks={weeks.map((week) => ({
-        days: week.map((date) => ({
-          date,
-          label: formatDate(date),
-          weekday: formatWeekday(date),
-          dayNum: Number(date.slice(-2)),
-          month: formatMonth(date),
-        })),
-        bands: BANDS.map((band) => ({
-          label: t(band.key),
-          cells: week.map((date) => blocks.get(date)?.get(band.key) ?? []),
-        })),
-      }))}
+      weeks={weeks}
+      axis={{ hours, slotCount, slotsPerHour: 60 / SLOT_MINUTES }}
     />
   );
 }
