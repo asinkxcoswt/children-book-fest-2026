@@ -131,6 +131,21 @@ export default function ScheduleBoardGrid({ weeks, axis, legend, details }: Prop
     const isSelected = opensDrawer && selected?.session === session;
     const lit = isSelected || (!opensDrawer && hovered === b.slug);
     const placement = { gridRow: `${b.rowStart} / ${b.rowEnd}`, gridColumn: b.lane + 1 };
+    // Title lines that fit under the time line within the block's own height
+    // (half-hour slots), so a clipped title never ends mid-phrase. Literal
+    // class names so the Tailwind scanner sees them.
+    const slots = b.rowEnd - b.rowStart;
+    const clamp = compact
+      ? slots <= 2
+        ? "line-clamp-1"
+        : slots <= 3
+          ? "line-clamp-2"
+          : "line-clamp-3"
+      : slots <= 2
+        ? "line-clamp-2"
+        : slots <= 3
+          ? "line-clamp-3"
+          : "line-clamp-4";
 
     const body = (
       <>
@@ -145,11 +160,9 @@ export default function ScheduleBoardGrid({ weeks, axis, legend, details }: Prop
           <span className="sr-only">{b.title}</span>
         ) : (
           <span
-            className={
-              compact
-                ? "line-clamp-2 break-words text-[11px] leading-tight"
-                : "line-clamp-3 font-display text-sm leading-snug"
-            }
+            className={`${clamp} font-body font-normal ${
+              compact ? "break-words text-[11px] leading-tight" : "text-[13px] leading-tight"
+            }`}
           >
             {b.title}
           </span>
@@ -161,7 +174,7 @@ export default function ScheduleBoardGrid({ weeks, axis, legend, details }: Prop
     // zone colour, so the active event jumps out of a crowded day.
     const shared = `block min-h-0 min-w-0 overflow-hidden text-left border-l-4 ${c.edge} transition-[transform,opacity,background-color] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ink focus-visible:ring-offset-2 ${
       lit ? `${c.bg} ${c.on}` : `${c.soft} text-ink`
-    } ${faded ? "opacity-25" : ""} ${compact ? "rounded-r-md p-1" : "rounded-r-lg p-2"}`;
+    } ${faded ? "opacity-25" : ""} ${compact ? "rounded-r-md p-1" : "rounded-r-lg px-2 py-1"}`;
 
     // On touch there's no hover to preview with, so a tap opens the drawer
     // rather than committing the visitor to a page they can't preview.
