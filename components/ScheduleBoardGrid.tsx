@@ -63,7 +63,8 @@ interface Props {
  *  - ≥lg: day-column grid; when it overflows, edge fades + prev/next buttons
  *    make the hidden days obvious. Hovering/focusing a block fades every other
  *    event so all sessions of the same event stand out.
- *  - <lg: the same grid compressed to fit the viewport, mini blocks.
+ *  - <lg: the same grid with mini blocks; lanes keep a minimum width, so a
+ *    week scrolls sideways behind the same fades, buttons and a swipe hint.
  *  Touch has no hover, so on any no-hover device tapping a block selects it
  *  instead of navigating: it applies the same cross-highlight and opens a
  *  brief-detail drawer, keeping the visitor on the board while they compare. */
@@ -74,25 +75,26 @@ export default function ScheduleBoardGrid({ weeks, axis, legend, details }: Prop
   // instead of navigating. false during SSR/hydration so the server-rendered
   // links match; flips right after mount on touch devices.
   const [touchUI, setTouchUI] = useState(false);
-  const scrollerRefs = useRef<(HTMLDivElement | null)[]>([]);
+  // One scroller per week per grid (compact and wide both render; CSS shows one).
+  const scrollerRefs = useRef<Map<string, HTMLDivElement>>(new Map());
   // The block that opened the drawer, so closing can hand focus back to it.
   const triggerRef = useRef<HTMLButtonElement | null>(null);
-  const [canScroll, setCanScroll] = useState<{ left: boolean; right: boolean }[]>([]);
+  const [canScroll, setCanScroll] = useState<Record<string, { left: boolean; right: boolean }>>({});
 
   const updateScrollState = useCallback(() => {
-    setCanScroll(
-      scrollerRefs.current.map((el) =>
-        el
-          ? { left: el.scrollLeft > 4, right: el.scrollLeft < el.scrollWidth - el.clientWidth - 4 }
-          : { left: false, right: false },
-      ),
-    );
+    const next: Record<string, { left: boolean; right: boolean }> = {};
+    for (const [key, el] of scrollerRefs.current) {
+      next[key] = { left: el.scrollLeft > 4, right: el.scrollLeft < el.scrollWidth - el.clientWidth - 4 };
+    }
+    setCanScroll(next);
   }, []);
 
+  // Measured by a ResizeObserver (it fires once on observe, then on every
+  // size change) so the overflow affordances track the viewport and fonts.
   useEffect(() => {
-    updateScrollState();
-    window.addEventListener("resize", updateScrollState);
-    return () => window.removeEventListener("resize", updateScrollState);
+    const ro = new ResizeObserver(updateScrollState);
+    for (const el of scrollerRefs.current.values()) ro.observe(el);
+    return () => ro.disconnect();
   }, [updateScrollState]);
 
   useEffect(() => {
@@ -103,8 +105,8 @@ export default function ScheduleBoardGrid({ weeks, axis, legend, details }: Prop
     return () => mq.removeEventListener("change", update);
   }, []);
 
-  const scrollByColumn = (week: number, direction: 1 | -1) => {
-    const el = scrollerRefs.current[week];
+  const scrollByColumn = (key: string, direction: 1 | -1) => {
+    const el = scrollerRefs.current.get(key);
     if (!el) return;
     el.scrollBy({ left: direction * el.clientWidth * 0.6, behavior: "smooth" });
   };
@@ -263,7 +265,7 @@ export default function ScheduleBoardGrid({ weeks, axis, legend, details }: Prop
             ? "1.25rem"
             : "3rem"
           : compact
-            ? `minmax(0, ${d.lanes}fr)`
+            ? `minmax(${5 * d.lanes}rem, ${d.lanes}fr)`
             : `minmax(${6.5 * d.lanes}rem, ${d.lanes}fr)`,
       ),
     ].join(" ");
@@ -279,108 +281,119 @@ export default function ScheduleBoardGrid({ weeks, axis, legend, details }: Prop
     </div>
   );
 
-  return (
-    <>
-      {/* Mobile: each week's grid squeezed to the viewport — all days visible, mini tickets. */}
-      <div className="lg:hidden">
-        <p className="mb-2 text-xs text-ink/50">{t("tapEventHint")}</p>
-        {weeks.map((week, w) => (
+  /** One week: the day × hour grid inside a horizontal scroller. When it
+   *  overflows, edge fades and prev/next buttons make the hidden days obvious,
+   *  and the hour gutter stays pinned so times are never scrolled away. */
+  const weekRow = (week: BoardDay[], w: number, compact: boolean) => {
+    const key = `${compact ? "c" : "w"}${w}`;
+    const scroll = canScroll[key];
+    const arrow = compact
+      ? "h-8 w-8 border-2 text-base"
+      : "h-10 w-10 border-2 text-lg transition-transform hover:scale-110";
+    return (
+      <div key={week[0].date} className={`relative ${w > 0 ? (compact ? "mt-6" : "mt-10") : ""}`}>
+        <div
+          ref={(el) => {
+            if (el) scrollerRefs.current.set(key, el);
+            else scrollerRefs.current.delete(key);
+          }}
+          onScroll={updateScrollState}
+          className="overflow-x-auto overscroll-x-contain"
+        >
           <div
-            key={week[0].date}
-            className={`grid gap-x-1 ${w > 0 ? "mt-6" : ""}`}
-            style={{ gridTemplateColumns: columns(week, true) }}
+            className={`grid ${compact ? "gap-x-1" : "gap-x-3"}`}
+            style={{ gridTemplateColumns: columns(week, compact) }}
           >
-            <div />
+            <div className="sticky left-0 z-10 bg-paper" />
+            {week.map((day) =>
+              day.blocks.length === 0 ? (
+                <div
+                  key={day.date}
+                  className={`flex flex-col items-center border-b-[3px] border-peach text-ink/40 ${
+                    compact ? "pb-1" : "pb-2"
+                  }`}
+                >
+                  <span className={`font-display leading-none ${compact ? "text-base" : "text-xl"}`}>
+                    {day.dayNum}
+                  </span>
+                  <span className={`leading-tight ${compact ? "text-[10px]" : "text-[11px]"}`}>{day.weekday}</span>
+                </div>
+              ) : compact ? (
+                <div key={day.date} className="border-b-[3px] border-peach pb-1 text-center text-ink">
+                  <span className="block text-[10px] leading-tight text-ink/55">{day.weekday}</span>
+                  <span className="block font-display text-base leading-tight">{day.dayNum}</span>
+                </div>
+              ) : (
+                <div key={day.date} className="flex items-baseline gap-2 border-b-[3px] border-peach px-1 pb-2">
+                  <span className="font-display text-3xl leading-none text-ink">{day.dayNum}</span>
+                  <span className="text-xs leading-tight text-ink/55">
+                    <span className="block text-sm text-ink">{day.weekday}</span>
+                    {day.month}
+                  </span>
+                </div>
+              ),
+            )}
+            <div className={`sticky left-0 z-10 bg-paper ${compact ? "pt-2" : "pt-3"}`}>{hourGutter(compact)}</div>
             {week.map((day) => (
-              <div
-                key={day.date}
-                className={`border-b-[3px] border-peach pb-1 text-center ${
-                  day.blocks.length === 0 ? "text-ink/40" : "text-ink"
-                }`}
-              >
-                <span className="block text-[10px] leading-tight text-ink/55">{day.weekday}</span>
-                <span className="block font-display text-base leading-tight">{day.dayNum}</span>
-              </div>
-            ))}
-            <div className="pt-2">{hourGutter(true)}</div>
-            {week.map((day) => (
-              <div key={day.date} className="pt-2">
-                {dayColumn(day, true)}
+              <div key={day.date} className={compact ? "pt-2" : "pt-3"}>
+                {dayColumn(day, compact)}
               </div>
             ))}
           </div>
-        ))}
+        </div>
+
+        {scroll?.left && (
+          <div className="pointer-events-none absolute inset-y-0 left-0 flex w-14 items-center bg-gradient-to-r from-paper to-transparent">
+            <button
+              type="button"
+              aria-label={t("earlierDays")}
+              onClick={() => scrollByColumn(key, -1)}
+              className={`pointer-events-auto ml-1 flex items-center justify-center rounded-full border-ink/15 bg-paper text-ink shadow-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ink focus-visible:ring-offset-2 ${arrow}`}
+            >
+              ←
+            </button>
+          </div>
+        )}
+        {scroll?.right && (
+          <div className="pointer-events-none absolute inset-y-0 right-0 flex w-14 items-center justify-end bg-gradient-to-l from-paper to-transparent">
+            <button
+              type="button"
+              aria-label={t("laterDays")}
+              onClick={() => scrollByColumn(key, 1)}
+              className={`pointer-events-auto mr-1 flex items-center justify-center rounded-full border-ink/15 bg-paper text-ink shadow-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ink focus-visible:ring-offset-2 ${arrow}`}
+            >
+              →
+            </button>
+          </div>
+        )}
+      </div>
+    );
+  };
+
+  // Spelled out on the compact grid, where a week is wider than the screen.
+  const swipeHint = Object.entries(canScroll).some(([k, v]) => k.startsWith("c") && (v.left || v.right));
+
+  return (
+    <>
+      {/* <lg: lanes keep a readable minimum width, so a week scrolls sideways. */}
+      <div className="lg:hidden">
+        <p className="mb-2 text-xs text-ink/50">
+          {t("tapEventHint")}
+          {swipeHint && (
+            <>
+              {" · "}
+              <span className="font-semibold text-ink/70">{t("swipeDaysHint")}</span>
+            </>
+          )}
+        </p>
+        {weeks.map((week, w) => weekRow(week, w, true))}
         {legendRow}
       </div>
 
-      {/* ≥lg: one day × hour grid per week, each with overflow affordances. */}
+      {/* ≥lg: one day × hour grid per week. */}
       <div className="hidden lg:block">
         {touchUI && <p className="mb-2 text-xs text-ink/50">{t("tapEventHint")}</p>}
-        {weeks.map((week, w) => (
-          <div key={week[0].date} className={`relative ${w > 0 ? "mt-10" : ""}`}>
-            <div
-              ref={(el) => {
-                scrollerRefs.current[w] = el;
-              }}
-              onScroll={updateScrollState}
-              className="overflow-x-auto"
-            >
-              <div className="grid gap-x-3" style={{ gridTemplateColumns: columns(week, false) }}>
-                <div />
-                {week.map((day) =>
-                  day.blocks.length === 0 ? (
-                    <div
-                      key={day.date}
-                      className="flex flex-col items-center border-b-[3px] border-peach pb-2 text-ink/40"
-                    >
-                      <span className="font-display text-xl leading-none">{day.dayNum}</span>
-                      <span className="text-[11px] leading-tight">{day.weekday}</span>
-                    </div>
-                  ) : (
-                    <div key={day.date} className="flex items-baseline gap-2 border-b-[3px] border-peach px-1 pb-2">
-                      <span className="font-display text-3xl leading-none text-ink">{day.dayNum}</span>
-                      <span className="text-xs leading-tight text-ink/55">
-                        <span className="block text-sm text-ink">{day.weekday}</span>
-                        {day.month}
-                      </span>
-                    </div>
-                  ),
-                )}
-                <div className="pt-3">{hourGutter(false)}</div>
-                {week.map((day) => (
-                  <div key={day.date} className="pt-3">
-                    {dayColumn(day, false)}
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            {canScroll[w]?.left && (
-              <div className="pointer-events-none absolute inset-y-0 left-0 flex w-16 items-center bg-gradient-to-r from-paper to-transparent">
-                <button
-                  type="button"
-                  aria-label={t("earlierDays")}
-                  onClick={() => scrollByColumn(w, -1)}
-                  className="pointer-events-auto flex h-10 w-10 items-center justify-center rounded-full border-2 border-ink/15 bg-paper text-lg text-ink shadow-sm transition-transform hover:scale-110 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ink focus-visible:ring-offset-2"
-                >
-                  ←
-                </button>
-              </div>
-            )}
-            {canScroll[w]?.right && (
-              <div className="pointer-events-none absolute inset-y-0 right-0 flex w-16 items-center justify-end bg-gradient-to-l from-paper to-transparent">
-                <button
-                  type="button"
-                  aria-label={t("laterDays")}
-                  onClick={() => scrollByColumn(w, 1)}
-                  className="pointer-events-auto flex h-10 w-10 items-center justify-center rounded-full border-2 border-ink/15 bg-paper text-lg text-ink shadow-sm transition-transform hover:scale-110 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ink focus-visible:ring-offset-2"
-                >
-                  →
-                </button>
-              </div>
-            )}
-          </div>
-        ))}
+        {weeks.map((week, w) => weekRow(week, w, false))}
         {legendRow}
       </div>
 
