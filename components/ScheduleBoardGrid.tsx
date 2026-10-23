@@ -20,6 +20,8 @@ export interface BoardBlock {
   rowEnd: number;
   /** 0-based column within the day, for sessions that overlap in time. */
   lane: number;
+  /** How many lanes the block may widen into (free of overlaps), ≥ 1. */
+  laneSpan: number;
 }
 
 export interface BoardDay {
@@ -119,9 +121,7 @@ export default function ScheduleBoardGrid({ weeks, axis, legend, details }: Prop
     triggerRef.current?.focus({ preventScroll: true });
   }, []);
 
-  /** `slim`: a compact block sharing its day with other lanes — too narrow for
-   *  a title, so it shows the start time only and the drawer does the rest. */
-  const ticket = (b: BoardBlock, compact: boolean, slim = false) => {
+  const ticket = (b: BoardBlock, compact: boolean) => {
     const c = tokenClasses(b.color);
     const opensDrawer = compact || touchUI;
     // Pointer devices highlight on hover; touch highlights the selected block.
@@ -130,7 +130,10 @@ export default function ScheduleBoardGrid({ weeks, axis, legend, details }: Prop
     const session = `${b.date}${b.start}`;
     const isSelected = opensDrawer && selected?.session === session;
     const lit = isSelected || (!opensDrawer && hovered === b.slug);
-    const placement = { gridRow: `${b.rowStart} / ${b.rowEnd}`, gridColumn: b.lane + 1 };
+    const placement = {
+      gridRow: `${b.rowStart} / ${b.rowEnd}`,
+      gridColumn: `${b.lane + 1} / span ${b.laneSpan}`,
+    };
     // Title lines that fit under the time line within the block's own height
     // (half-hour slots), so a clipped title never ends mid-phrase. Literal
     // class names so the Tailwind scanner sees them.
@@ -151,14 +154,15 @@ export default function ScheduleBoardGrid({ weeks, axis, legend, details }: Prop
       <>
         <span
           className={`block font-bold leading-tight tabular-nums ${
-            slim ? "text-[9px]" : compact ? "text-[10px]" : "text-[11px] tracking-wide"
+            compact ? "text-[10px] @max-[2.25rem]:text-[9px]" : "text-[11px] tracking-wide"
           }`}
         >
           {compact ? b.start : `${b.start}–${b.end}`}
         </span>
-        {slim ? (
-          <span className="sr-only">{b.title}</span>
-        ) : (
+        {/* The block is a container: below ~2.25rem wide (several lanes on a
+            phone) there is no room for a title, so it goes screen-reader-only
+            and the drawer does the rest. Tablets keep their titles. */}
+        <span className="@max-[2.25rem]:sr-only">
           <span
             className={`${clamp} font-body font-normal ${
               compact ? "break-words text-[11px] leading-tight" : "text-[13px] leading-tight"
@@ -166,13 +170,13 @@ export default function ScheduleBoardGrid({ weeks, axis, legend, details }: Prop
           >
             {b.title}
           </span>
-        )}
+        </span>
       </>
     );
 
     // Resting: a pale tint with a solid spine. Lit (hover/selected): the full
     // zone colour, so the active event jumps out of a crowded day.
-    const shared = `block min-h-0 min-w-0 overflow-hidden text-left border-l-4 ${c.edge} transition-[transform,opacity,background-color] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ink focus-visible:ring-offset-2 ${
+    const shared = `@container block min-h-0 min-w-0 overflow-hidden text-left border-l-4 ${c.edge} transition-[transform,opacity,background-color] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ink focus-visible:ring-offset-2 ${
       lit ? `${c.bg} ${c.on}` : `${c.soft} text-ink`
     } ${faded ? "opacity-25" : ""} ${compact ? "rounded-r-md p-1" : "rounded-r-lg px-2 py-1"}`;
 
@@ -226,7 +230,7 @@ export default function ScheduleBoardGrid({ weeks, axis, legend, details }: Prop
           backgroundImage: `repeating-linear-gradient(to bottom, color-mix(in srgb, var(--color-ink) 12%, transparent) 0 1px, transparent 1px calc(${slot} * ${axis.slotsPerHour}))`,
         }}
       >
-        {day.blocks.map((b) => ticket(b, compact, compact && day.lanes > 1))}
+        {day.blocks.map((b) => ticket(b, compact))}
       </div>
     );
   };

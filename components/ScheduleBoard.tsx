@@ -37,7 +37,7 @@ export default function ScheduleBoard({ events }: { events: FestivalEvent[] }) {
 
   // Raw sessions per date, then the axis is sized from the data so the board
   // never shows hours with nothing in them.
-  type Raw = Omit<BoardBlock, "rowStart" | "rowEnd" | "lane"> & { startMin: number; endMin: number };
+  type Raw = Omit<BoardBlock, "rowStart" | "rowEnd" | "lane" | "laneSpan"> & { startMin: number; endMin: number };
   const byDate = new Map<string, Raw[]>();
   let firstMin = Infinity;
   let lastMin = -Infinity;
@@ -71,6 +71,22 @@ export default function ScheduleBoard({ events }: { events: FestivalEvent[] }) {
   const days: BoardDay[] = dates.map((date) => {
     const raw = (byDate.get(date) ?? []).sort((a, b) => a.startMin - b.startMin || a.endMin - b.endMin);
     const lanes = assignLanes(raw);
+    const laneCount = Math.max(1, ...lanes.map((l) => l + 1));
+    // A session spreads into the lanes to its right for as long as nothing
+    // there overlaps it in time, so a solo session isn't a sliver on a day
+    // that has three rooms running at another hour.
+    const laneSpan = (i: number) => {
+      let span = 1;
+      while (lanes[i] + span < laneCount) {
+        const target = lanes[i] + span;
+        const clash = raw.some(
+          (o, j) => j !== i && lanes[j] === target && o.startMin < raw[i].endMin && o.endMin > raw[i].startMin,
+        );
+        if (clash) break;
+        span += 1;
+      }
+      return span;
+    };
     const blocks: BoardBlock[] = raw.map((r, i) => ({
       slug: r.slug,
       title: r.title,
@@ -82,6 +98,7 @@ export default function ScheduleBoard({ events }: { events: FestivalEvent[] }) {
       rowStart: (r.startMin - axisStart) / SLOT_MINUTES + 1,
       rowEnd: Math.ceil((r.endMin - axisStart) / SLOT_MINUTES) + 1,
       lane: lanes[i],
+      laneSpan: laneSpan(i),
     }));
     return {
       date,
@@ -89,7 +106,7 @@ export default function ScheduleBoard({ events }: { events: FestivalEvent[] }) {
       weekday: formatWeekday(date),
       dayNum: Number(date.slice(-2)),
       month: formatMonth(date),
-      lanes: Math.max(1, ...lanes.map((l) => l + 1)),
+      lanes: laneCount,
       blocks,
     };
   });
