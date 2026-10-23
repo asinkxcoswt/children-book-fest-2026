@@ -130,7 +130,7 @@ export default function ScheduleBoardGrid({ weeks, axis, legend, details }: Prop
     const active = opensDrawer ? (selected?.slug ?? null) : hovered;
     const faded = active !== null && active !== b.slug;
     const session = `${b.date}${b.start}`;
-    const isSelected = opensDrawer && selected?.session === session;
+    const isSelected = opensDrawer && selected?.slug === b.slug && selected.session === session;
     const lit = isSelected || (!opensDrawer && hovered === b.slug);
     const placement = {
       gridRow: `${b.rowStart} / ${b.rowEnd}`,
@@ -195,7 +195,7 @@ export default function ScheduleBoardGrid({ weeks, axis, legend, details }: Prop
           onClick={(e) => {
             triggerRef.current = e.currentTarget;
             setSelected((prev) =>
-              prev?.session === session ? null : { slug: b.slug, session },
+              prev?.slug === b.slug && prev.session === session ? null : { slug: b.slug, session },
             );
           }}
           className={`${shared} ${isSelected ? "ring-2 ring-ink ring-offset-1" : ""}`}
