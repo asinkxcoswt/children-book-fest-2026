@@ -1,0 +1,46 @@
+{
+  "slug": "diy-sweet-dreams-hat",
+  "thumbnail": "/content/events/diy-sweet-dreams-hat.jpeg",
+  "mascot": "/content/mascots/girl-bunny-ears.png",
+  "title": {
+    "th": "DIY Sweet Dreams Hat กับนิทาน \"นอนแล้วนะพระจันทร์\"",
+    "en": "DIY Sweet Dreams Hat with the story Goodnight, Moon"
+  },
+  "summary": {
+    "th": "ฟังนิทาน \"นอนแล้วนะพระจันทร์\" แล้วประดิษฐ์หมวกฝันดีของตัวเอง กับห้องเรียน",
+    "en": "Hear the story Goodnight, Moon, then make your own sweet-dreams hat, with Hong Rian."
+  },
+  "description": {
+    "th": "ฟังนิทานก่อนนอน \"นอนแล้วนะพระจันทร์\" แล้วลงมือประดิษฐ์หมวกฝันดีประดับดาวและโบว์ในแบบของตัวเอง นำกิจกรรมโดย ณัฐชนัน โพธิตาภรณ์ และ บุณยวีร์ เซ่งไพเราะห์ จากห้องเรียน",
+    "en": "Listen to the bedtime story Goodnight, Moon, then craft your own sweet-dreams hat decorated with stars and bows. Led by Natchanan Phothitaphon and Boonyawee Sengphairoh from Hong Rian."
+  },
+  "category": "storytelling",
+  "schedule": {
+    "venue": {
+      "th": "Main Stage ห้องแกลลอรี",
+      "en": "Main Stage, Gallery Room"
+    },
+    "sessions": [
+      {
+        "date": "2026-12-12",
+        "start": "11:00",
+        "end": "11:50",
+        "ticketCodes": [
+          "20261212-1100"
+        ]
+      }
+    ]
+  },
+  "ageRange": "เด็กๆ | ครอบครัว | ผู้สนใจทั่วไป",
+  "gallery": [
+    {
+      "src": "/content/events/diy-sweet-dreams-hat.jpeg",
+      "alt": {
+        "th": "หนังสือ \"นอนแล้วนะพระจันทร์\" กับหมวกทรงแหลมสีฟ้าและสีเหลืองประดับดาว",
+        "en": "The book Goodnight, Moon beside blue and yellow pointed hats decorated with stars"
+      }
+    }
+  ],
+  "ticketEventCode": "cbf2026-diy-sweet-dreams-hat",
+  "walkIn": false
+}

@@ -1,0 +1,46 @@
+{
+  "slug": "look-closer-read-picture",
+  "thumbnail": "/content/events/look-closer-read-picture.jpeg",
+  "mascot": "/content/mascots/boy-magnifier-book.png",
+  "title": {
+    "th": "Look Club Book Club",
+    "en": "Look Club Book Club"
+  },
+  "summary": {
+    "th": "แบ่งปัน | ชวนดู | อวด หนังสือภาพ กับ \"สานอักษร\" และ \"Mappa\"",
+    "en": "Share, look, and show off picture books with Saan Aksorn and Mappa."
+  },
+  "description": {
+    "th": "\"สานอักษร\" และ \"Mappa\" เปิดพื้นที่รื่นรมย์สำหรับคน \"รัก\" หนังสือภาพ จะหิ้วเอามาแบ่งปัน หรือจะมายืมดูด้วยกันก็ได้ มาเจอกันได้เลย ร่วมวงโดย แม่นี จาก Mappa และ ป้าเกื้อ จากสานอักษร",
+    "en": "Saan Aksorn and Mappa open a cosy space for people who love picture books. Bring your own to share, or come and browse together. With Mae Nee from Mappa and Pa Kuea from Saan Aksorn."
+  },
+  "category": "seminar",
+  "schedule": {
+    "venue": {
+      "th": "ห้อง MDIC",
+      "en": "MDIC Room"
+    },
+    "sessions": [
+      {
+        "date": "2026-11-28",
+        "start": "14:00",
+        "end": "15:50",
+        "ticketCodes": [
+          "20261128-1400"
+        ]
+      }
+    ]
+  },
+  "ageRange": "ผู้ใหญ่ | ผู้สนใจทั่วไป",
+  "gallery": [
+    {
+      "src": "/content/events/look-closer-read-picture.jpeg",
+      "alt": {
+        "th": "ตัวอักษร Look Club Book Club กับตัวละครสีเหลืองอ่านหนังสือบนพื้นหลังสีแดง",
+        "en": "The words Look Club Book Club with a yellow character reading a book on a red background"
+      }
+    }
+  ],
+  "ticketEventCode": "cbf2026-look-closer-read-picture",
+  "walkIn": false
+}

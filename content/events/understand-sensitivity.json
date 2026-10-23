@@ -1,0 +1,46 @@
+{
+  "slug": "understand-sensitivity",
+  "thumbnail": "/content/events/understand-sensitivity.jpeg",
+  "mascot": "/content/mascots/girl-sitting.png",
+  "title": {
+    "th": "เข้าใจความอ่อนไหว: เมื่อความไวต่อสิ่งเร้าไม่ใช่ความผิดปกติ",
+    "en": "Understanding Sensitivity: When Sensory Sensitivity Is Not a Disorder"
+  },
+  "summary": {
+    "th": "เสวนาเรื่อง Sensory Processing Sensitivity (SPS) ในเด็ก กับ อ.อาภาพร อุษณรัศมี จาก Is Plern",
+    "en": "A talk on Sensory Processing Sensitivity (SPS) in children with Arpaporn Usanarassamee from Is Plern."
+  },
+  "description": {
+    "th": "ทำความเข้าใจเด็กที่ไวต่อเสียงดัง อุณหภูมิ กลิ่น หรือสัมผัสของเสื้อผ้า ผ่านแนวคิด Sensory Processing Sensitivity (SPS) ว่าความอ่อนไหวไม่ใช่ความผิดปกติ และผู้ใหญ่จะดูแลและใช้หนังสือภาพช่วยเด็กได้อย่างไร โดย อ.อาภาพร อุษณรัศมี จาก Is Plern",
+    "en": "Understand children who are sensitive to loud sounds, temperature, smells, or the feel of clothing through the idea of Sensory Processing Sensitivity (SPS): sensitivity is not a disorder, and adults can support these children with care and picture books. With Arpaporn Usanarassamee from Is Plern."
+  },
+  "category": "seminar",
+  "schedule": {
+    "venue": {
+      "th": "ห้อง MDIC",
+      "en": "MDIC Room"
+    },
+    "sessions": [
+      {
+        "date": "2026-11-28",
+        "start": "16:00",
+        "end": "16:50",
+        "ticketCodes": [
+          "20261128-1600"
+        ]
+      }
+    ]
+  },
+  "ageRange": "ผู้ใหญ่ | ผู้สนใจทั่วไป",
+  "gallery": [
+    {
+      "src": "/content/events/understand-sensitivity.jpeg",
+      "alt": {
+        "th": "ภาพวาดเด็กผู้หญิงกอดหัวใจ ล้อมรอบด้วยเด็ก ๆ ที่ไวต่อเสียง อุณหภูมิ เสื้อผ้า และกลิ่น",
+        "en": "An illustration of a girl holding a heart, surrounded by children sensitive to sound, temperature, clothing, and smells"
+      }
+    }
+  ],
+  "ticketEventCode": "cbf2026-understand-sensitivity",
+  "walkIn": false
+}

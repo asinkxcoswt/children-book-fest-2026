@@ -1,0 +1,46 @@
+{
+  "slug": "my-memories-with-grandma",
+  "thumbnail": "/content/events/my-memories-with-grandma.jpeg",
+  "mascot": "/content/mascots/two-friends-trading.png",
+  "title": {
+    "th": "ความทรงจำของฉันกับคุณยาย (My Memories with Grandma)",
+    "en": "My Memories with Grandma"
+  },
+  "summary": {
+    "th": "เล่านิทานพร้อมดนตรีสดจาก Kkamangnun (까막눈) กับ Namju Choi และครูเบิร์ด นีลชา เฟื่องฟูเกียรติ",
+    "en": "Storytelling with live music from Kkamangnun, with Namju Choi and Kru Bird Neelacha Fuangfukiat."
+  },
+  "description": {
+    "th": "ฟังนิทาน \"ความทรงจำของฉันกับคุณยาย\" เล่าสดพร้อมดนตรีจาก Kkamangnun (까막눈) โดย Namju Choi และครูเบิร์ด นีลชา เฟื่องฟูเกียรติ จากติ๊งต่าง ชวนเด็ก ๆ ร้อง เต้น และย้อนนึกถึงความทรงจำอบอุ่นกับคุณยาย เข้าชมฟรี หยอดกล่องตามศรัทธาหน้างาน",
+    "en": "A live telling of My Memories with Grandma with music from Kkamangnun, by Namju Choi and Kru Bird Neelacha Fuangfukiat from Ting Tang. Children sing, dance, and share warm memories of grandma. Free entry, with a donation box at the venue."
+  },
+  "category": "storytelling",
+  "schedule": {
+    "venue": {
+      "th": "Main Stage ห้องแกลลอรี",
+      "en": "Main Stage, Gallery Room"
+    },
+    "sessions": [
+      {
+        "date": "2026-12-05",
+        "start": "15:00",
+        "end": "15:50",
+        "ticketCodes": [
+          "20261205-1500"
+        ]
+      }
+    ]
+  },
+  "ageRange": "เด็กๆ | ครอบครัว | ผู้สนใจทั่วไป",
+  "gallery": [
+    {
+      "src": "/content/events/my-memories-with-grandma.jpeg",
+      "alt": {
+        "th": "นักเล่านิทานและนักกีตาร์ร้องเพลงกับเด็ก ๆ ที่เต้นอยู่รอบตัว",
+        "en": "A storyteller and a guitarist singing with children dancing around them"
+      }
+    }
+  ],
+  "ticketEventCode": "cbf2026-my-memories-with-grandma",
+  "walkIn": true
+}

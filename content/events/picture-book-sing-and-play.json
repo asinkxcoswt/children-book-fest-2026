@@ -1,0 +1,46 @@
+{
+  "slug": "picture-book-sing-and-play",
+  "thumbnail": "/content/events/picture-book-sing-and-play.jpeg",
+  "mascot": "/content/mascots/girl-maracas.png",
+  "title": {
+    "th": "หนังสือภาพชวนร้อง ชวนเล่น",
+    "en": "Picture Books to Sing and Play"
+  },
+  "summary": {
+    "th": "เวิร์กชอปร้องเล่นกับหนังสือภาพสำหรับเด็กเล็กและครอบครัว กับ Just a little wild",
+    "en": "A sing-and-play picture-book workshop for little ones and their families, with Just a little wild."
+  },
+  "description": {
+    "th": "ชวนเด็กเล็กและผู้ปกครองมาร้อง เล่น และขยับร่างกายไปกับหนังสือภาพ ผ่านเพลง ร่มสีรุ้ง และกิจกรรมสนุก ๆ ที่สร้างความผูกพันในครอบครัว จัดโดย Just a little wild",
+    "en": "Little ones and their parents sing, play, and move along with picture books through songs, a rainbow parachute, and playful activities that bring families closer. Run by Just a little wild."
+  },
+  "category": "workshop",
+  "schedule": {
+    "venue": {
+      "th": "ห้อง Auditorium",
+      "en": "Auditorium"
+    },
+    "sessions": [
+      {
+        "date": "2026-12-06",
+        "start": "11:00",
+        "end": "11:50",
+        "ticketCodes": [
+          "20261206-1100"
+        ]
+      }
+    ]
+  },
+  "ageRange": "เด็กๆ | ครอบครัว | ผู้สนใจทั่วไป",
+  "gallery": [
+    {
+      "src": "/content/events/picture-book-sing-and-play.jpeg",
+      "alt": {
+        "th": "ครูและเด็กเล็กนั่งล้อมร่มชูชีพสีรุ้งในห้องที่มีชั้นหนังสือภาพ",
+        "en": "Teachers and toddlers sitting around a rainbow parachute in a room lined with picture books"
+      }
+    }
+  ],
+  "ticketEventCode": "cbf2026-picture-book-sing-and-play",
+  "walkIn": false
+}

@@ -1,0 +1,46 @@
+{
+  "slug": "tale-and-creative-play",
+  "thumbnail": "/content/events/tale-and-creative-play.jpeg",
+  "mascot": "/content/mascots/girl-sitting.png",
+  "title": {
+    "th": "อ่าน เล่า เล่น: นิทานละครสร้างสรรค์",
+    "en": "Read, Tell, Play: Creative Drama from Stories"
+  },
+  "summary": {
+    "th": "เวิร์กชอปนิทานละครสร้างสรรค์สำหรับผู้ใหญ่ กับครูเบิร์ด นีลชา เฟื่องฟูเกียรติ จากคิดแจ่ม",
+    "en": "A creative drama workshop for adults with Kru Bird Neelacha Fuangfukiat from Kid Jaem."
+  },
+  "description": {
+    "th": "เวิร์กชอปเข้มข้นสำหรับครู ผู้ปกครอง และผู้สนใจ เรียนรู้การอ่านหนังสือภาพ เล่าเรื่อง และแปลงนิทานเป็นละครสร้างสรรค์ เพื่อนำไปใช้กับเด็ก ๆ นำกิจกรรมโดย ครูเบิร์ด นีลชา เฟื่องฟูเกียรติ จากคิดแจ่ม",
+    "en": "An in-depth workshop for teachers, parents, and anyone interested, on reading picture books, telling stories, and turning them into creative drama to use with children. Led by Kru Bird Neelacha Fuangfukiat from Kid Jaem."
+  },
+  "category": "workshop",
+  "schedule": {
+    "venue": {
+      "th": "ห้อง MDIC",
+      "en": "MDIC Room"
+    },
+    "sessions": [
+      {
+        "date": "2026-12-06",
+        "start": "13:00",
+        "end": "16:50",
+        "ticketCodes": [
+          "20261206-1300"
+        ]
+      }
+    ]
+  },
+  "ageRange": "ผู้ใหญ่ | ผู้สนใจทั่วไป",
+  "gallery": [
+    {
+      "src": "/content/events/tale-and-creative-play.jpeg",
+      "alt": {
+        "th": "ผู้ใหญ่นั่งล้อมวงบนพื้นอ่านหนังสือภาพด้วยกัน",
+        "en": "Adults sitting in a circle on the floor reading picture books together"
+      }
+    }
+  ],
+  "ticketEventCode": "cbf2026-tale-and-creative-play",
+  "walkIn": false
+}

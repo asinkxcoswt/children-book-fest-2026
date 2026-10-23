@@ -1,0 +1,46 @@
+{
+  "slug": "dinosour-adventure-in-library",
+  "thumbnail": "/content/events/dinosour-adventure-in-library.jpeg",
+  "mascot": "/content/mascots/boy-magnifier.png",
+  "title": {
+    "th": "โบกมือเรียกคุณไดโนเสาร์... เล่าเรื่องผจญภัยในห้องสมุด",
+    "en": "Wave to the Dinosaur: An Adventure Story in the Library"
+  },
+  "summary": {
+    "th": "เล่านิทานและเวิร์กชอป โดยหลักสูตรวรรณกรรมสำหรับเด็ก มหาวิทยาลัยศรีนครินทรวิโรฒ",
+    "en": "Storytelling and a workshop by the Children's Literature programme, Srinakharinwirot University."
+  },
+  "description": {
+    "th": "ร่วมผจญภัยในห้องสมุดไปกับคุณไดโนเสาร์ ผ่านการเล่านิทานและกิจกรรมสนุก ๆ ที่ชวนเด็ก ๆ ขยับ ร้อง และเล่นไปพร้อมกัน จัดโดยหลักสูตรศิลปศาสตรบัณฑิต สาขาวรรณกรรมสำหรับเด็ก มหาวิทยาลัยศรีนครินทรวิโรฒ",
+    "en": "Join the dinosaur on an adventure through the library, with storytelling and playful activities that have children moving, singing, and playing together. Run by the Bachelor of Arts programme in Children's Literature, Srinakharinwirot University."
+  },
+  "category": "storytelling",
+  "schedule": {
+    "venue": {
+      "th": "Main Stage ห้องแกลลอรี",
+      "en": "Main Stage, Gallery Room"
+    },
+    "sessions": [
+      {
+        "date": "2026-12-12",
+        "start": "13:00",
+        "end": "13:50",
+        "ticketCodes": [
+          "20261212-1300"
+        ]
+      }
+    ]
+  },
+  "ageRange": "เด็กๆ | ครอบครัว | ผู้สนใจทั่วไป",
+  "gallery": [
+    {
+      "src": "/content/events/dinosour-adventure-in-library.jpeg",
+      "alt": {
+        "th": "เด็ก ๆ สวมหมวกแม่มดยกมือขึ้นในห้องสมุดที่ประดับดาวสีทอง",
+        "en": "Children in witch hats raising their hands in a library decorated with gold stars"
+      }
+    }
+  ],
+  "ticketEventCode": "cbf2026-dinosour-adventure-in-library",
+  "walkIn": true
+}

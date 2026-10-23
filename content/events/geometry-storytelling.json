@@ -1,0 +1,46 @@
+{
+  "slug": "geometry-storytelling",
+  "thumbnail": "/content/events/geometry-storytelling.jpeg",
+  "mascot": "/content/mascots/boy-magnifier-book.png",
+  "title": {
+    "th": "ภาพเล่าเรื่อง: ชวนมอง ชวนคิด และทดลองเล่าด้วยรูปเรขาคณิต",
+    "en": "Pictures Tell Stories: Look, Think, and Tell with Geometric Shapes"
+  },
+  "summary": {
+    "th": "เวิร์กชอปอ่านภาพและทดลองเล่าเรื่องด้วยรูปทรงเรขาคณิต กับพี่ไผ่ พี่โอ๋ และพี่แตง",
+    "en": "A workshop on reading pictures and telling stories with geometric shapes, with Phi Phai, Phi O, and Phi Taeng."
+  },
+  "description": {
+    "th": "ชวนเด็ก ๆ มองภาพในหนังสือภาพอย่างตั้งใจ คิดตามเรื่องราว แล้วทดลองเล่าเรื่องของตัวเองด้วยรูปทรงเรขาคณิตสีสันสดใสบนโต๊ะไฟ นำกิจกรรมโดย พี่ไผ่ พี่โอ๋ และพี่แตง",
+    "en": "Children look closely at the pictures in picture books, think through the story, then try telling their own tale with brightly coloured geometric shapes on a light table. Led by Phi Phai, Phi O, and Phi Taeng."
+  },
+  "category": "workshop",
+  "schedule": {
+    "venue": {
+      "th": "ห้อง Auditorium",
+      "en": "Auditorium"
+    },
+    "sessions": [
+      {
+        "date": "2026-11-28",
+        "start": "11:00",
+        "end": "12:50",
+        "ticketCodes": [
+          "20261128-1100"
+        ]
+      }
+    ]
+  },
+  "ageRange": "เด็กๆ | ครอบครัว | ผู้สนใจทั่วไป",
+  "gallery": [
+    {
+      "src": "/content/events/geometry-storytelling.jpeg",
+      "alt": {
+        "th": "เด็กวางแผ่นสีโปร่งแสงบนโต๊ะไฟใต้ภาพวาดจากหนังสือภาพ",
+        "en": "A child arranging translucent coloured shapes on a light table beneath a picture-book illustration"
+      }
+    }
+  ],
+  "ticketEventCode": "cbf2026-geometry-storytelling",
+  "walkIn": false
+}

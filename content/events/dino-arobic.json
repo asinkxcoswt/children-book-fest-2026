@@ -1,0 +1,46 @@
+{
+  "slug": "dino-arobic",
+  "thumbnail": "/content/events/dino-arobic.jpeg",
+  "mascot": "/content/mascots/girl-maracas.png",
+  "title": {
+    "th": "\"ไดโน แอโรบิก\" มา FIT & FUN กันเถอะ",
+    "en": "Dino Aerobics: Let's Get Fit & Fun"
+  },
+  "summary": {
+    "th": "ละครหุ่นเชิดไดโนเสาร์ชวนขยับร่างกาย โดย Plan for Kids",
+    "en": "A dinosaur puppet show that gets everyone moving, by Plan for Kids."
+  },
+  "description": {
+    "th": "พบกับโต๋เต๋และโป๊งเหน่ง สองไดโนเสาร์ตัวโตที่จะชวนเด็ก ๆ ลุกขึ้นมาขยับร่างกาย เต้นแอโรบิกไปด้วยกันแบบ FIT & FUN จัดแสดงโดย Plan for Kids",
+    "en": "Meet Toe-Tae and Pong-Neng, two big dinosaurs who invite children to get up, move, and dance aerobics together, fit and fun. Performed by Plan for Kids."
+  },
+  "category": "storytelling",
+  "schedule": {
+    "venue": {
+      "th": "Main Stage ห้องแกลลอรี",
+      "en": "Main Stage, Gallery Room"
+    },
+    "sessions": [
+      {
+        "date": "2026-12-10",
+        "start": "13:00",
+        "end": "13:50",
+        "ticketCodes": [
+          "20261210-1300"
+        ]
+      }
+    ]
+  },
+  "ageRange": "เด็กๆ | ครอบครัว | ผู้สนใจทั่วไป",
+  "gallery": [
+    {
+      "src": "/content/events/dino-arobic.jpeg",
+      "alt": {
+        "th": "ไดโนเสาร์ตัวสีฟ้าและสีม่วงเต้นรำท่ามกลางโน้ตดนตรี",
+        "en": "A blue dinosaur and a purple dinosaur dancing among music notes"
+      }
+    }
+  ],
+  "ticketEventCode": "cbf2026-dino-arobic",
+  "walkIn": true
+}

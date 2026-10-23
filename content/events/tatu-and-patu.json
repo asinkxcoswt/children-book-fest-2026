@@ -1,0 +1,46 @@
+{
+  "slug": "tatu-and-patu",
+  "thumbnail": "/content/events/tatu-and-patu.jpeg",
+  "mascot": "/content/mascots/two-friends-trading.png",
+  "title": {
+    "th": "ตาตุและปาตุ นักแก้ปัญหาสุดเพี้ยน",
+    "en": "Tatu and Patu: The Wacky Problem Solvers"
+  },
+  "summary": {
+    "th": "เล่านิทานพร้อมหุ่นเชิดจากหนังสือ \"ตาตุและปาตุ\" โดยทีม Cream Bangkok และสำนักพิมพ์นาวา",
+    "en": "Puppet storytelling from the book Tatu and Patu, by Cream Bangkok and Nawa Publishing."
+  },
+  "description": {
+    "th": "พบกับตาตุและปาตุ สองพี่น้องนักประดิษฐ์จากหนังสือภาพของ Aino Havukainen และ Sami Toivonen ที่จะมาแก้ปัญหากวนใจในชีวิตประจำวันด้วยวิธีสุดเพี้ยน เล่าสดพร้อมหุ่นเชิดโดยทีม Cream Bangkok ร่วมกับสำนักพิมพ์นาวา",
+    "en": "Meet Tatu and Patu, the inventor brothers from the picture books by Aino Havukainen and Sami Toivonen, as they solve everyday annoyances in the wackiest ways. Told live with puppets by Cream Bangkok together with Nawa Publishing."
+  },
+  "category": "storytelling",
+  "schedule": {
+    "venue": {
+      "th": "Main Stage ห้องแกลลอรี",
+      "en": "Main Stage, Gallery Room"
+    },
+    "sessions": [
+      {
+        "date": "2026-11-29",
+        "start": "14:00",
+        "end": "14:50",
+        "ticketCodes": [
+          "20261129-1400"
+        ]
+      }
+    ]
+  },
+  "ageRange": "เด็กๆ | ครอบครัว | ผู้สนใจทั่วไป",
+  "gallery": [
+    {
+      "src": "/content/events/tatu-and-patu.jpeg",
+      "alt": {
+        "th": "นักเล่านิทานสองคนเชิดหุ่นตาตุและปาตุบนเวทีไม้ ข้างปกหนังสือ",
+        "en": "Two storytellers working Tatu and Patu puppets on a wooden stage beside the book cover"
+      }
+    }
+  ],
+  "ticketEventCode": "cbf2026-tatu-and-patu",
+  "walkIn": true
+}
