@@ -180,7 +180,7 @@ export default function ScheduleBoardGrid({ weeks, axis, legend, details }: Prop
     // zone colour, so the active event jumps out of a crowded day.
     const shared = `@container block min-h-0 min-w-0 overflow-hidden text-left border-l-4 ${c.edge} transition-[transform,opacity,background-color] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ink focus-visible:ring-offset-2 ${
       lit ? `${c.bg} ${c.on}` : `${c.soft} text-ink`
-    } ${faded ? "opacity-25" : ""} ${compact ? "rounded-r-md p-1" : "rounded-r-lg px-2 py-1"}`;
+    } ${faded ? "opacity-25" : ""} ${compact ? "mb-px rounded-r-md p-1" : "mb-0.5 rounded-r-lg px-2 py-1"}`;
 
     // On touch there's no hover to preview with, so a tap opens the drawer
     // rather than committing the visitor to a page they can't preview.
@@ -225,7 +225,7 @@ export default function ScheduleBoardGrid({ weeks, axis, legend, details }: Prop
     return (
       <div
         key={day.date}
-        className={`grid ${compact ? "gap-x-0.5 gap-y-px" : "gap-x-1.5 gap-y-0.5"}`}
+        className={`grid ${compact ? "gap-x-0.5" : "gap-x-1.5"}`}
         style={{
           gridTemplateRows: `repeat(${axis.slotCount}, ${slot})`,
           gridTemplateColumns: `repeat(${day.lanes}, minmax(0, 1fr))`,
@@ -245,7 +245,7 @@ export default function ScheduleBoardGrid({ weeks, axis, legend, details }: Prop
       {axis.hours.map((h) => (
         <span
           key={h}
-          className={`-mt-2 text-right tabular-nums text-ink/50 ${compact ? "pr-0.5 text-[9px]" : "pr-2 text-xs"}`}
+          className={`-translate-y-1/2 text-right leading-none tabular-nums text-ink/50 ${compact ? "pr-0.5 text-[9px]" : "pr-2 text-xs"}`}
           style={{ gridRow: `span ${axis.slotsPerHour}` }}
         >
           {h}
