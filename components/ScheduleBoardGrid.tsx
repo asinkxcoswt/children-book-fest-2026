@@ -245,7 +245,7 @@ export default function ScheduleBoardGrid({ weeks, axis, legend, details }: Prop
       {axis.hours.map((h) => (
         <span
           key={h}
-          className={`-translate-y-1/2 text-right leading-none tabular-nums text-ink/50 ${compact ? "pr-0.5 text-[9px]" : "pr-2 text-xs"}`}
+          className={`self-start -translate-y-1/2 text-right leading-none tabular-nums text-ink/50 ${compact ? "pr-0.5 text-[9px]" : "pr-2 text-xs"}`}
           style={{ gridRow: `span ${axis.slotsPerHour}` }}
         >
           {h}
