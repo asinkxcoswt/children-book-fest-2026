@@ -1,0 +1,47 @@
+{
+  "slug": "my-home",
+  "thumbnail": "/content/events/my-home.jpeg",
+  "mascot": "/content/mascots/girl-sitting.png",
+  "title": {
+    "th": "บ้านของฉัน",
+    "en": "My Home"
+  },
+  "summary": {
+    "th": "เวิร์กชอปปั้นดินสร้างบ้านในฝัน กับ พี่โอ๋ คัธริน กอประคอง จาก Is Plern",
+    "en": "A clay-modelling workshop to build your dream home, with Oh Katrin Koprakong of Is Plern."
+  },
+  "description": {
+    "th": "ปั้นบ้านของฉันจากดินสีสันสดใส ทั้งตัวบ้าน ตัวละคร และสวนรอบบ้าน ตามจินตนาการของเด็ก ๆ นำกิจกรรมโดย พี่โอ๋ คัธริน กอประคอง จาก Is Plern (ปั้น เล่น ให้เป็นเรื่อง)",
+    "en": "Shape your own home out of bright modelling clay, from the house itself to the characters and garden around it, however you imagine it. Led by Oh Katrin Koprakong of Is Plern."
+  },
+  "category": "workshop",
+  "schedule": {
+    "venue": {
+      "th": "ห้อง MDIC",
+      "en": "MDIC Room"
+    },
+    "sessions": [
+      {
+        "date": "2026-12-05",
+        "start": "15:00",
+        "end": "17:50",
+        "ticketCodes": [
+          "20261205-1500"
+        ]
+      }
+    ]
+  },
+  "ageRange": "เด็กๆ | ครอบครัว | ผู้สนใจทั่วไป",
+  "price": 300,
+  "gallery": [
+    {
+      "src": "/content/events/my-home.jpeg",
+      "alt": {
+        "th": "ตุ๊กตาดินปั้นเด็กชุดสีน้ำเงินนอนยิ้ม ข้าง ๆ มีบ้านดินปั้นหลังเล็กที่มีเด็กมองออกมาจากหน้าต่าง",
+        "en": "A clay child in a blue onesie smiling, beside a small clay house with a child looking out of the window"
+      }
+    }
+  ],
+  "ticketEventCode": "cbf2026-my-home",
+  "admission": "ticket"
+}
