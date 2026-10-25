@@ -4,7 +4,7 @@ import type { Metadata } from "next";
 import { getCategories, getEventCount, getEvents, getFestivalDates } from "@/lib/content";
 import { SITE_URL } from "@/lib/site";
 import { tokenClasses } from "@/lib/colors";
-import { t, pick } from "@/lib/i18n";
+import { t } from "@/lib/i18n";
 import FestivalMap from "@/components/FestivalMap";
 import ScheduleBoard from "@/components/ScheduleBoard";
 import SectionHeading from "@/components/SectionHeading";
@@ -26,8 +26,7 @@ export default function V4Home() {
     "@context": "https://schema.org",
     "@type": "Festival",
     name: `${t("festivalName")} ${t("festivalYear")}`,
-    alternateName: `${t("festivalName", "en")} ${t("festivalYear", "en")}`,
-    description: t("heroBody"),
+        description: t("heroBody"),
     inLanguage: "th",
     startDate: dates[0],
     endDate: dates[dates.length - 1],
@@ -98,13 +97,13 @@ export default function V4Home() {
 
       {/* The playful village map as primary zone navigation. */}
       <section id="map" className="mx-auto max-w-5xl px-6 pt-14">
-        <SectionHeading title={t("festivalMap")} caption={t("festivalMap", "en")} />
+        <SectionHeading title={t("festivalMap")} />
         <FestivalMap />
       </section>
 
       {/* Chapter cards — editorial tiles with zone illustrations and a playful tilt. */}
       <section className="mx-auto max-w-5xl px-6 py-14">
-        <SectionHeading title={t("browseZones")} caption={t("browseZones", "en")} />
+        <SectionHeading title={t("browseZones")} />
         <div className="mt-8 grid gap-6 sm:grid-cols-2">
           {categories.map((cat, i) => {
             const c = tokenClasses(cat.color);
@@ -127,12 +126,11 @@ export default function V4Home() {
                     className="h-40 w-28 shrink-0 object-contain object-bottom drop-shadow-md transition-transform group-hover:scale-105"
                   />
                   <div className="pb-2">
-                    <p className={`font-display text-3xl ${c.on}`}>{pick(cat.name)}</p>
-                    <p className={`text-sm ${c.on} opacity-80`}>{cat.name.en}</p>
+                    <p className={`font-display text-3xl ${c.on}`}>{cat.name}</p>
                   </div>
                 </div>
-                <p className={`mt-4 text-lg ${c.on}`}>{pick(cat.tagline)}</p>
-                <p className={`mt-2 ${c.on} opacity-90`}>{pick(cat.description)}</p>
+                <p className={`mt-4 text-lg ${c.on}`}>{cat.tagline}</p>
+                <p className={`mt-2 ${c.on} opacity-90`}>{cat.description}</p>
                 <p className={`mt-4 text-sm ${c.on} opacity-90`}>
                   {getEventCount(cat.slug)} {t("events")} · {t("enterZone")} →
                 </p>
@@ -144,7 +142,7 @@ export default function V4Home() {
 
       {/* Whole-festival schedule board — the date is the primary axis. */}
       <section id="programme" className="mx-auto max-w-5xl px-6 pb-20 scroll-mt-6">
-        <SectionHeading title={t("programmeByDay")} caption={t("programmeByDay", "en")} />
+        <SectionHeading title={t("programmeByDay")} />
         <div className="mt-8">
           <ScheduleBoard events={getEvents()} />
         </div>

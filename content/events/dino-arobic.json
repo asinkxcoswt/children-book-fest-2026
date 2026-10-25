@@ -2,24 +2,13 @@
   "slug": "dino-arobic",
   "thumbnail": "/content/events/dino-arobic.jpeg",
   "mascot": "/content/mascots/girl-maracas.png",
-  "title": {
-    "th": "\"ไดโน แอโรบิก\" มา FIT & FUN กันเถอะ",
-    "en": "Dino Aerobics: Let's Get Fit & Fun"
-  },
-  "summary": {
-    "th": "ไดโนป่วนชวนเต้นแอโรบิกสำหรับเด็กและครอบครัว โดย Plan for Kids",
-    "en": "The Dino gang leads aerobics for children and families, by Plan for Kids."
-  },
-  "description": {
-    "th": "ไดโนป่วนชวนเพื่อน ๆ มาสนุกกับแอโรบิกสำหรับเด็กและครอบครัว เต้นสนุกทุก step กับเพลงสุดฮิตของแก๊งไดโนป่วนก๊วนหรรษา พบกับโต๋เต๋และโป๊งเหน่ง สองไดโนเสาร์ตัวโตที่จะชวนทุกคนลุกขึ้นมาขยับร่างกายแบบ FIT & FUN จัดแสดงโดย Plan for Kids",
-    "en": "The mischievous dinos invite everyone to aerobics for children and families, dancing every step to the hit songs of the Dino Gang. Meet Toe-Tae and Pong-Neng, two big dinosaurs who get everyone up and moving, fit and fun. Performed by Plan for Kids."
-  },
+  "title": "\"ไดโน แอโรบิก\" มา FIT & FUN กันเถอะ",
+  "summary": "ไดโนป่วนชวนเต้นแอโรบิกสำหรับเด็กและครอบครัว โดย Plan for Kids",
+  "presenter": "Plan for Kids",
+  "description": "ไดโนป่วนชวนเพื่อน ๆ มาสนุกกับแอโรบิกสำหรับเด็กและครอบครัว เต้นสนุกทุก step กับเพลงสุดฮิตของแก๊งไดโนป่วนก๊วนหรรษา",
   "category": "storytelling",
   "schedule": {
-    "venue": {
-      "th": "Main Stage ห้องแกลลอรี",
-      "en": "Main Stage, Gallery Room"
-    },
+    "venue": "Main Stage ห้องแกลลอรี",
     "sessions": [
       {
         "date": "2026-11-29",
@@ -36,10 +25,7 @@
   "gallery": [
     {
       "src": "/content/events/dino-arobic.jpeg",
-      "alt": {
-        "th": "ไดโนเสาร์ตัวสีฟ้าและสีม่วงเต้นรำท่ามกลางโน้ตดนตรี",
-        "en": "A blue dinosaur and a purple dinosaur dancing among music notes"
-      }
+      "alt": "ไดโนเสาร์ตัวสีฟ้าและสีม่วงเต้นรำท่ามกลางโน้ตดนตรี"
     }
   ],
   "ticketEventCode": "cbf2026-dino-arobic",

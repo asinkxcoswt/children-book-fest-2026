@@ -2,24 +2,13 @@
   "slug": "my-home",
   "thumbnail": "/content/events/my-home.jpeg",
   "mascot": "/content/mascots/girl-sitting.png",
-  "title": {
-    "th": "บ้านของฉัน",
-    "en": "My Home"
-  },
-  "summary": {
-    "th": "กิจกรรมศิลปะปั้นดินเบาสำรวจความหมายของ \"บ้าน\" กับ พี่โอ๋ คัธริน กอประคอง จาก Is Plern",
-    "en": "An air-dry clay art session exploring what \"home\" means, with Oh Katrin Koprakong of Is Plern."
-  },
-  "description": {
-    "th": "บ้านอาจไม่ได้หมายถึงสถานที่อยู่อาศัยเพียงอย่างเดียว แต่อาจเป็นพื้นที่แห่งความทรงจำ ความอบอุ่น ความปลอดภัย หรือสถานที่ที่เรารู้สึกเป็นตัวของตัวเอง\n\nกิจกรรมศิลปะสร้างสรรค์ที่ได้รับแรงบันดาลใจจากหนังสือภาพเรื่อง Home ชวนผู้เข้าร่วมสำรวจความหมายของคำว่า \"บ้าน\" ผ่านมุมมองและประสบการณ์ของตนเอง ก่อนถ่ายทอดออกมาเป็นผลงานประติมากรรมดินเบา โดยให้ความสำคัญกับกระบวนการสร้างสรรค์มากกว่าความสวยงามของชิ้นงาน ระหว่างการปั้น ผู้เข้าร่วมจะได้ฝึกการจดจ่ออยู่กับปัจจุบัน (Mindfulness) ผ่านการสัมผัส การเคลื่อนไหวของมือ และการสังเกตความรู้สึกของตนเอง ก่อนปิดท้ายด้วยการสะท้อนความคิดและแลกเปลี่ยนเรื่องราว เพื่อเปิดพื้นที่ให้แต่ละคนได้ทำความเข้าใจความหมายของบ้านในแบบของตนเอง นำกิจกรรมโดย พี่โอ๋ คัธริน กอประคอง จาก Is Plern (อ่าน เล่น ให้เป็นเรื่อง)",
-    "en": "Home may not only mean the place we live. It can be a space of memory, warmth, safety, or simply where we feel most ourselves.\n\nThis creative art session, inspired by the picture book Home, invites participants to explore what \"home\" means through their own perspective and experience, then express it as an air-dry clay sculpture, valuing the creative process over how polished the piece looks. While sculpting, participants practise staying in the present (mindfulness) through touch, the movement of the hands, and noticing their own feelings, before closing with reflection and sharing stories, so each person can understand home in their own way. Led by Oh Katrin Koprakong of Is Plern."
-  },
+  "title": "บ้านของฉัน",
+  "summary": "กิจกรรมศิลปะปั้นดินเบาสำรวจความหมายของ \"บ้าน\" กับ พี่โอ๋ คัธริน กอประคอง จาก Is Plern",
+  "presenter": "พี่โอ๋ คัธริน กอประคอง จาก Is Plern",
+  "description": "บ้านอาจไม่ได้หมายถึงสถานที่อยู่อาศัยเพียงอย่างเดียว แต่อาจเป็นพื้นที่แห่งความทรงจำ ความอบอุ่น ความปลอดภัย หรือสถานที่ที่เรารู้สึกเป็นตัวของตัวเอง\nกิจกรรมศิลปะสร้างสรรค์ที่ได้รับแรงบันดาลใจจากหนังสือภาพเรื่อง Home ชวนผู้เข้าร่วมสำรวจความหมายของคำว่า “บ้าน” ผ่านมุมมองและประสบการณ์ของตนเอง ก่อนถ่ายทอดออกมาเป็นผลงานประติมากรรมดินเบา โดยให้ความสำคัญกับกระบวนการสร้างสรรค์มากกว่าความสวยงามของชิ้นงาน\nระหว่างการปั้น ผู้เข้าร่วมจะได้ฝึกการจดจ่ออยู่กับปัจจุบัน (Mindfulness) ผ่านการสัมผัส การเคลื่อนไหวของมือ และการสังเกตความรู้สึกของตนเอง ก่อนปิดท้ายด้วยการสะท้อนความคิดและแลกเปลี่ยนเรื่องราว เพื่อเปิดพื้นที่ให้แต่ละคนได้ทำความเข้าใจความหมายของบ้านในแบบของตนเอง",
   "category": "workshop",
   "schedule": {
-    "venue": {
-      "th": "ห้อง MDIC",
-      "en": "MDIC Room"
-    },
+    "venue": "ห้อง MDIC",
     "sessions": [
       {
         "date": "2026-12-05",
@@ -36,10 +25,7 @@
   "gallery": [
     {
       "src": "/content/events/my-home.jpeg",
-      "alt": {
-        "th": "ตุ๊กตาดินปั้นเด็กชุดสีน้ำเงินนอนยิ้ม ข้าง ๆ มีบ้านดินปั้นหลังเล็กที่มีเด็กมองออกมาจากหน้าต่าง",
-        "en": "A clay child in a blue onesie smiling, beside a small clay house with a child looking out of the window"
-      }
+      "alt": "ตุ๊กตาดินปั้นเด็กชุดสีน้ำเงินนอนยิ้ม ข้าง ๆ มีบ้านดินปั้นหลังเล็กที่มีเด็กมองออกมาจากหน้าต่าง"
     }
   ],
   "ticketEventCode": "cbf2026-my-home",

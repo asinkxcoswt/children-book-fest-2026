@@ -6,7 +6,7 @@ import { getCategory, getEvent, getEvents, getSessionsByDate, hasSessionVenues, 
 import { tokenClasses } from "@/lib/colors";
 import { ogImage } from "@/lib/imageLoader";
 import { COW_TICKET_URL } from "@/lib/site";
-import { t, pick, formatDate } from "@/lib/i18n";
+import { t, formatDate } from "@/lib/i18n";
 import TicketPurchase from "@/components/TicketPurchase";
 import WalkInNotice from "@/components/WalkInNotice";
 import ShareButton from "@/components/ShareButton";
@@ -23,8 +23,8 @@ export async function generateMetadata({
   const { slug } = await params;
   const event = getEvent(slug);
   if (!event) return {};
-  const title = pick(event.title);
-  const description = pick(event.summary);
+  const title = event.title;
+  const description = event.summary;
   return {
     title,
     description,
@@ -59,17 +59,17 @@ export default async function V4Event({ params }: { params: Promise<{ slug: stri
     <main className="mx-auto max-w-5xl flex-1 px-6 py-12">
       {category && (
         <Link href={`/category/${category.slug}`} className={`text-sm ${c.text} hover:underline`}>
-          ← {pick(category.name)}
+          ← {category.name}
         </Link>
       )}
-      <h1 className="mt-3 font-display text-4xl text-ink sm:text-5xl">{pick(event.title)}</h1>
-      <p className="mt-2 text-lg text-ink/70">{pick(event.summary)}</p>
+      <h1 className="mt-3 font-display text-4xl text-ink sm:text-5xl">{event.title}</h1>
+      <p className="mt-2 text-lg text-ink/70">{event.summary}</p>
 
       {/* Primary poster — shown at its own aspect ratio, never cropped. */}
       <div className="mt-8 overflow-hidden rounded-2xl border-2 border-ink/10 sm:max-w-xl">
         <Image
           src={event.thumbnail}
-          alt={pick(event.title)}
+          alt={event.title}
           width={1200}
           height={1200}
           priority
@@ -80,24 +80,30 @@ export default async function V4Event({ params }: { params: Promise<{ slug: stri
 
       <div className="mt-10 grid gap-10 sm:grid-cols-[1fr_18rem]">
         <div>
-          <article className="whitespace-pre-line text-lg leading-relaxed text-ink/85">{pick(event.description)}</article>
+          <article className="whitespace-pre-line text-lg leading-relaxed text-ink/85">{event.description}</article>
 
           {/* Practical details live with the content; the sidebar stays transactional. */}
           <dl className="mt-8 grid gap-x-8 gap-y-5 border-t-[3px] border-peach pt-5 text-sm sm:grid-cols-2">
             <div>
               <dt className="font-display text-ink/60">{t("when")}</dt>
               {getSessionsByDate(event).map(({ date, venue, sessions }) => (
-                <dd key={`${date}${venue.th}`} className="text-ink">
+                <dd key={`${date}${venue}`} className="text-ink">
                   {formatDate(date)} · {sessions.map((s) => `${s.start}–${s.end}`).join(", ")}
                   {/* Rooms are spelled out per date only when they differ. */}
-                  {perSessionVenue && ` · ${pick(venue)}`}
+                  {perSessionVenue && ` · ${venue}`}
                 </dd>
               ))}
             </div>
             {!perSessionVenue && (
               <div>
                 <dt className="font-display text-ink/60">{t("where")}</dt>
-                <dd className="text-ink">{pick(event.schedule.venue)}</dd>
+                <dd className="text-ink">{event.schedule.venue}</dd>
+              </div>
+            )}
+            {event.presenter && (
+              <div>
+                <dt className="font-display text-ink/60">{t("presenter")}</dt>
+                <dd className="text-ink">{event.presenter}</dd>
               </div>
             )}
             <div>
@@ -136,10 +142,10 @@ export default async function V4Event({ params }: { params: Promise<{ slug: stri
                 className="inline-flex items-center gap-2 rounded-full border-2 border-ink/10 bg-paper px-3 py-1 text-sm text-ink transition-colors hover:border-ink/30 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ink focus-visible:ring-offset-2"
               >
                 <span aria-hidden className={`h-3 w-3 rounded border-2 border-ink ${c.bg}`} />
-                {pick(category.name)}
+                {category.name}
               </Link>
             )}
-            <ShareButton title={pick(event.title)} text={pick(event.summary)} />
+            <ShareButton title={event.title} text={event.summary} />
           </div>
           <div>
             {event.admission !== "ticket" ? (
@@ -154,10 +160,10 @@ export default async function V4Event({ params }: { params: Promise<{ slug: stri
                 // Wallet-pass text comes from our content — the platform
                 // doesn't know the event's date or venue.
                 pass={{
-                  title: pick(event.title),
+                  title: event.title,
                   sessions: event.schedule.sessions.map((s) => ({
                     ...s,
-                    venueText: pick(sessionVenue(event, s)),
+                    venueText: sessionVenue(event, s),
                   })),
                 }}
               />
@@ -194,7 +200,7 @@ export default async function V4Event({ params }: { params: Promise<{ slug: stri
             <div key={`${i}-${img.src}`} className="overflow-hidden rounded-2xl border-2 border-ink/10">
               <Image
                 src={img.src}
-                alt={pick(img.alt)}
+                alt={img.alt}
                 width={1200}
                 height={900}
                 sizes="(min-width: 640px) 32rem, 100vw"

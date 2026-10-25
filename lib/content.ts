@@ -1,6 +1,6 @@
 import { readFileSync, readdirSync } from "node:fs";
 import { join } from "node:path";
-import type { Category, EventSession, FestivalEvent, Localized } from "@/types/content";
+import type { Category, EventSession, FestivalEvent } from "@/types/content";
 import categoriesData from "@/content/categories.json";
 
 const categories = categoriesData as Category[];
@@ -44,7 +44,7 @@ export function firstSession(event: FestivalEvent): EventSession {
 
 /** The room a session is held in: its own `venue` when set, else the event's
  *  default. Always read venues through this so overrides are never missed. */
-export function sessionVenue(event: FestivalEvent, session: EventSession): Localized {
+export function sessionVenue(event: FestivalEvent, session: EventSession): string {
   return session.venue ?? event.schedule.venue;
 }
 
@@ -59,12 +59,12 @@ export function hasSessionVenues(event: FestivalEvent): boolean {
  *  same-day time slots read as one line. */
 export function getSessionsByDate(
   event: FestivalEvent,
-): { date: string; venue: Localized; sessions: EventSession[] }[] {
-  const groups: { date: string; venue: Localized; sessions: EventSession[] }[] = [];
+): { date: string; venue: string; sessions: EventSession[] }[] {
+  const groups: { date: string; venue: string; sessions: EventSession[] }[] = [];
   for (const s of event.schedule.sessions) {
     const venue = sessionVenue(event, s);
     const last = groups[groups.length - 1];
-    if (last?.date === s.date && last.venue.th === venue.th) last.sessions.push(s);
+    if (last?.date === s.date && last.venue === venue) last.sessions.push(s);
     else groups.push({ date: s.date, venue, sessions: [s] });
   }
   return groups;

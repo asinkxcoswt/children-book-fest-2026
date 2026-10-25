@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import type { ColorToken } from "@/types/content";
 import type { PurchaseFormField } from "@/lib/ticketApi";
 import { tokenClasses } from "@/lib/colors";
-import { t, DEFAULT_LOCALE } from "@/lib/i18n";
+import { t } from "@/lib/i18n";
 
 /** Answers keyed by the organizer's field keys. */
 export type PurchaseAnswers = Record<string, string>;
@@ -35,7 +35,7 @@ const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 type FieldErrors = Record<string, string | undefined>;
 
 function labelOf(field: PurchaseFormField): string {
-  return DEFAULT_LOCALE === "th" ? field.labelTh : field.labelEn;
+  return field.labelTh;
 }
 
 /** Browsers autofill by field purpose, and the organizer's key is the only clue

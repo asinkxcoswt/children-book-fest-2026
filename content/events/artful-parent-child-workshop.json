@@ -2,24 +2,13 @@
   "slug": "artful-parent-child-workshop",
   "thumbnail": "/content/events/artful-parent-child-workshop.jpeg",
   "mascot": "/content/mascots/girl-sitting.png",
-  "title": {
-    "th": "Artful Parent-Child Workshop…จับมือปั้นกับคนโปรด",
-    "en": "Artful Parent-Child Workshop: Sculpt with someone you love"
-  },
-  "summary": {
-    "th": "เวิร์กชอปปั้นดินสำหรับพ่อแม่ลูก กับครูคะนึ้ง",
-    "en": "A clay-sculpting workshop for parents and children with Kru Kanueng."
-  },
-  "description": {
-    "th": "Workshop ศิลปะสำหรับพ่อแม่และลูก ที่ชวนมาปั้นดิน เล่น และสร้างสรรค์ผลงานไปด้วยกัน ผ่านโจทย์สนุก ๆ ที่เปิดโอกาสให้ทั้งคู่ได้ลองเป็นทั้งผู้นำและผู้ตาม ได้ฟังความคิดของกันและกัน เรียนรู้ที่จะยอมรับความแตกต่าง\n\nระหว่างการปั้น พ่อแม่และลูกจะได้ค้นพบว่า บางครั้งสิ่งที่เราตั้งใจไว้อาจไม่ได้ออกมาเป็นอย่างที่คิด และเราอาจต้องค่อย ๆ ปรับ เปลี่ยน และปล่อยให้สิ่งต่าง ๆ สวยงามในแบบของมันเอง กิจกรรมนี้จะเป็นกาวที่เชื่อมความสัมพันธ์ของครอบครัวให้เข้าใจกันและกันมากขึ้น นำกิจกรรมโดยครูคะนึ้ง ทำกิจกรรมเป็นคู่ พ่อหรือแม่ 1 คนกับลูก 1 คน (เด็กอายุ 5 ขวบขึ้นไป)",
-    "en": "An art workshop for parent and child: shape clay, play, and create together through playful prompts that let each of you try being the leader and the follower, listen to each other's ideas, and learn to accept your differences.\n\nAs you sculpt, parent and child discover that what we plan does not always turn out as imagined, and that we may need to adjust, change, and let things be beautiful in their own way. The workshop is a glue that helps families understand one another better. Led by Kru Kanueng. Work in pairs: one parent with one child (children aged 5 and up)."
-  },
+  "title": "Artful Parent-Child Workshop…จับมือปั้นกับคนโปรด",
+  "summary": "เวิร์กชอปปั้นดินสำหรับพ่อแม่ลูก กับครูคะนึ้ง",
+  "presenter": "ครูคะนึ้ง (COOLKanink)",
+  "description": "Workshop ศิลปะสำหรับพ่อแม่และลูก ที่ชวนมาปั้นดิน เล่น และสร้างสรรค์ผลงานไปด้วยกัน ผ่านโจทย์สนุก ๆ ที่เปิดโอกาสให้ทั้งคู่ได้ลองเป็นทั้งผู้นำและผู้ตาม ได้ฟังความคิดของกันและกัน เรียนรู้ที่จะยอมรับความแตกต่าง\n\nระหว่างการปั้น พ่อแม่และลูกจะได้ค้นพบว่า บางครั้งสิ่งที่เราตั้งใจไว้อาจไม่ได้ออกมาเป็นอย่างที่คิด และเราอาจต้องค่อย ๆ ปรับ เปลี่ยน และปล่อยให้สิ่งต่าง ๆ สวยงามในแบบของมันเอง กิจกรรมนี้ จะเป็นกาวที่เชื่อมความสัมพันธ์ของครอบครัวให้เข้าใจกันและกันมากขึ้น",
   "category": "workshop",
   "schedule": {
-    "venue": {
-      "th": "ห้อง MDIC",
-      "en": "MDIC Room"
-    },
+    "venue": "ห้อง MDIC",
     "sessions": [
       {
         "date": "2026-11-29",
@@ -36,10 +25,7 @@
   "gallery": [
     {
       "src": "/content/events/artful-parent-child-workshop.jpeg",
-      "alt": {
-        "th": "ชิ้นงานดินปั้นหลากสีวางเรียงรอบแจกันดอกไม้บนเสื่อ",
-        "en": "Colorful clay sculptures arranged around a vase of flowers on a woven mat"
-      }
+      "alt": "ชิ้นงานดินปั้นหลากสีวางเรียงรอบแจกันดอกไม้บนเสื่อ"
     }
   ],
   "ticketEventCode": "cbf2026-artful-parent-child-workshop",

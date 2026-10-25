@@ -2,24 +2,13 @@
   "slug": "geometry-storytelling",
   "thumbnail": "/content/events/geometry-storytelling.jpeg",
   "mascot": "/content/mascots/boy-magnifier-book.png",
-  "title": {
-    "th": "ภาพเล่าเรื่อง: ชวนมอง ชวนคิด และทดลองเล่าด้วยรูปเรขาคณิต",
-    "en": "Pictures Tell Stories: Look, Think, and Tell with Geometric Shapes"
-  },
-  "summary": {
-    "th": "เวิร์กชอปอ่านภาพในหนังสือภาพ ฟังมุมมองนักวาด และทดลองเล่าเรื่องด้วยรูปเรขาคณิต กับพี่ไผ่ พี่โอ๋ และพี่แตง",
-    "en": "Read how picture books tell stories, hear an illustrator's view, and retell with simple shapes, with Pai, Oh and Taeng."
-  },
-  "description": {
-    "th": "หนังสือภาพเล่าเรื่องผ่านภาพได้อย่างไร ชวนมองตัวอย่างหนังสือภาพจากหลากหลายประเทศ เพื่อสังเกตว่ารูปร่าง สี ขนาด การจัดวาง และองค์ประกอบต่าง ๆ สร้างความหมายและความรู้สึกให้กับเรื่องราวอย่างไร ก่อนฟังมุมมองจากนักวาดภาพประกอบผ่านผลงานจริง และทดลองนำรูปเรขาคณิตง่าย ๆ มาจัดวางใหม่ เพื่อค้นหาว่า เรื่องเดียวกันสามารถเล่าผ่านภาพได้แตกต่างกันแค่ไหน นำกิจกรรมโดย พี่ไผ่ พี่โอ๋ และพี่แตง",
-    "en": "How do picture books tell stories through images? Look at examples from many countries and notice how shape, colour, size, placement, and composition create meaning and feeling. Then hear an illustrator's perspective through real work, and experiment with rearranging simple geometric shapes to find out how differently the same story can be told in pictures. Led by Pai, Oh and Taeng."
-  },
+  "title": "ภาพเล่าเรื่อง: ชวนมอง ชวนคิด และทดลองเล่าด้วยรูปเรขาคณิต",
+  "summary": "เวิร์กชอปอ่านภาพในหนังสือภาพ ฟังมุมมองนักวาด และทดลองเล่าเรื่องด้วยรูปเรขาคณิต กับพี่ไผ่ พี่โอ๋ และพี่แตง",
+  "presenter": "พี่ไผ่ พี่โอ๋ และพี่แตง",
+  "description": "หนังสือภาพเล่าเรื่องผ่านภาพได้อย่างไร ชวนมองตัวอย่างหนังสือภาพจากหลากหลายประเทศ เพื่อสังเกตว่ารูปร่าง สี ขนาด การจัดวาง และองค์ประกอบต่างๆ สร้างความหมายและความรู้สึกให้กับเรื่องราวอย่างไร ก่อนฟังมุมมองจากนักวาดภาพประกอบผ่านผลงานจริง และทดลองนำรูปเรขาคณิตง่ายๆ มาจัดวางใหม่ เพื่อค้นหาว่า เรื่องเดียวกัน สามารถเล่าผ่านภาพได้แตกต่างกันแค่ไหน",
   "category": "workshop",
   "schedule": {
-    "venue": {
-      "th": "ห้อง Auditorium",
-      "en": "Auditorium"
-    },
+    "venue": "ห้อง Auditorium",
     "sessions": [
       {
         "date": "2026-11-28",
@@ -36,10 +25,7 @@
   "gallery": [
     {
       "src": "/content/events/geometry-storytelling.jpeg",
-      "alt": {
-        "th": "เด็กวางแผ่นสีโปร่งแสงบนโต๊ะไฟใต้ภาพวาดจากหนังสือภาพ",
-        "en": "A child arranging translucent coloured shapes on a light table beneath a picture-book illustration"
-      }
+      "alt": "เด็กวางแผ่นสีโปร่งแสงบนโต๊ะไฟใต้ภาพวาดจากหนังสือภาพ"
     }
   ],
   "ticketEventCode": "cbf2026-geometry-storytelling",

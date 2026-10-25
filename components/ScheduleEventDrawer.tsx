@@ -10,7 +10,7 @@ export interface BoardEventDetail {
   slug: string;
   title: string;
   summary: string;
-  /** Localized category (zone) name. */
+  /** Category (zone) name. */
   category: string;
   color: ColorToken;
   venue: string;

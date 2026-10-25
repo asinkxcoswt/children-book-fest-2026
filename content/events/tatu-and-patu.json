@@ -2,24 +2,13 @@
   "slug": "tatu-and-patu",
   "thumbnail": "/content/events/tatu-and-patu.jpeg",
   "mascot": "/content/mascots/two-friends-trading.png",
-  "title": {
-    "th": "ตาตุและปาตุ นักแก้ปัญหาสุดเพี้ยน",
-    "en": "Tatu and Patu: The Wacky Problem Solvers"
-  },
-  "summary": {
-    "th": "เล่านิทานพร้อมหุ่นเชิดจากหนังสือ \"ตาตุและปาตุ\" โดยทีม Cream Bangkok และสำนักพิมพ์นาวา",
-    "en": "Puppet storytelling from the book Tatu and Patu, by Cream Bangkok and Nawa Publishing."
-  },
-  "description": {
-    "th": "ทีมงานอ่านหนังสือ \"ตาตุและปาตุ นักแก้ปัญหาสุดเพี้ยน กับ 14 ปัญหากวนใจในชีวิตประจำวัน\" ของ Aino Havukainen และ Sami Toivonen และชวนเด็ก ๆ คิดหาทางแก้ปัญหาในแบบของตัวเอง เล่าสดพร้อมหุ่นเชิดโดยทีม Cream Bangkok ร่วมกับสำนักพิมพ์นาวา",
-    "en": "The team reads \"Tatu and Patu, the Wacky Problem Solvers, and 14 Everyday Annoyances\" by Aino Havukainen and Sami Toivonen, then invites children to invent their own solutions. Told live with puppets by the Cream Bangkok team together with Nawa Publishing."
-  },
+  "title": "ตาตุและปาตุ นักแก้ปัญหาสุดเพี้ยน",
+  "summary": "เล่านิทานพร้อมหุ่นเชิดจากหนังสือ \"ตาตุและปาตุ\" โดยทีม Cream Bangkok และสำนักพิมพ์นาวา",
+  "presenter": "ทีม Cream Bangkok และสำนักพิมพ์นาวา",
+  "description": "ทีมงานอ่านหนังสือ \"ตาตุและปาตุ นักแก้ปัญหาสุดเพี้ยน กับ 14 ปัญหากวนใจในชีวิตประจำวัน\" และชวนเด็กๆ คิดหาทางแก้ปัญหาในแบบของตัวเอง",
   "category": "storytelling",
   "schedule": {
-    "venue": {
-      "th": "Main Stage ห้องแกลลอรี",
-      "en": "Main Stage, Gallery Room"
-    },
+    "venue": "Main Stage ห้องแกลลอรี",
     "sessions": [
       {
         "date": "2026-11-29",
@@ -36,10 +25,7 @@
   "gallery": [
     {
       "src": "/content/events/tatu-and-patu.jpeg",
-      "alt": {
-        "th": "นักเล่านิทานสองคนเชิดหุ่นตาตุและปาตุบนเวทีไม้ ข้างปกหนังสือ",
-        "en": "Two storytellers working Tatu and Patu puppets on a wooden stage beside the book cover"
-      }
+      "alt": "นักเล่านิทานสองคนเชิดหุ่นตาตุและปาตุบนเวทีไม้ ข้างปกหนังสือ"
     }
   ],
   "ticketEventCode": "cbf2026-tatu-and-patu",

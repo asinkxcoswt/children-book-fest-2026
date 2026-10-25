@@ -2,24 +2,13 @@
   "slug": "puppet-show",
   "thumbnail": "/content/events/puppet-show.jpeg",
   "mascot": "/content/mascots/girl-shadow-puppet.png",
-  "title": {
-    "th": "ละครหุ่นเชิด มาเกเยือนโลก",
-    "en": "Puppet Show: Mage Visits Earth"
-  },
-  "summary": {
-    "th": "ละครหุ่นเชิดจากนิทานหัดอ่าน \"มาเกเยือนโลก\" โดย Plan for Kids",
-    "en": "A puppet show based on the early-reader picture book Mage Visits Earth, by Plan for Kids."
-  },
-  "description": {
-    "th": "ชมละครหุ่นเชิดจากหนังสือนิทานหัดอ่าน ชุดจักรวาลอ่านสนุก ตอน \"มาเกเยือนโลก\" เรื่องราวของมาคีมาคี เพื่อนตัวน้อยจากดาวเคราะห์แคระที่เดินทางมาเยือนโลก จัดแสดงโดย Plan for Kids",
-    "en": "A puppet show from the Fun Reading Universe early-reader series, telling the story of Makemake, a little friend from a dwarf planet who comes to visit Earth. Performed by Plan for Kids."
-  },
+  "title": "ละครหุ่นเชิด มาเกเยือนโลก",
+  "summary": "ละครหุ่นเชิดจากนิทานหัดอ่าน \"มาเกเยือนโลก\" โดย Plan for Kids",
+  "presenter": "Plan for Kids",
+  "description": "ชมละครหุ่นเชิดจากหนังสือนิทานหัดอ่าน ชุดจักรวาลอ่านสนุก ตอน \"มาเกเยือนโลก\" เรื่องราวของมาคีมาคี เพื่อนตัวน้อยจากดาวเคราะห์แคระที่เดินทางมาเยือนโลก จัดแสดงโดย Plan for Kids",
   "category": "storytelling",
   "schedule": {
-    "venue": {
-      "th": "Main Stage ห้อง Gallery",
-      "en": "Main Stage, Gallery Room"
-    },
+    "venue": "Main Stage ห้อง Gallery",
     "sessions": [
       {
         "date": "2026-12-10",
@@ -36,10 +25,7 @@
   "gallery": [
     {
       "src": "/content/events/puppet-show.jpeg",
-      "alt": {
-        "th": "ปกหนังสือ \"มาเกเยือนโลก\" กับยานอวกาศสีเหลืองบนพื้นหลังอวกาศ",
-        "en": "The cover of Mage Visits Earth with a yellow spaceship against a starry background"
-      }
+      "alt": "ปกหนังสือ \"มาเกเยือนโลก\" กับยานอวกาศสีเหลืองบนพื้นหลังอวกาศ"
     }
   ],
   "ticketEventCode": "cbf2026-puppet-show",

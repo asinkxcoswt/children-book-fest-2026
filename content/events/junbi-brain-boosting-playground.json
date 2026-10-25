@@ -2,24 +2,13 @@
   "slug": "junbi-brain-boosting-playground",
   "thumbnail": "/content/events/junbi-brain-boosting-playground.jpeg",
   "mascot": "/content/mascots/boy-magnifier.png",
-  "title": {
-    "th": "Junbi Brain Boosting Playground",
-    "en": "Junbi Brain Boosting Playground"
-  },
-  "summary": {
-    "th": "จากนิทาน...สู่สนามเด็กเล่น พื้นที่เล่นอิสระเสริม EF โดย Junbi Playducation",
-    "en": "From story to playground: a free-play space that builds executive function, by Junbi Playducation."
-  },
-  "description": {
-    "th": "Brain Boosting Playground คือพื้นที่เล่นอิสระที่ออกแบบจากแนวคิดว่า \"หนังสือภาพไม่ใช่จุดสิ้นสุดของการอ่าน แต่เป็นจุดเริ่มต้นของการเล่นและการเรียนรู้\" เราหยิบโลกในหนังสือภาพออกจากหน้ากระดาษ มาสร้างเป็นสนามเด็กเล่นที่เด็กสามารถเดินเข้าไปสำรวจ เล่น ทดลอง และสร้างประสบการณ์ของตนเองได้\n\nแนวคิดของกิจกรรมอ้างอิงหลักการพัฒนา Executive Functions (EF) หรือทักษะสมองเพื่อการจัดการชีวิต ผ่านการเล่น เพราะเด็กจะได้วางแผน ตัดสินใจ แก้ปัญหา ควบคุมตนเอง จดจ่อ ยืดหยุ่นความคิด และทำงานร่วมกับผู้อื่นอย่างเป็นธรรมชาติ โดยไม่มีคำตอบตายตัวหรือวิธีเล่นเพียงแบบเดียว ภายในพื้นที่แบ่งออกเป็น 5 มุมกิจกรรม ซึ่งเชื่อมโยงกับหนังสือภาพแต่ละเรื่องในรูปแบบที่แตกต่างกัน จัดโดย Junbi Playducation",
-    "en": "Brain Boosting Playground is a free-play space built on one idea: a picture book is not where reading ends, but where play and learning begin. We lift the worlds inside picture books off the page and turn them into a playground children can walk into, explore, experiment in, and make their own.\n\nThe activity draws on Executive Functions (EF), the brain skills for managing life, developed through play. Children plan, decide, solve problems, regulate themselves, focus, think flexibly, and work with others, naturally, with no fixed answers and no single right way to play. The space is divided into five activity corners, each linked to a different picture book in its own way. Run by Junbi Playducation."
-  },
+  "title": "Junbi Brain Boosting Playground",
+  "summary": "จากนิทาน...สู่สนามเด็กเล่น พื้นที่เล่นอิสระเสริม EF โดย Junbi Playducation",
+  "presenter": "Junbi Playducation",
+  "description": "Brain Boosting Playground : จากนิทาน...สู่สนามเด็กเล่น\n\nBrain Boosting Playground คือพื้นที่เล่นอิสระที่ออกแบบจากแนวคิดว่า \"หนังสือภาพไม่ใช่จุดสิ้นสุดของการอ่าน แต่เป็นจุดเริ่มต้นของการเล่นและการเรียนรู้\" เราหยิบโลกในหนังสือภาพออกจากหน้ากระดาษ มาสร้างเป็นสนามเด็กเล่นที่เด็กสามารถเดินเข้าไปสำรวจ เล่น ทดลอง และสร้างประสบการณ์ของตนเองได้\n\nแนวคิดของกิจกรรมอ้างอิงหลักการพัฒนา Executive Functions (EF) หรือทักษะสมองเพื่อการจัดการชีวิต ผ่านการเล่น เพราะเด็กจะได้วางแผน ตัดสินใจ แก้ปัญหา ควบคุมตนเอง จดจ่อ ยืดหยุ่นความคิด และทำงานร่วมกับผู้อื่นอย่างเป็นธรรมชาติ โดยไม่มีคำตอบตายตัวหรือวิธีเล่นเพียงแบบเดียว\nภายในพื้นที่แบ่งออกเป็น 5 มุมกิจกรรม ซึ่งเชื่อมโยงกับหนังสือภาพแต่ละเรื่องในรูปแบบที่แตกต่างกัน",
   "category": "workshop",
   "schedule": {
-    "venue": {
-      "th": "ห้อง MDIC",
-      "en": "MDIC Room"
-    },
+    "venue": "ห้อง MDIC",
     "sessions": [
       {
         "date": "2026-11-29",
@@ -36,10 +25,7 @@
   "gallery": [
     {
       "src": "/content/events/junbi-brain-boosting-playground.jpeg",
-      "alt": {
-        "th": "เด็กชายนั่งประกอบของเล่นสีฟ้าอย่างตั้งใจ",
-        "en": "A boy concentrating on assembling a blue toy"
-      }
+      "alt": "เด็กชายนั่งประกอบของเล่นสีฟ้าอย่างตั้งใจ"
     }
   ],
   "ticketEventCode": "cbf2026-junbi-brain-boosting-playground",

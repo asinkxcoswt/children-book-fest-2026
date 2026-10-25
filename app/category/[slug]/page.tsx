@@ -4,7 +4,7 @@ import { notFound } from "next/navigation";
 import { getCategories, getCategory, getEventsByCategory, getSessionsByDate, hasSessionVenues } from "@/lib/content";
 import { tokenClasses } from "@/lib/colors";
 import { ogImage } from "@/lib/imageLoader";
-import { t, pick, formatDate, formatWeekday } from "@/lib/i18n";
+import { t, formatDate, formatWeekday } from "@/lib/i18n";
 import FestivalMap from "@/components/FestivalMap";
 import SectionHeading from "@/components/SectionHeading";
 import WaveEdge from "@/components/WaveEdge";
@@ -17,8 +17,8 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
   const { slug } = await params;
   const category = getCategory(slug);
   if (!category) return {};
-  const title = pick(category.name);
-  const description = pick(category.description);
+  const title = category.name;
+  const description = category.description;
   return {
     title,
     description,
@@ -59,12 +59,9 @@ export default async function V4Category({ params }: { params: Promise<{ slug: s
             >
               ← {t("backToHome")}
             </Link>
-            <h1 className={`mt-4 font-display text-5xl ${c.on}`}>{pick(category.name)}</h1>
-            <p className={`mt-1 text-xs uppercase tracking-[0.18em] ${c.on} opacity-70`}>
-              {category.name.en}
-            </p>
-            <p className={`mt-4 max-w-xl text-2xl ${c.on}`}>{pick(category.tagline)}</p>
-            <p className={`mt-3 max-w-xl text-lg ${c.on} opacity-90`}>{pick(category.description)}</p>
+            <h1 className={`mt-4 font-display text-5xl ${c.on}`}>{category.name}</h1>
+            <p className={`mt-4 max-w-xl text-2xl ${c.on}`}>{category.tagline}</p>
+            <p className={`mt-3 max-w-xl text-lg ${c.on} opacity-90`}>{category.description}</p>
             <Link
               href="#events"
               className="mt-6 inline-block rounded-full bg-paper px-7 py-3 text-lg text-ink transition-transform hover:scale-105 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ink focus-visible:ring-offset-2"
@@ -92,7 +89,7 @@ export default async function V4Category({ params }: { params: Promise<{ slug: s
       </section>
 
       <section id="events" className="mx-auto max-w-5xl scroll-mt-6 px-6 py-12">
-        <SectionHeading title={t("eventsInZone")} caption={t("eventsInZone", "en")} />
+        <SectionHeading title={t("eventsInZone")} />
         {events.length === 0 && (
           <p className="mt-6 rounded-2xl border-2 border-dashed border-ink/15 px-4 py-10 text-center font-display text-xl text-ink/60">
             {t("zoneComingSoon")}
@@ -116,15 +113,15 @@ export default async function V4Category({ params }: { params: Promise<{ slug: s
                   />
                 </div>
                 <span className="flex-1">
-                  <span className="block font-display text-2xl text-ink">{pick(ev.title)}</span>
-                  <span className="block text-ink/70">{pick(ev.summary)}</span>
+                  <span className="block font-display text-2xl text-ink">{ev.title}</span>
+                  <span className="block text-ink/70">{ev.summary}</span>
                   <span className="mt-1 block text-sm text-ink/60">
                     {hasSessionVenues(ev)
                       ? // Rooms differ by date, so name each: "ห้อง A (28 พ.ย.), ห้อง B (10 ธ.ค.)"
                         getSessionsByDate(ev)
-                          .map(({ date, venue }) => `${pick(venue)} (${formatDate(date)})`)
+                          .map(({ date, venue }) => `${venue} (${formatDate(date)})`)
                           .join(", ")
-                      : pick(ev.schedule.venue)}
+                      : ev.schedule.venue}
                   </span>
                   {/* Day chips — one per day this event runs, with its start time.
                       The festival spans 16 days, so empty days are not drawn. */}

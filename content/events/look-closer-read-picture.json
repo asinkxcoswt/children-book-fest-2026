@@ -2,24 +2,13 @@
   "slug": "look-closer-read-picture",
   "thumbnail": "/content/events/look-closer-read-picture.jpeg",
   "mascot": "/content/mascots/boy-magnifier-book.png",
-  "title": {
-    "th": "Look Club Book Club",
-    "en": "Look Club Book Club"
-  },
-  "summary": {
-    "th": "แบ่งปัน | ชวนดู | อวด หนังสือภาพ กับ \"สานอักษร\" และ \"Mappa\"",
-    "en": "Share, look, and show off picture books with Saan Aksorn and Mappa."
-  },
-  "description": {
-    "th": "LOOK CLUB BOOK CLUB ชวน LOOK Closer แล้ว READ Picture แบ่งปัน ชวนดู อวดหนังสือภาพ (ด้วยแหล่ะ) เปิดพื้นที่รื่นรมย์สำหรับคน \"รัก\" หนังสือภาพ หรือคนที่ \"อยากเริ่มรัก\" มันไปด้วยกัน กับ \"สานอักษร\" และ \"Mappa\"\n\nจะหยิบเล่มโปรดบนชั้นมาอวดโฉม แลกเปลี่ยนหน้านั้นในเล่มนี้ที่โดนใจ หรือถ้ายังไม่มีเล่มไหน จะมาตัวเปล่าพร้อมความสงสัย พวกเราก็ยินดีต้อนรับ ล้อมวงเข้ามานั่งคุยกันสบาย ๆ ในบรรยากาศเป็นกันเอง และค้นพบมุมมองใหม่ ๆ ผ่านภาพเล่าเรื่อง และถอดรหัสหนังสือภาพร่วมกัน ร่วมวงโดย แม่นี จาก Mappa และ ป้าเกื้อ จากสานอักษร",
-    "en": "LOOK CLUB BOOK CLUB: look closer, then read the picture. Share, show, and yes, show off your picture books. A relaxed space for people who love picture books, or who would like to start, with Sarn Aksorn and Mappa.\n\nBring a favourite from your shelf, swap the page that got you, or come empty-handed with nothing but curiosity. Everyone is welcome. Sit in a circle, chat in a friendly atmosphere, discover new perspectives through visual storytelling, and decode picture books together. Hosted by Mae Nee of Mappa and Pa Kuea of Sarn Aksorn."
-  },
+  "title": "Look Club Book Club",
+  "summary": "แบ่งปัน | ชวนดู | อวด หนังสือภาพ กับ \"สานอักษร\" และ \"Mappa\"",
+  "presenter": "แม่นี จาก Mappa และ ป้าเกื้อ จากสานอักษร",
+  "description": "นำหนังสือภาพหลากหลายมาแสดง และจัดกิจกรรมพูดคุย\n\n👀LOOK CLUB BOOK CLUB 🎨📖✨\nชวน LOOK Closer แล้ว READ Picture\n\nแบ่งปัน . ชวนดู . อวด หนังสือภาพ (ด้วยแหล่ะ) ☕️🍂\n\nเปิดพื้นที่รื่นรมย์สำหรับคน \"รัก\" หนังสือภาพ\nหรือคนที่ \"อยากเริ่มรัก\" มันไปด้วยกัน\nกับ “สานอักษร” และ “Mappa”\n\nจะหยิบเล่มโปรดบนชั้นมาอวดโฉม\nแลกเปลี่ยนหน้านั้นในเล่มนี้ที่โดนใจ\nหรือถ้ายังไม่มีเล่มไหน... จะมาตัวเปล่าพร้อมความสงสัย\nพวกเราก็ยินดีต้อนรับ\n\nล้อมวงเข้ามานั่งคุยกันสบายๆ ในบรรยากาศเป็นกันเอง\nและค้นพบมุมมองใหม่ๆ ผ่านภาพเล่าเรื่อง\nและถอดรหัสหนังสือภาพร่วมกัน",
   "category": "seminar",
   "schedule": {
-    "venue": {
-      "th": "ห้อง MDIC",
-      "en": "MDIC Room"
-    },
+    "venue": "ห้อง MDIC",
     "sessions": [
       {
         "date": "2026-11-28",
@@ -36,10 +25,7 @@
   "gallery": [
     {
       "src": "/content/events/look-closer-read-picture.jpeg",
-      "alt": {
-        "th": "ตัวอักษร Look Club Book Club กับตัวละครสีเหลืองอ่านหนังสือบนพื้นหลังสีแดง",
-        "en": "The words Look Club Book Club with a yellow character reading a book on a red background"
-      }
+      "alt": "ตัวอักษร Look Club Book Club กับตัวละครสีเหลืองอ่านหนังสือบนพื้นหลังสีแดง"
     }
   ],
   "ticketEventCode": "cbf2026-look-closer-read-picture",

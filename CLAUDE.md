@@ -11,7 +11,7 @@
 - TypeScript
 - Tailwind CSS for styling
 - `pnpm` as package manager
-- Bilingual: Thai (default) + English
+- Thai only (no English locale; content fields are plain Thai strings)
 - Event registration is handled by an **external** system (links out), not built in-house
 
 ---
@@ -94,9 +94,9 @@ Generous spacing, large tap targets, high contrast for text.
 
 ## Internationalization
 
-- Default locale: Thai (`th`). Secondary: English (`en`).
+- Thai only. There is no English locale and no locale switching.
 - All user-facing copy comes from locale files — no hardcoded strings in components.
-- Set `<html lang>` per active locale. Test Thai line-breaking and font rendering on every page.
+- `<html lang="th">`. Test Thai line-breaking and font rendering on every page.
 
 ---
 
@@ -106,9 +106,9 @@ Generous spacing, large tap targets, high contrast for text.
 Events and categories are **structured data the client can edit**, not values hardcoded in components.
 Source options to decide on: local MDX/JSON in `content/`.
 
-Each **event** record should include at minimum: id/slug, title (th/en), description (th/en),
+Each **event** record should include at minimum: id/slug, title, description (organiser's text verbatim), presenter,
 category, schedule (date/time), venue, image gallery, capacity (if shown), and the external
-registration URL. Each **category** has: id/slug, name (th/en), description, and a brand color token.
+registration URL. Each **category** has: id/slug, name, description, and a brand color token.
 
 Until this is finalized, do not scaffold pages that assume a specific shape — ask first.
 

@@ -2,33 +2,19 @@
   "slug": "pop-up-doll-room",
   "thumbnail": "/content/events/pop-up-doll-room.jpeg",
   "mascot": "/content/mascots/girl-glasses-reading.png",
-  "title": {
-    "th": "Pop-up doll room \"ธรรมชาติวิวไหน Rizz ใจ\" สุดๆ",
-    "en": "Pop-up Doll Room: Nature Scenes That Steal Your Heart"
-  },
-  "summary": {
-    "th": "เวิร์กชอปสร้างห้องตุ๊กตาป๊อปอัปธีมธรรมชาติ กับ Kiass Matt",
-    "en": "Build a pop-up doll room with a nature theme, with Kiass Matt."
-  },
-  "description": {
-    "th": "เวิร์กชอปทำป๊อปอัปฉากห้องตุ๊กตา 2 แบบ ที่จะกลายเป็นบ้านตุ๊กตา (pop-up doll house) ได้ ด้วยกลไกป๊อปอัปง่าย ๆ สไตล์ carousel ชวนคิดถึง ตระหนักถึงความสำคัญของธรรมชาติและสิ่งแวดล้อม ในธีม \"ธรรมชาติวิวไหน Rizz ใจ\" สุดๆ\n\nให้ผู้ร่วมเวิร์กชอปคิดฉาก เหตุการณ์ หรือวิวธรรมชาติที่ประทับใจ มาออกแบบเป็นห้องทั้งหมด 4 ห้องในแบบของตัวเอง (เลือกทำในเวิร์กชอป 2 แบบ) พร้อมคิดมาว่าอยากให้ตัวละครหรือสิ่งของอะไรป๊อปอัปขึ้นมา ผู้สอนเตรียมวัสดุอุปกรณ์ให้ ใช้เวลา 2–2.5 ชั่วโมง รับอายุ 8 ปีขึ้นไป (อายุน้อยกว่านี้ควรมีผู้ปกครองมาช่วยทำ) ต้องใช้กรรไกรและคัตเตอร์ได้ นำกิจกรรมโดย Kiass Matt",
-    "en": "A workshop making two pop-up doll-room scenes that fold together into a pop-up doll house, using a simple carousel-style mechanism, and inviting you to think about nature and the environment in the theme \"Nature Scenes That Steal Your Heart\".\n\nParticipants think of a scene, moment, or natural view that moved them and design four rooms of their own (two are built in the workshop), deciding which characters or objects should pop up. Materials are provided. Takes 2 to 2.5 hours. Ages 8 and up (younger children should bring a parent to help). You need to be able to use scissors and a craft knife. Led by Kiass Matt."
-  },
+  "title": "Pop-up doll room \"ธรรมชาติวิวไหน Rizz ใจ\" สุดๆ",
+  "summary": "เวิร์กชอปสร้างห้องตุ๊กตาป๊อปอัปธีมธรรมชาติ กับ Kiass Matt",
+  "presenter": "Kiass Matt",
+  "description": "เวิร์คช็อปทำป๊อบอัพฉากห้องตุ๊กตา 2 แบบ ที่จะกลายเป็นบ้านตุ๊กตา (pop-up doll house)ได้ ด้วยกลไกป๊อบอัพง่ายๆ สไตล์ carousel ชวนคิดถึง ตระหนักถึงความสำคัญของธรรมชาติ และสิ่งแวดล้อม ในธีม \"ธรรมชาติวิวไหน Rizzใจ\" สุดๆ\n\nให้ผู้ร่วมเวิร์คช็อปคิดฉาก เหตุการณ์ หรือวิวธรรมชาติที่ประทับใจ มาออกแบบเป็น ห้องทั้งหมด 4 ห้องในแบบของตัวเอง (เลือกทำในเวิร์คช็อป 2 แบบ) พร้อมคิดมาว่าอยากให้ตัวละคร หรือสิ่งของอะไรป๊อปอัพขึ้นมา\n\n-โดยผู้สอนจะเตรียมวัสดุ อุปกรณ์ให้\n- ใช้เวลา 2- 2.5 ชม.\n- รับบุคคลทั่วไป อายุ 8 ปี ขึ้นไป (อายุน้อยกว่านี้ ควรมีผู้ปกครองมาช่วยทำ)\n- ใช้กรรไกร และคัตเตอร์ได้\n- รับรอบละ 8-10 คน",
   "category": "workshop",
   "schedule": {
-    "venue": {
-      "th": "ห้อง Auditorium",
-      "en": "Auditorium"
-    },
+    "venue": "ห้อง Auditorium",
     "sessions": [
       {
         "date": "2026-11-28",
         "start": "14:00",
         "end": "16:50",
-        "venue": {
-          "th": "ห้อง Auditorium",
-          "en": "Auditorium"
-        },
+        "venue": "ห้อง Auditorium",
         "ticketCodes": [
           "20261128-1400"
         ]
@@ -37,10 +23,7 @@
         "date": "2026-12-10",
         "start": "14:00",
         "end": "16:50",
-        "venue": {
-          "th": "ห้อง MDIC",
-          "en": "MDIC Room"
-        },
+        "venue": "ห้อง MDIC",
         "ticketCodes": [
           "20261210-1400"
         ]
@@ -52,10 +35,7 @@
   "gallery": [
     {
       "src": "/content/events/pop-up-doll-room.jpeg",
-      "alt": {
-        "th": "หนังสือป๊อปอัปกระดาษตัดเป็นฉากใต้ทะเลมีเต่าและแมงกะพรุน",
-        "en": "A paper pop-up book opened to an undersea scene with a turtle and jellyfish"
-      }
+      "alt": "หนังสือป๊อปอัปกระดาษตัดเป็นฉากใต้ทะเลมีเต่าและแมงกะพรุน"
     }
   ],
   "ticketEventCode": "cbf2026-pop-up-doll-room",

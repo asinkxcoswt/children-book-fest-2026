@@ -1,86 +1,38 @@
 [
   {
     "slug": "storytelling",
-    "name": {
-      "th": "เล่านิทาน",
-      "en": "Storytelling"
-    },
-    "tagline": {
-      "th": "เปิดเล่มโปรด แล้วโลดแล่นไปด้วยกัน",
-      "en": "Open a favourite book and run wild together"
-    },
-    "description": {
-      "th": "ชวนเด็ก ๆ มาฟังนิทานเรื่องโปรดกับนักเล่านิทานหลากหลายคน ที่ขนเทคนิคการเล่าสนุก ๆ มาเติมชีวิตให้ตัวละคร และพาจินตนาการออกเดินทางไปด้วยกัน",
-      "en": "Children are invited to hear their favourite stories from a cast of storytellers, each bringing playful techniques that bring characters to life and send imaginations travelling together."
-    },
+    "name": "เล่านิทาน",
+    "tagline": "เปิดเล่มโปรด แล้วโลดแล่นไปด้วยกัน",
+    "description": "ชวนเด็ก ๆ มาฟังนิทานเรื่องโปรดกับนักเล่านิทานหลากหลายคน ที่ขนเทคนิคการเล่าสนุก ๆ มาเติมชีวิตให้ตัวละคร และพาจินตนาการออกเดินทางไปด้วยกัน",
     "thumbnail": "/content/zones/storytelling-reading-with-mouse.png",
-    "thumbnailLetter": {
-      "th": "เล่า",
-      "en": "S"
-    },
+    "thumbnailLetter": "เล่า",
     "color": "bubblegum"
   },
   {
     "slug": "workshop",
-    "name": {
-      "th": "เวิร์กชอป",
-      "en": "Workshop"
-    },
-    "tagline": {
-      "th": "ชวนคิด ชวนทำ สนุกกับหนังสือภาพ",
-      "en": "Think it, make it, have fun with picture books"
-    },
-    "description": {
-      "th": "เปิดโลกหนังสือภาพตั้งแต่คิดเรื่อง เขียน วาด ไปจนถึงการนำไปใช้และออกแบบกิจกรรมส่งเสริมการอ่าน พร้อมไอเดียอีกมากมายให้ลองลงมือ แล้วหอบแรงบันดาลใจกลับบ้าน",
-      "en": "Explore the world of picture books from dreaming up a story, writing and drawing it, through to using books and designing activities that encourage reading, with plenty of ideas to try hands-on and take inspiration home."
-    },
+    "name": "เวิร์กชอป",
+    "tagline": "ชวนคิด ชวนทำ สนุกกับหนังสือภาพ",
+    "description": "เปิดโลกหนังสือภาพตั้งแต่คิดเรื่อง เขียน วาด ไปจนถึงการนำไปใช้และออกแบบกิจกรรมส่งเสริมการอ่าน พร้อมไอเดียอีกมากมายให้ลองลงมือ แล้วหอบแรงบันดาลใจกลับบ้าน",
     "thumbnail": "/content/zones/workshop-green-crayon.png",
-    "thumbnailLetter": {
-      "th": "ทำ",
-      "en": "W"
-    },
+    "thumbnailLetter": "ทำ",
     "color": "sky"
   },
   {
     "slug": "meet-the-creators",
-    "name": {
-      "th": "พบปะนักสร้างสรรค์",
-      "en": "Meet the creators"
-    },
-    "tagline": {
-      "th": "เจอคนเบื้องหลังเล่มที่รัก",
-      "en": "Meet the people behind the books you love"
-    },
-    "description": {
-      "th": "พบกับนักเขียนและนักวาดทั้งชาวไทยและต่างชาติ มาฟังเรื่องราวเบื้องหลังหนังสือภาพ พูดคุยถึงแรงบันดาลใจ และทำความรู้จักคนที่เปลี่ยนตัวอักษรกับภาพวาดให้กลายเป็นโลกแสนสนุกของเด็ก ๆ",
-      "en": "Meet authors and illustrators from Thailand and abroad, hear the stories behind their picture books, talk about inspiration, and get to know the people who turn words and pictures into a world of fun for children."
-    },
+    "name": "พบปะนักสร้างสรรค์",
+    "tagline": "เจอคนเบื้องหลังเล่มที่รัก",
+    "description": "พบกับนักเขียนและนักวาดทั้งชาวไทยและต่างชาติ มาฟังเรื่องราวเบื้องหลังหนังสือภาพ พูดคุยถึงแรงบันดาลใจ และทำความรู้จักคนที่เปลี่ยนตัวอักษรกับภาพวาดให้กลายเป็นโลกแสนสนุกของเด็ก ๆ",
     "thumbnail": "/content/zones/meet-the-creators-waving.png",
-    "thumbnailLetter": {
-      "th": "พบ",
-      "en": "M"
-    },
+    "thumbnailLetter": "พบ",
     "color": "tangerine"
   },
   {
     "slug": "seminar",
-    "name": {
-      "th": "เสวนา",
-      "en": "Seminar"
-    },
-    "tagline": {
-      "th": "ล้อมวงคุย เปิดมุมมอง",
-      "en": "Gather round and open up new perspectives"
-    },
-    "description": {
-      "th": "ชวนคนรักหนังสือภาพมาเติมความรู้ แลกเปลี่ยนประสบการณ์ และสำรวจประเด็นน่าสนใจในแวดวงหนังสือภาพสำหรับเด็ก ผ่านวงสนทนาที่ชวนคิดและต่อยอดไอเดียไปด้วยกัน",
-      "en": "Picture book lovers come together to learn, share experiences, and explore interesting topics in the world of children's picture books through conversations that spark thinking and build on ideas together."
-    },
+    "name": "เสวนา",
+    "tagline": "ล้อมวงคุย เปิดมุมมอง",
+    "description": "ชวนคนรักหนังสือภาพมาเติมความรู้ แลกเปลี่ยนประสบการณ์ และสำรวจประเด็นน่าสนใจในแวดวงหนังสือภาพสำหรับเด็ก ผ่านวงสนทนาที่ชวนคิดและต่อยอดไอเดียไปด้วยกัน",
     "thumbnail": "/content/zones/seminar-hugging-book.png",
-    "thumbnailLetter": {
-      "th": "คุย",
-      "en": "S"
-    },
+    "thumbnailLetter": "คุย",
     "color": "meadow"
   }
 ]

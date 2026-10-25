@@ -2,24 +2,13 @@
   "slug": "picture-book-sing-and-play",
   "thumbnail": "/content/events/picture-book-sing-and-play.jpeg",
   "mascot": "/content/mascots/girl-maracas.png",
-  "title": {
-    "th": "หนังสือภาพชวนร้อง ชวนเล่น",
-    "en": "Picture Books to Sing and Play"
-  },
-  "summary": {
-    "th": "เวิร์กชอปร้องเล่นกับหนังสือภาพสำหรับเด็กเล็กและครอบครัว กับ Just a little wild",
-    "en": "A sing-and-play picture-book workshop for little ones and their families, with Just a little wild."
-  },
-  "description": {
-    "th": "ชวนเด็กและครอบครัวร่วมร้อง เล่น ขยับ และร่วมสนุกกับเรื่องราวจากหนังสือภาพ ก่อนที่เรื่องราวจะค่อย ๆ มีชีวิตขึ้นผ่านการแสดง Panel Theater ที่เปิดโอกาสให้ทุกคนได้ร่วมคิด ร่วมเล่น และร่วมสร้างเรื่องราวไปด้วยกัน จัดโดย Just a little wild",
-    "en": "Children and families sing, play, move, and enjoy stories from picture books, before the story slowly comes to life through a Panel Theater performance where everyone can think, play, and build the story together. Run by Just a little wild."
-  },
+  "title": "หนังสือภาพชวนร้อง ชวนเล่น",
+  "summary": "เวิร์กชอปร้องเล่นกับหนังสือภาพสำหรับเด็กเล็กและครอบครัว กับ Just a little wild",
+  "presenter": "Just a little wild",
+  "description": "ชวนเด็กและครอบครัวร่วมร้อง เล่น ขยับ และร่วมสนุกกับเรื่องราวจากหนังสือภาพ ก่อนที่เรื่องราวจะค่อยๆ มีชีวิตขึ้นผ่านการแสดง Panel Theater ที่เปิดโอกาสให้ทุกคนได้ร่วมคิด ร่วมเล่น และร่วมสร้างเรื่องราวไปด้วยกัน",
   "category": "workshop",
   "schedule": {
-    "venue": {
-      "th": "ห้อง Auditorium",
-      "en": "Auditorium"
-    },
+    "venue": "ห้อง Auditorium",
     "sessions": [
       {
         "date": "2026-12-06",
@@ -36,10 +25,7 @@
   "gallery": [
     {
       "src": "/content/events/picture-book-sing-and-play.jpeg",
-      "alt": {
-        "th": "ครูและเด็กเล็กนั่งล้อมร่มชูชีพสีรุ้งในห้องที่มีชั้นหนังสือภาพ",
-        "en": "Teachers and toddlers sitting around a rainbow parachute in a room lined with picture books"
-      }
+      "alt": "ครูและเด็กเล็กนั่งล้อมร่มชูชีพสีรุ้งในห้องที่มีชั้นหนังสือภาพ"
     }
   ],
   "ticketEventCode": "cbf2026-picture-book-sing-and-play",

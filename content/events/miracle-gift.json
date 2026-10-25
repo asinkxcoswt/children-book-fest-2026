@@ -2,24 +2,13 @@
   "slug": "miracle-gift",
   "thumbnail": "/content/events/miracle-gift.jpeg",
   "mascot": "/content/mascots/two-friends-trading.png",
-  "title": {
-    "th": "ของขวัญมหัศจรรย์",
-    "en": "The Miracle Gift"
-  },
-  "summary": {
-    "th": "นิทานเล่าสดจากหนังสือ \"ของขวัญมหัศจรรย์\" โดย พี่พริม จาก Barefoot Banana",
-    "en": "A live read-aloud of the picture book The Miracle Gift with Phi Prim from Barefoot Banana."
-  },
-  "description": {
-    "th": "ชวนทุกคนมาเปิด #ของขวัญมหัศจรรย์ ด้วยกันที่งานเทศกาลหนังสือภาพสำหรับเด็ก 'ของขวัญมหัศจรรย์' หนังสือภาพที่จะพาทุกคนก้าวข้ามรูปแบบหนังสือภาพทั่วไป กับความพิเศษแบบ 3-in-1 ที่มีหนังสือเล่มเล็กแอบซ่อนอยู่ด้านในอีกที ชวนให้ประหลาดใจ ผจญภัย และโลดแล่นไปกับโลกของจินตนาการอย่างไม่รู้จบ ของขวัญชิ้นนี้จะพาพวกเราไปพบกับอะไรบ้าง มาออกเดินทางไปกับความสงสัยและร่วมค้นหาคำตอบกัน เล่าสดโดยพี่พริม จาก Barefoot Banana",
-    "en": "Come and open the Miracle Gift together at the Children's Picture Book Festival. \"The Miracle Gift\" is a picture book that goes beyond the usual form: a 3-in-1 surprise with a little book hidden inside, inviting wonder, adventure, and an endless run through the world of imagination. What will this gift lead us to? Set off with your curiosity and find out together. Told live by Prim of Barefoot Banana."
-  },
+  "title": "ของขวัญมหัศจรรย์",
+  "summary": "นิทานเล่าสดจากหนังสือ \"ของขวัญมหัศจรรย์\" โดย พี่พริม จาก Barefoot Banana",
+  "presenter": "พี่พริม จาก Barefoot Banana",
+  "description": "ชวนทุกคนมาเปิด #ของขวัญมหัศจรรย์ ด้วยกันที่งานเทศกาลหนังสือภาพสำหรับเด็ก\n\n‘ของขวัญมหัศจรรย์’ หนังสือภาพที่จะพาทุกคนก้าวข้ามรูปแบบหนังสือภาพทั่วไป! กับความพิเศษแบบ 3-in-1 ที่มีหนังสือเล่มเล็กแอบซ่อนอยู่ด้านในอีกที ชวนให้ประหลาดใจ ผจญภัย และโลดแล่นไปกับโลกของจินตนาการอย่างไม่รู้จบ 📚🪄\n\nของขวัญชิ้นนี้จะพาพวกเราไปพบกับอะไรบ้าง มาออกเดินทางไปกับความสงสัยและร่วมค้นหาคำตอบกัน",
   "category": "storytelling",
   "schedule": {
-    "venue": {
-      "th": "Main Stage ห้องแกลลอรี",
-      "en": "Main Stage, Gallery Room"
-    },
+    "venue": "Main Stage ห้องแกลลอรี",
     "sessions": [
       {
         "date": "2026-11-28",
@@ -36,10 +25,7 @@
   "gallery": [
     {
       "src": "/content/events/miracle-gift.jpeg",
-      "alt": {
-        "th": "นักเล่านิทานเปิดหนังสือภาพให้เด็ก ๆ ดูข้างบ่อบอลสีขาว",
-        "en": "A storyteller holding open a picture book for children beside a white ball pit"
-      }
+      "alt": "นักเล่านิทานเปิดหนังสือภาพให้เด็ก ๆ ดูข้างบ่อบอลสีขาว"
     }
   ],
   "ticketEventCode": "cbf2026-miracle-gift",

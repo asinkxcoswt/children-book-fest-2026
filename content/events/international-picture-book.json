@@ -2,24 +2,13 @@
   "slug": "international-picture-book",
   "thumbnail": "/content/events/international-picture-book.jpeg",
   "mascot": "/content/mascots/girl-bunny-ears.png",
-  "title": {
-    "th": "นิทรรศการหนังสือภาพและนิทานนานาชาติ",
-    "en": "International Picture Book Exhibition & Storytelling"
-  },
-  "summary": {
-    "th": "นิทรรศการหนังสือภาพ 500 เล่มจากหลายประเทศ พร้อมรอบเล่านิทานและทำของเล่นรีไซเคิล โดยมูลนิธิเมล็ดฝัน",
-    "en": "An exhibition of 500 picture books from many countries, with storytelling rounds and recycled-toy making, by Maletfun Foundation."
-  },
-  "description": {
-    "th": "จัดแสดงหนังสือภาพ 500 เล่ม ทั้งภาษาไทย ญี่ปุ่น อังกฤษ และภาษาอื่น ๆ ให้ครอบครัวได้เดินชมและเปิดอ่านด้วยกัน พร้อมจัดรอบเล่านิทานและกิจกรรมทำของเล่นจากวัสดุรีไซเคิล นำกิจกรรมโดย กิ๊บ อลิสสา และ คุมิ มัทสุโอะ จากมูลนิธิเมล็ดฝัน (Maletfun) บัตรราคา 200 บาท สำหรับผู้ใหญ่ 1 ท่าน + เด็ก 1 คน เพิ่มคนหัวละ 50 บาท",
-    "en": "An exhibition of 500 picture books in Thai, Japanese, English and other languages for families to browse and read together, with storytelling rounds and a recycled-material toy-making activity. Led by Gib Alissa and Kumi Matsuo of the Maletfun Foundation. A ticket is 200 baht for one adult and one child; each extra person is 50 baht."
-  },
+  "title": "นิทรรศการหนังสือภาพและนิทานนานาชาติ",
+  "summary": "นิทรรศการหนังสือภาพ 500 เล่มจากหลายประเทศ พร้อมรอบเล่านิทานและทำของเล่นรีไซเคิล โดยมูลนิธิเมล็ดฝัน",
+  "presenter": "กิ๊บ อลิสสา และ คุมิ มัทสุโอะ มูลนิธิเมล็ดฝัน (Maletfun)",
+  "description": "จัดแสดงหนังสือภาพ 500 เล่ม ทั้งภาษาไทย ญี่ปุ่น อังกฤษ และอื่นๆ /จัดรอบเล่านิทาน+ทำของเล่นจากวัสดุรีไซเคิล",
   "category": "workshop",
   "schedule": {
-    "venue": {
-      "th": "ห้อง Auditorium",
-      "en": "Auditorium"
-    },
+    "venue": "ห้อง Auditorium",
     "sessions": [
       {
         "date": "2026-12-12",
@@ -60,10 +49,7 @@
   "gallery": [
     {
       "src": "/content/events/international-picture-book.jpeg",
-      "alt": {
-        "th": "ครอบครัวนั่งบนพรมฟังนิทานหน้าชั้นหนังสือภาพที่เรียงเต็มผนัง",
-        "en": "Families sitting on a rug listening to a story in front of shelves full of picture books"
-      }
+      "alt": "ครอบครัวนั่งบนพรมฟังนิทานหน้าชั้นหนังสือภาพที่เรียงเต็มผนัง"
     }
   ],
   "ticketEventCode": "cbf2026-international-picture-book",

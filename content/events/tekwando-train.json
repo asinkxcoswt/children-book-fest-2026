@@ -2,24 +2,13 @@
   "slug": "tekwando-train",
   "thumbnail": "/content/events/tekwando-train.jpeg",
   "mascot": "/content/mascots/girl-smelling-flower.png",
-  "title": {
-    "th": "ตะลุยโลกเทควันโดนิทาน ตอน \"ต่อทางรถไฟ\"",
-    "en": "Taekwondo Story Adventure: Build the Railway"
-  },
-  "summary": {
-    "th": "ชวนเด็กก้าวออกจากหน้าหนังสือภาพผ่านการเคลื่อนไหวแบบเทควันโด กับ Junbi Taekwondo Studio",
-    "en": "Children step out of the picture book through taekwondo movement, with Junbi Taekwondo Studio."
-  },
-  "description": {
-    "th": "ตะลุยโลกเทควันโดนิทาน เป็นกิจกรรมที่ชวนเด็กก้าวออกจากหน้าหนังสือภาพ ผ่านการเคลื่อนไหว การเล่น และการสร้างสรรค์ โดยใช้หลักการเรียนรู้ผ่านการเคลื่อนไหวจาก Junbi Taekwondo Studio มาต่อยอดเป็นประสบการณ์ที่เด็กได้มีส่วนร่วมตลอดทั้งกิจกรรม\n\nกิจกรรมเริ่มต้นจากการเล่านิทาน ก่อนชวนเด็กแปลงเรื่องราวให้กลายเป็นภารกิจการเคลื่อนไหว เด็กจะได้ใช้ทักษะพื้นฐานจากเทควันโดในรูปแบบของการเล่น เช่น การเตะ การชก การทรงตัว การกระโดด การหลบหลีกและการประสานการทำงานของร่างกาย เพื่อร่วมผจญภัยไปกับตัวละครในนิทาน\n\nกระบวนการทั้งหมดออกแบบบนแนวคิดการพัฒนา Executive Functions (EF) ผ่านการเล่นพิชิตภารกิจ เด็กจะได้ฝึกการจดจ่อ การควบคุมตนเอง การวางแผน การแก้ปัญหา ความยืดหยุ่นทางความคิด และการทำงานร่วมกับผู้อื่น โดยเชื่อมโยงการอ่าน การเคลื่อนไหว และการสร้างสรรค์เข้าด้วยกัน กิจกรรมนี้เชื่อว่า หนังสือภาพไม่ได้มีไว้เพียงเพื่ออ่านจนจบ แต่สามารถพาเด็กออกจากหน้ากระดาษ ไปสู่การเรียนรู้ที่เกิดขึ้นผ่านร่างกาย จินตนาการ และการลงมือทำจริง",
-    "en": "Taekwondo Story Adventure invites children to step out of the picture book through movement, play, and creativity, using Junbi Taekwondo Studio's learning-through-movement approach to build an experience children take part in from start to finish.\n\nIt begins with a story. Children then turn the story into movement missions, using basic taekwondo skills as play: kicking, punching, balancing, jumping, dodging, and coordinating the body, to join the characters on their adventure.\n\nThe whole process is designed around Executive Functions (EF), developed by playing through missions. Children practise focus, self-control, planning, problem solving, flexible thinking, and teamwork, linking reading, movement, and creativity. This activity believes a picture book is not only there to be read to the end: it can carry children off the page into learning that happens through the body, imagination, and real doing."
-  },
+  "title": "ตะลุยโลกเทควันโดนิทาน ตอน \"ต่อทางรถไฟ\"",
+  "summary": "ชวนเด็กก้าวออกจากหน้าหนังสือภาพผ่านการเคลื่อนไหวแบบเทควันโด กับ Junbi Taekwondo Studio",
+  "presenter": "Junbi Taekwondo Studio",
+  "description": "ตะลุยโลกเทควันโดนิทาน เป็นกิจกรรมที่ชวนเด็กก้าวออกจากหน้าหนังสือภาพ ผ่านการเคลื่อนไหว การเล่น และการสร้างสรรค์ โดยใช้หลักการเรียนรู้ผ่านการเคลื่อนไหวจาก Junbi Taekwondo Studio มาต่อยอดเป็นประสบการณ์ที่เด็กได้มีส่วนร่วมตลอดทั้งกิจกรรม\n\nกิจกรรมเริ่มต้นจากการเล่านิทาน ก่อนชวนเด็กแปลงเรื่องราวให้กลายเป็นภารกิจการเคลื่อนไหว เด็กจะได้ใช้ทักษะพื้นฐานจากเทควันโดในรูปแบบของการเล่น เช่น การเตะ การชก การทรงตัว การกระโดด การหลบหลีกและการประสานการทำงานของร่างกาย เพื่อร่วมผจญภัยไปกับตัวละครในนิทาน\n\nกระบวนการทั้งหมดออกแบบบนแนวคิดการพัฒนา Executive Functions (EF) ผ่านการเล่นพิชิตภารกิจ เด็กจะได้ฝึกการจดจ่อ การควบคุมตนเอง การวางแผน การแก้ปัญหา ความยืดหยุ่นทางความคิด และการทำงานร่วมกับผู้อื่น โดยเชื่อมโยงการอ่าน การเคลื่อนไหว และการสร้างสรรค์เข้าด้วยกัน\n\nกิจกรรมนี้เชื่อว่า หนังสือภาพไม่ได้มีไว้เพียงเพื่ออ่านจนจบ แต่สามารถพาเด็กออกจากหน้ากระดาษ ไปสู่การเรียนรู้ที่เกิดขึ้นผ่านร่างกาย จินตนาการ และการลงมือทำจริง",
   "category": "workshop",
   "schedule": {
-    "venue": {
-      "th": "ห้อง MDIC",
-      "en": "MDIC Room"
-    },
+    "venue": "ห้อง MDIC",
     "sessions": [
       {
         "date": "2026-12-13",
@@ -36,10 +25,7 @@
   "gallery": [
     {
       "src": "/content/events/tekwando-train.jpeg",
-      "alt": {
-        "th": "เด็ก ๆ และครูเทควันโดถ่ายรูปหมู่กับกล่องกระดาษหน้าจอฉาย",
-        "en": "Children and taekwondo instructors posing with cardboard boxes in front of a projector screen"
-      }
+      "alt": "เด็ก ๆ และครูเทควันโดถ่ายรูปหมู่กับกล่องกระดาษหน้าจอฉาย"
     }
   ],
   "ticketEventCode": "cbf2026-tekwando-train",

@@ -2,24 +2,13 @@
   "slug": "clay-miracle-land",
   "thumbnail": "/content/events/clay-miracle-land.jpeg",
   "mascot": "/content/mascots/girl-smelling-flower.png",
-  "title": {
-    "th": "ปั้นดิน ดินแดนเกาะมหัศจรรย์",
-    "en": "Clay Sculpting: The Miracle Island"
-  },
-  "summary": {
-    "th": "เวิร์กชอปปั้นดินสร้างเกาะมหัศจรรย์ของตัวเอง กับ ยุวดี สุวรรณศักดิ์ชัย จาก Breath Sketch",
-    "en": "A clay-sculpting workshop where you build your own miracle island, with Yuwadee Suwannasakchai from Breath Sketch."
-  },
-  "description": {
-    "th": "ชวนเด็ก ๆ และครอบครัวมาปั้นดินสีสันสดใส สร้างเกาะมหัศจรรย์ในจินตนาการ ตั้งแต่พื้นดิน ต้นไม้ ไปจนถึงซุ้มประตูและลูกปัดประดับ นำกิจกรรมโดย ยุวดี สุวรรณศักดิ์ชัย จาก Breath Sketch",
-    "en": "Children and families mould brightly coloured clay into a miracle island from their imagination, from the ground and trees to archways and bead decorations. Led by Yuwadee Suwannasakchai from Breath Sketch."
-  },
+  "title": "ปั้นดิน ดินแดนเกาะมหัศจรรย์",
+  "summary": "เวิร์กชอปปั้นดินสร้างเกาะมหัศจรรย์ของตัวเอง กับ ยุวดี สุวรรณศักดิ์ชัย จาก Breath Sketch",
+  "presenter": "ยุวดี สุวรรณศักดิ์ชัย จาก Breath Sketch",
+  "description": "ชวนเด็ก ๆ และครอบครัวมาปั้นดินสีสันสดใส สร้างเกาะมหัศจรรย์ในจินตนาการ ตั้งแต่พื้นดิน ต้นไม้ ไปจนถึงซุ้มประตูและลูกปัดประดับ นำกิจกรรมโดย ยุวดี สุวรรณศักดิ์ชัย จาก Breath Sketch",
   "category": "workshop",
   "schedule": {
-    "venue": {
-      "th": "ห้อง MDIC",
-      "en": "MDIC Room"
-    },
+    "venue": "ห้อง MDIC",
     "sessions": [
       {
         "date": "2026-11-29",
@@ -36,10 +25,7 @@
   "gallery": [
     {
       "src": "/content/events/clay-miracle-land.jpeg",
-      "alt": {
-        "th": "เกาะดินปั้นสีพาสเทลประดับซุ้มโค้งสีชมพูและลูกปัดหลากสี",
-        "en": "A pastel clay island decorated with pink arches and colourful beads"
-      }
+      "alt": "เกาะดินปั้นสีพาสเทลประดับซุ้มโค้งสีชมพูและลูกปัดหลากสี"
     }
   ],
   "ticketEventCode": "cbf2026-clay-miracle-land",

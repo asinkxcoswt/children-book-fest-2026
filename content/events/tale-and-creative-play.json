@@ -2,24 +2,13 @@
   "slug": "tale-and-creative-play",
   "thumbnail": "/content/events/tale-and-creative-play.jpeg",
   "mascot": "/content/mascots/girl-sitting.png",
-  "title": {
-    "th": "อ่าน เล่า เล่น: นิทานละครสร้างสรรค์",
-    "en": "Read, Tell, Play: Creative Drama from Stories"
-  },
-  "summary": {
-    "th": "เวิร์กชอปนิทานละครสร้างสรรค์สำหรับผู้ใหญ่ กับครูเบิร์ด นีลชา เฟื่องฟูเกียรติ จากคิดแจ่ม",
-    "en": "A creative drama workshop for adults with Kru Bird Neelacha Fuangfukiat from Kid Jaem."
-  },
-  "description": {
-    "th": "กิจกรรมที่ชวนเด็กและผู้ใหญ่ก้าวออกจากหน้าหนังสือ ผ่านการอ่าน การเล่านิทาน และกระบวนการละครสร้างสรรค์ (Creative Drama) โดยใช้หนังสือภาพเป็นจุดเริ่มต้นของการเล่นและการเรียนรู้\n\nผู้เข้าร่วมจะได้ฟังและอ่านเรื่องราวร่วมกัน ก่อนชวนกันสำรวจตัวละคร เหตุการณ์ และความรู้สึกผ่านการเคลื่อนไหว เสียง การสมมติบทบาท และการเล่นละครอย่างอิสระ เปิดพื้นที่ให้แต่ละคนได้ใช้จินตนาการ ทดลองมองเรื่องราวจากมุมต่าง ๆ และสร้างความหมายของเรื่องด้วยตัวเอง กิจกรรมนี้จะพา \"นิทานออกนอกหน้า\" จากหนังสือไปสู่การเล่น การเคลื่อนไหว และการสำรวจเรื่องราวผ่านบทบาทและจินตนาการ โดยไม่จำเป็นต้องมีทักษะด้านละครมาก่อน นำกิจกรรมโดย ครูเบิร์ด นีลชา เฟื่องฟูเกียรติ จากคิดแจ่ม",
-    "en": "A session that takes children and adults off the page through reading, storytelling, and Creative Drama, with the picture book as the starting point for play and learning.\n\nParticipants listen to and read a story together, then explore its characters, events, and feelings through movement, sound, role play, and free dramatic play. Everyone gets space to use their imagination, try seeing the story from different angles, and make their own meaning of it. The story steps out of the book into play, movement, and exploration through roles and imagination. No drama experience needed. Led by Kru Bird Neelacha Fuangfookiat of Kidjaem."
-  },
+  "title": "อ่าน เล่า เล่น: นิทานละครสร้างสรรค์",
+  "summary": "เวิร์กชอปนิทานละครสร้างสรรค์สำหรับผู้ใหญ่ กับครูเบิร์ด นีลชา เฟื่องฟูเกียรติ จากคิดแจ่ม",
+  "presenter": "ครูเบิร์ด นีลชา เฟื่องฟูเกียรติ จากคิดแจ่ม",
+  "description": "กิจกรรมที่ชวนเด็กและผู้ใหญ่ก้าวออกจากหน้าหนังสือ ผ่าน การอ่าน การเล่านิทาน และกระบวนการละครสร้างสรรค์ (Creative Drama) โดยใช้หนังสือภาพเป็นจุดเริ่มต้นของการเล่นและการเรียนรู้\n\nผู้เข้าร่วมจะได้ฟังและอ่านเรื่องราวร่วมกัน ก่อนชวนกันสำรวจตัวละคร เหตุการณ์ และความรู้สึกผ่านการเคลื่อนไหว เสียง การสมมติบทบาท และการเล่นละครอย่างอิสระ เปิดพื้นที่ให้แต่ละคนได้ใช้จินตนาการ ทดลองมองเรื่องราวจากมุมต่าง ๆ และสร้างความหมายของเรื่องด้วยตัวเอง\n\nกิจกรรมนี้จะพา “นิทานออกนอกหน้า” จากหนังสือไปสู่การเล่น การเคลื่อนไหว และการสำรวจเรื่องราวผ่านบทบาทและจินตนาการ เปิดพื้นที่ให้ผู้เข้าร่วมได้ทดลองและเรียนรู้ไปพร้อมกัน โดยไม่จำเป็นต้องมีทักษะด้านละครมาก่อน\n\nระยะเวลาจัดกิจกรรม 2-3ชั่วโมง",
   "category": "workshop",
   "schedule": {
-    "venue": {
-      "th": "ห้อง MDIC",
-      "en": "MDIC Room"
-    },
+    "venue": "ห้อง MDIC",
     "sessions": [
       {
         "date": "2026-12-06",
@@ -36,10 +25,7 @@
   "gallery": [
     {
       "src": "/content/events/tale-and-creative-play.jpeg",
-      "alt": {
-        "th": "ผู้ใหญ่นั่งล้อมวงบนพื้นอ่านหนังสือภาพด้วยกัน",
-        "en": "Adults sitting in a circle on the floor reading picture books together"
-      }
+      "alt": "ผู้ใหญ่นั่งล้อมวงบนพื้นอ่านหนังสือภาพด้วยกัน"
     }
   ],
   "ticketEventCode": "cbf2026-tale-and-creative-play",

@@ -2,7 +2,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { getCategories } from "@/lib/content";
 import { tokenClasses } from "@/lib/colors";
-import { t, pick } from "@/lib/i18n";
+import { t } from "@/lib/i18n";
 
 /* Variant 3 "Friendly Map" — reusable festival map.
  * Pins link to their zone. When `currentSlug` is set (a category page), the
@@ -116,9 +116,9 @@ export default function FestivalMap({
                   isCurrent ? "border-tomato" : "border-paper"
                 } ${c.bg} font-display text-2xl ${c.on}`}
               >
-                {pick(cat.thumbnailLetter)}
+                {cat.thumbnailLetter}
               </span>
-              <span className="mt-1 block text-xs text-ink/80">{pick(cat.name)}</span>
+              <span className="mt-1 block text-xs text-ink/80">{cat.name}</span>
             </>
           );
           return (

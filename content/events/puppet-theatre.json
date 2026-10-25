@@ -2,24 +2,13 @@
   "slug": "puppet-theatre",
   "thumbnail": "/content/events/puppet-theatre.jpeg",
   "mascot": "/content/mascots/girl-shadow-puppet.png",
-  "title": {
-    "th": "ประดิษฐ์หุ่นมือ Puppet Theatre",
-    "en": "Make Your Own Hand Puppet: Puppet Theatre"
-  },
-  "summary": {
-    "th": "เวิร์กชอปประดิษฐ์หุ่นมือและหุ่นเชิด กับ ยุวดี สุวรรณศักดิ์ชัย จาก Breath Sketch",
-    "en": "A hand-puppet and rod-puppet making workshop with Yuwadee Suwannasakchai from Breath Sketch."
-  },
-  "description": {
-    "th": "ลงมือประดิษฐ์หุ่นมือและหุ่นเชิดตัวละครของตัวเองจากถุงมือ ลูกบอลโฟม ผ้าสักหลาด และไหมพรม แล้วนำมาเล่นละครหุ่นด้วยกัน นำกิจกรรมโดย ยุวดี สุวรรณศักดิ์ชัย จาก Breath Sketch",
-    "en": "Make your own character puppets from gloves, foam balls, felt, and yarn, then bring them to life in a puppet show together. Led by Yuwadee Suwannasakchai from Breath Sketch."
-  },
+  "title": "ประดิษฐ์หุ่นมือ Puppet Theatre",
+  "summary": "เวิร์กชอปประดิษฐ์หุ่นมือและหุ่นเชิด กับ ยุวดี สุวรรณศักดิ์ชัย จาก Breath Sketch",
+  "presenter": "ยุวดี สุวรรณศักดิ์ชัย จาก Breath Sketch",
+  "description": "ลงมือประดิษฐ์หุ่นมือและหุ่นเชิดตัวละครของตัวเองจากถุงมือ ลูกบอลโฟม ผ้าสักหลาด และไหมพรม แล้วนำมาเล่นละครหุ่นด้วยกัน นำกิจกรรมโดย ยุวดี สุวรรณศักดิ์ชัย จาก Breath Sketch",
   "category": "workshop",
   "schedule": {
-    "venue": {
-      "th": "ห้อง MDIC",
-      "en": "MDIC Room"
-    },
+    "venue": "ห้อง MDIC",
     "sessions": [
       {
         "date": "2026-12-13",
@@ -36,10 +25,7 @@
   "gallery": [
     {
       "src": "/content/events/puppet-theatre.jpeg",
-      "alt": {
-        "th": "หุ่นมือจากถุงมือสีขาวประดับใบหน้า และหุ่นแมวส้มสวมผ้าคลุมสีฟ้า",
-        "en": "A white glove puppet with a decorated face and an orange cat puppet wearing a blue cape"
-      }
+      "alt": "หุ่นมือจากถุงมือสีขาวประดับใบหน้า และหุ่นแมวส้มสวมผ้าคลุมสีฟ้า"
     }
   ],
   "ticketEventCode": "cbf2026-puppet-theatre",

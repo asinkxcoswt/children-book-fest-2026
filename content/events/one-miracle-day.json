@@ -2,24 +2,13 @@
   "slug": "one-miracle-day",
   "thumbnail": "/content/events/one-miracle-day.jpeg",
   "mascot": "/content/mascots/girl-bunny-ears.png",
-  "title": {
-    "th": "นิทานเพลงกางใจ หนึ่งวันมหัศจรรย์ ตอน ร้อน!",
-    "en": "Kang Jai Musical Tales: One Miracle Day, \"Hot!\""
-  },
-  "summary": {
-    "th": "นิทานเพลงเล่าเรื่องวันร้อน ๆ โดย ครูไนซ์ กะวิตา พุฒแดง จาก บ้านกางใจ",
-    "en": "A musical story about one very hot day, by Kru Nice Kawita Phutdaeng of Baan Kang Jai."
-  },
-  "description": {
-    "th": "ร่วมร้องเล่นไปกับนิทานเพลงกางใจ เรื่องราวของเด็กน้อยในวันที่อากาศร้อนจนเหงื่อท่วม แล้วค่อย ๆ พบความมหัศจรรย์ที่ซ่อนอยู่ในวันธรรมดา เล่าเรื่องและร้องเพลงโดย ครูไนซ์ กะวิตา พุฒแดง จาก บ้านกางใจ",
-    "en": "Sing and play along with a Kang Jai musical tale about a little one sweating through a scorching day, and the small wonders hiding inside an ordinary afternoon. Told and sung by Kru Nice Kawita Phutdaeng of Baan Kang Jai."
-  },
+  "title": "นิทานเพลงกางใจ หนึ่งวันมหัศจรรย์ ตอน ร้อน!",
+  "summary": "นิทานเพลงเล่าเรื่องวันร้อน ๆ โดย ครูไนซ์ กะวิตา พุฒแดง จาก บ้านกางใจ",
+  "presenter": "ครูไนซ์ กะวิตา พุฒแดง จาก บ้านกางใจ",
+  "description": "ร่วมร้องเล่นไปกับนิทานเพลงกางใจ เรื่องราวของเด็กน้อยในวันที่อากาศร้อนจนเหงื่อท่วม แล้วค่อย ๆ พบความมหัศจรรย์ที่ซ่อนอยู่ในวันธรรมดา เล่าเรื่องและร้องเพลงโดย ครูไนซ์ กะวิตา พุฒแดง จาก บ้านกางใจ",
   "category": "storytelling",
   "schedule": {
-    "venue": {
-      "th": "Main Stage ห้องแกลลอรี",
-      "en": "Main Stage, Gallery Room"
-    },
+    "venue": "Main Stage ห้องแกลลอรี",
     "sessions": [
       {
         "date": "2026-12-06",
@@ -36,10 +25,7 @@
   "gallery": [
     {
       "src": "/content/events/one-miracle-day.jpeg",
-      "alt": {
-        "th": "ภาพวาดสีน้ำเด็กผมหยิกนอนแผ่บนพื้น เหงื่อไหลหน้าแดงเพราะอากาศร้อน",
-        "en": "A watercolour illustration of a curly-haired child sprawled on the floor, red-faced and sweating from the heat"
-      }
+      "alt": "ภาพวาดสีน้ำเด็กผมหยิกนอนแผ่บนพื้น เหงื่อไหลหน้าแดงเพราะอากาศร้อน"
     }
   ],
   "ticketEventCode": "cbf2026-one-miracle-day",

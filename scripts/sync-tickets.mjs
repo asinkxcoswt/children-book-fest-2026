@@ -295,7 +295,7 @@ async function listEvents() {
 async function syncEvent(event, existingEvents) {
   const eventCode = eventCodeFor(event.slug);
   const desired = {
-    name: event.title.th,
+    name: event.title,
     tags: [TAG],
     ...REFUND,
     paymentMethods: PAYMENT_METHODS,
@@ -303,7 +303,7 @@ async function syncEvent(event, existingEvents) {
   };
   const current = existingEvents.get(eventCode);
 
-  log(`\n${eventCode}  (${event.title.th})`);
+  log(`\n${eventCode}  (${event.title})`);
 
   if (!current) {
     plan("create", "event");

@@ -1,32 +1,24 @@
-import type { Localized } from "@/types/content";
 import uiStrings from "@/content/ui.json";
 
-export type Locale = "th" | "en";
-export const DEFAULT_LOCALE: Locale = "th";
-export const LOCALES: Locale[] = ["th", "en"];
-
-/** Resolve a bilingual value for the active locale. */
-export function pick(value: Localized, locale: Locale = DEFAULT_LOCALE): string {
-  return value[locale];
-}
+/** The site is Thai-only. Dates and times are formatted for th-TH, pinned to
+ *  the festival's timezone. */
+const INTL = "th-TH";
 
 type UiKey = keyof typeof uiStrings;
 
 /** Look up a chrome/UI string from content/ui.json — no hardcoded copy in components. */
-export function t(key: UiKey, locale: Locale = DEFAULT_LOCALE): string {
-  return (uiStrings[key] as Localized)[locale];
+export function t(key: UiKey): string {
+  return uiStrings[key];
 }
 
-/** Short weekday label only, e.g. "ส." / "Sat". */
-export function formatWeekday(isoDate: string, locale: Locale = DEFAULT_LOCALE): string {
-  const intlLocale = locale === "th" ? "th-TH" : "en-GB";
-  return new Date(`${isoDate}T00:00:00`).toLocaleDateString(intlLocale, { weekday: "short" });
+/** Short weekday label only, e.g. "ส.". */
+export function formatWeekday(isoDate: string): string {
+  return new Date(`${isoDate}T00:00:00`).toLocaleDateString(INTL, { weekday: "short" });
 }
 
-/** Short month label only, e.g. "ส.ค." / "Aug". */
-export function formatMonth(isoDate: string, locale: Locale = DEFAULT_LOCALE): string {
-  const intlLocale = locale === "th" ? "th-TH" : "en-GB";
-  return new Date(`${isoDate}T00:00:00`).toLocaleDateString(intlLocale, { month: "short" });
+/** Short month label only, e.g. "ส.ค.". */
+export function formatMonth(isoDate: string): string {
+  return new Date(`${isoDate}T00:00:00`).toLocaleDateString(INTL, { month: "short" });
 }
 
 /** The festival's timezone. Session fields from the ticket platform are
@@ -43,14 +35,9 @@ function festivalDay(iso: string): string {
  *  A session that ends on a later day carries that day inline — "23:00 – อ. 8
  *  ธ.ค. 01:00" — because a bare "23:00–01:00" reads as ending the same evening
  *  and sends the buyer to the gate on the wrong day. */
-export function formatTimeRange(
-  startAt: string,
-  endAt: string | null,
-  locale: Locale = DEFAULT_LOCALE,
-): string {
-  const intlLocale = locale === "th" ? "th-TH" : "en-GB";
+export function formatTimeRange(startAt: string, endAt: string | null): string {
   const time = (iso: string) =>
-    new Date(iso).toLocaleTimeString(intlLocale, {
+    new Date(iso).toLocaleTimeString(INTL, {
       hour: "2-digit",
       minute: "2-digit",
       hour12: false,
@@ -59,13 +46,12 @@ export function formatTimeRange(
   if (!endAt) return time(startAt);
   const endDay = festivalDay(endAt);
   if (endDay === festivalDay(startAt)) return `${time(startAt)}–${time(endAt)}`;
-  return `${time(startAt)} – ${formatDate(endDay, locale)} ${time(endAt)}`;
+  return `${time(startAt)} – ${formatDate(endDay)} ${time(endAt)}`;
 }
 
-/** Locale-aware date formatting for schedules. */
-export function formatDate(isoDate: string, locale: Locale = DEFAULT_LOCALE): string {
-  const intlLocale = locale === "th" ? "th-TH" : "en-GB";
-  return new Date(`${isoDate}T00:00:00`).toLocaleDateString(intlLocale, {
+/** Date formatting for schedules, e.g. "ส. 28 พ.ย.". */
+export function formatDate(isoDate: string): string {
+  return new Date(`${isoDate}T00:00:00`).toLocaleDateString(INTL, {
     weekday: "short",
     day: "numeric",
     month: "short",

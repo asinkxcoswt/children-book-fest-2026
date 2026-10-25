@@ -1,6 +1,6 @@
 import type { FestivalEvent } from "@/types/content";
 import { getCategories, getCategory, getFestivalDates, hasSessionVenues, sessionVenue } from "@/lib/content";
-import { pick, formatDate, formatWeekday, formatMonth } from "@/lib/i18n";
+import { formatDate, formatWeekday, formatMonth } from "@/lib/i18n";
 import ScheduleBoardGrid, { type BoardBlock, type BoardDay } from "@/components/ScheduleBoardGrid";
 import type { BoardEventDetail } from "@/components/ScheduleEventDrawer";
 
@@ -50,7 +50,7 @@ export default function ScheduleBoard({ events }: { events: FestivalEvent[] }) {
       const list = byDate.get(s.date) ?? [];
       list.push({
         slug: event.slug,
-        title: pick(event.title),
+        title: event.title,
         date: s.date,
         start: s.start,
         end: s.end,
@@ -117,17 +117,17 @@ export default function ScheduleBoard({ events }: { events: FestivalEvent[] }) {
   for (const event of events) {
     details[event.slug] = {
       slug: event.slug,
-      title: pick(event.title),
-      summary: pick(event.summary),
-      category: pick(getCategory(event.category)?.name ?? { th: "", en: "" }),
+      title: event.title,
+      summary: event.summary,
+      category: getCategory(event.category)?.name ?? "",
       color: getCategory(event.category)?.color ?? "peach",
-      venue: pick(event.schedule.venue),
+      venue: event.schedule.venue,
       ageRange: event.ageRange,
       sessions: event.schedule.sessions.map((s) => ({
         key: `${s.date}${s.start}`,
         // Room per session only when the event moves between rooms.
         label: hasSessionVenues(event)
-          ? `${formatDate(s.date)} · ${pick(sessionVenue(event, s))}`
+          ? `${formatDate(s.date)} · ${sessionVenue(event, s)}`
           : formatDate(s.date),
         time: `${s.start}–${s.end}`,
       })),
@@ -142,7 +142,7 @@ export default function ScheduleBoard({ events }: { events: FestivalEvent[] }) {
   return (
     <ScheduleBoardGrid
       details={details}
-      legend={getCategories().map((cat) => ({ label: pick(cat.name), color: cat.color }))}
+      legend={getCategories().map((cat) => ({ label: cat.name, color: cat.color }))}
       weeks={weeks}
       axis={{ hours, slotCount, slotsPerHour: 60 / SLOT_MINUTES }}
     />
