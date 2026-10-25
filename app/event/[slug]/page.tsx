@@ -80,7 +80,7 @@ export default async function V4Event({ params }: { params: Promise<{ slug: stri
 
       <div className="mt-10 grid gap-10 sm:grid-cols-[1fr_18rem]">
         <div>
-          <article className="text-lg leading-relaxed text-ink/85">{pick(event.description)}</article>
+          <article className="whitespace-pre-line text-lg leading-relaxed text-ink/85">{pick(event.description)}</article>
 
           {/* Practical details live with the content; the sidebar stays transactional. */}
           <dl className="mt-8 grid gap-x-8 gap-y-5 border-t-[3px] border-peach pt-5 text-sm sm:grid-cols-2">
