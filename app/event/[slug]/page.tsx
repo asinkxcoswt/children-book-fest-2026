@@ -2,7 +2,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
-import { getCategory, getEvent, getEvents, getSessionsByDate, getVenue, hasSessionVenues, sessionVenue } from "@/lib/content";
+import { getCategory, getEvent, getEvents, getSessionsByDate, hasSessionVenues, sessionVenue } from "@/lib/content";
 import { tokenClasses } from "@/lib/colors";
 import { ogImage } from "@/lib/imageLoader";
 import { COW_TICKET_URL } from "@/lib/site";
@@ -50,7 +50,6 @@ export default async function V4Event({ params }: { params: Promise<{ slug: stri
   if (!event) notFound();
 
   const category = getCategory(event.category);
-  const venue = getVenue();
   const perSessionVenue = hasSessionVenues(event);
   const c = tokenClasses(category?.color ?? "peach");
   // The poster sits at the top; anything else in the gallery goes below the details.
@@ -95,16 +94,12 @@ export default async function V4Event({ params }: { params: Promise<{ slug: stri
                 </dd>
               ))}
             </div>
-            {/* Room, then the building — rooms are spelled out per date above
-                when they differ, but the building is always the same. */}
-            <div>
-              <dt className="font-display text-ink/60">{t("where")}</dt>
-              <dd className="text-ink">
-                {!perSessionVenue && `${event.schedule.venue} · `}
-                {venue.name}
-              </dd>
-              <dd className="text-ink/70">{venue.address}</dd>
-            </div>
+            {!perSessionVenue && (
+              <div>
+                <dt className="font-display text-ink/60">{t("where")}</dt>
+                <dd className="text-ink">{event.schedule.venue}</dd>
+              </div>
+            )}
             {event.presenter && (
               <div>
                 <dt className="font-display text-ink/60">{t("presenter")}</dt>

@@ -123,7 +123,7 @@ export default function ScheduleBoard({ events }: { events: FestivalEvent[] }) {
       summary: event.summary,
       category: getCategory(event.category)?.name ?? "",
       color: getCategory(event.category)?.color ?? "peach",
-      venue: `${event.schedule.venue} · ${venue.name}`,
+      venue: event.schedule.venue,
       ageRange: event.ageRange,
       sessions: event.schedule.sessions.map((s) => ({
         key: `${s.date}${s.start}`,
