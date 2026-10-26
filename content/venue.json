@@ -1,0 +1,16 @@
+{
+  "name": "TCDC กรุงเทพฯ",
+  "fullName": "ศูนย์สร้างสรรค์งานออกแบบ",
+  "address": "อาคารไปรษณีย์กลาง บางรัก",
+  "mapUrl": "https://www.tcdc.or.th/th/tcdc-bangkok/service/visit-and-service-area",
+  "exhibition": {
+    "area": "นิทรรศการชั้น 5 และห้อง Gallery",
+    "open": "10:30",
+    "close": "18:00"
+  },
+  "closedDates": [
+    "2026-11-30",
+    "2026-12-07"
+  ],
+  "fullNameEn": "Thailand Creative & Design Center (TCDC)"
+}

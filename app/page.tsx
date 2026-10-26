@@ -1,13 +1,14 @@
 import Link from "next/link";
 import Image from "next/image";
 import type { Metadata } from "next";
-import { getCategories, getEventCount, getEvents, getFestivalDates } from "@/lib/content";
+import { getCategories, getEventCount, getEvents, getFestivalDates, getVenue } from "@/lib/content";
 import { SITE_URL } from "@/lib/site";
 import { tokenClasses } from "@/lib/colors";
 import { t } from "@/lib/i18n";
 import FestivalMap from "@/components/FestivalMap";
 import ScheduleBoard from "@/components/ScheduleBoard";
 import SectionHeading from "@/components/SectionHeading";
+import VenueInfo from "@/components/VenueInfo";
 
 /* Home — the client's stage banner on top, then the playful explorable
  * festival map as the centerpiece navigation. */
@@ -19,9 +20,9 @@ export const metadata: Metadata = {
 export default function V4Home() {
   const categories = getCategories();
   const dates = getFestivalDates();
-  // Festival-level structured data. Google event rich results also want a
-  // `location` (venue name + address) — add it here once the client confirms
-  // the real venue; per-event JSON-LD waits until event data is no longer mock.
+  const venue = getVenue();
+  // Festival-level structured data, with the venue as `location` for Google's
+  // event rich results. Per-event JSON-LD waits until event data is no longer mock.
   const festivalJsonLd = {
     "@context": "https://schema.org",
     "@type": "Festival",
@@ -34,6 +35,12 @@ export default function V4Home() {
     eventStatus: "https://schema.org/EventScheduled",
     image: [`${SITE_URL}/og/festival-share.png`],
     url: SITE_URL,
+    location: {
+      "@type": "Place",
+      name: venue.fullName,
+      alternateName: venue.fullNameEn,
+      address: venue.address,
+    },
   };
   return (
     <main className="flex-1">
@@ -70,14 +77,23 @@ export default function V4Home() {
             />
           </div>
         </div>
-        <div className="relative mx-auto max-w-5xl px-6 pb-12 pt-16">
+        <div className="relative mx-auto max-w-5xl px-6 pb-12 pt-28 sm:pt-16">
           <h1 className="sr-only">{t("theme")}</h1>
-          {/* The festival dates as a ticket stuck on the stage floor — the one
-              fact the banner lacks. Editorial copy (content/ui.json), not derived
-              from the programme, so it can state the full run. */}
-          <p className="absolute -top-6 left-6 inline-block -rotate-2 rounded-xl border-2 border-ink bg-sunshine px-5 py-2 font-display text-xl tracking-wide text-ink shadow-[3px_3px_0_var(--color-ink)] sm:left-8 sm:text-2xl">
-            {t("festivalDates")}
-          </p>
+          {/* The festival dates and venue as two tickets stuck on the stage
+              floor — the two facts the banner lacks. Dates are editorial copy
+              (content/ui.json), not derived from the programme, so they can
+              state the full run; the venue comes from content/venue.json. */}
+          <div className="absolute -top-6 left-6 flex flex-wrap items-start gap-3 sm:left-8">
+            <p className="inline-block -rotate-2 rounded-xl border-2 border-ink bg-sunshine px-5 py-2 font-display text-xl tracking-wide text-ink shadow-[3px_3px_0_var(--color-ink)] sm:text-2xl">
+              {t("festivalDates")}
+            </p>
+            <a
+              href="#venue"
+              className="inline-block rotate-1 rounded-xl border-2 border-ink bg-sky px-5 py-2 font-display text-xl tracking-wide text-paper shadow-[3px_3px_0_var(--color-ink)] transition-transform hover:scale-105 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ink focus-visible:ring-offset-2 sm:text-2xl"
+            >
+              📍 {venue.name}
+            </a>
+          </div>
           <div className="flex flex-wrap items-center gap-4">
             <Link
               href="#map"
@@ -91,6 +107,11 @@ export default function V4Home() {
             >
               {t("programmeByDay")} →
             </Link>
+          </div>
+          {/* Where to come, when the exhibition is open, and which days the
+              building is shut — answered before the visitor picks a zone. */}
+          <div id="venue" className="mt-10 scroll-mt-6">
+            <VenueInfo />
           </div>
         </div>
       </section>

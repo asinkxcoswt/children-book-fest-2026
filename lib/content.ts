@@ -1,9 +1,11 @@
 import { readFileSync, readdirSync } from "node:fs";
 import { join } from "node:path";
-import type { Category, EventSession, FestivalEvent } from "@/types/content";
+import type { Category, EventSession, FestivalEvent, Venue } from "@/types/content";
 import categoriesData from "@/content/categories.json";
+import venueData from "@/content/venue.json";
 
 const categories = categoriesData as Category[];
+const venue = venueData as Venue;
 
 const EVENTS_DIR = join(process.cwd(), "content", "events");
 
@@ -89,4 +91,15 @@ export function getFestivalDates(): string[] {
 /** Count of events per category slug — handy for category tiles. */
 export function getEventCount(categorySlug: string): number {
   return events.filter((e) => e.category === categorySlug).length;
+}
+
+/** The festival venue (content/venue.json). */
+export function getVenue(): Venue {
+  return venue;
+}
+
+/** Whether the venue is closed on a festival date — a schedule-board column
+ *  and a notice, never a place an event could be. */
+export function isVenueClosed(isoDate: string): boolean {
+  return venue.closedDates.includes(isoDate);
 }

@@ -16,8 +16,6 @@
   "viewEvent": "ดูรายละเอียด",
   "close": "ปิด",
   "allSessions": "รอบทั้งหมด",
-  "tapEventHint": "แตะที่กิจกรรมเพื่อดูรายละเอียดโดยย่อ",
-  "swipeDaysHint": "ปัดซ้าย-ขวาเพื่อดูวันอื่น ๆ",
   "enterZone": "เข้าโซนนี้",
   "backToHome": "กลับหน้าแรก",
   "backToZone": "กลับไปที่โซน",
@@ -87,5 +85,14 @@
   "openLineManually": "เปิด LINE",
   "openLineManuallyHint": "ดูเหมือนว่า LINE ยังไม่เปิดขึ้นมา แตะปุ่มด้านล่างเพื่อเปิดอีกครั้ง",
   "openingLine": "กำลังเปิด LINE…",
-  "presenter": "นำกิจกรรมโดย"
+  "presenter": "นำกิจกรรมโดย",
+  "venue": "สถานที่จัดงาน",
+  "openMap": "ดูแผนที่และการเดินทาง",
+  "exhibitionHours": "เวลาเข้าชมนิทรรศการ",
+  "daily": "ทุกวัน",
+  "closedDays": "วันปิดทำการ",
+  "closed": "ปิด",
+  "venueClosedOn": "TCDC ปิดวันจันทร์ที่",
+  "and": "และ",
+  "exhibitionOpenNote": "ชมนิทรรศการชั้น 5 และห้อง Gallery ได้ทุกวัน"
 }

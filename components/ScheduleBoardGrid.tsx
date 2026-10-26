@@ -35,6 +35,8 @@ export interface BoardDay {
   /** How many sessions run at once at the busiest moment of the day. */
   lanes: number;
   blocks: BoardBlock[];
+  /** The venue is shut this day: the column is hatched out and labelled. */
+  closed: boolean;
 }
 
 export interface BoardAxis {
@@ -222,6 +224,22 @@ export default function ScheduleBoardGrid({ weeks, axis, legend, details }: Prop
    *  hairlines painted as a repeating background so they need no elements. */
   const dayColumn = (day: BoardDay, compact: boolean) => {
     const slot = compact ? "1.25rem" : "1.75rem";
+    // A closed day: diagonal tomato hatching down the whole column, the
+    // print-programme way of crossing a day out.
+    if (day.closed) {
+      return (
+        <div
+          key={day.date}
+          aria-hidden
+          className="rounded-md"
+          style={{
+            height: `calc(${slot} * ${axis.slotCount})`,
+            backgroundImage:
+              "repeating-linear-gradient(135deg, color-mix(in srgb, var(--color-tomato) 22%, transparent) 0 3px, transparent 3px 10px)",
+          }}
+        />
+      );
+    }
     return (
       <div
         key={day.date}
@@ -260,7 +278,11 @@ export default function ScheduleBoardGrid({ weeks, axis, legend, details }: Prop
     [
       compact ? "1.75rem" : "3rem",
       ...week.map((d) =>
-        d.blocks.length === 0
+        d.closed
+          ? compact
+            ? "1.75rem"
+            : "3.5rem"
+          : d.blocks.length === 0
           ? compact
             ? "1.25rem"
             : "3rem"
@@ -306,7 +328,26 @@ export default function ScheduleBoardGrid({ weeks, axis, legend, details }: Prop
           >
             <div className="sticky left-0 z-10 bg-paper" />
             {week.map((day) =>
-              day.blocks.length === 0 ? (
+              day.closed ? (
+                <div
+                  key={day.date}
+                  className={`flex flex-col items-center border-b-[3px] border-tomato/40 text-ink/40 ${
+                    compact ? "pb-1" : "pb-2"
+                  }`}
+                >
+                  <span className={`font-display leading-none line-through ${compact ? "text-base" : "text-xl"}`}>
+                    {day.dayNum}
+                  </span>
+                  <span className={`leading-tight ${compact ? "text-[10px]" : "text-[11px]"}`}>{day.weekday}</span>
+                  <span
+                    className={`mt-1 rounded-full bg-tomato/10 px-1.5 font-display text-tomato ${
+                      compact ? "text-[9px]" : "text-[10px]"
+                    }`}
+                  >
+                    {t("closed")}
+                  </span>
+                </div>
+              ) : day.blocks.length === 0 ? (
                 <div
                   key={day.date}
                   className={`flex flex-col items-center border-b-[3px] border-peach text-ink/40 ${
@@ -370,29 +411,16 @@ export default function ScheduleBoardGrid({ weeks, axis, legend, details }: Prop
     );
   };
 
-  // Spelled out on the compact grid, where a week is wider than the screen.
-  const swipeHint = Object.entries(canScroll).some(([k, v]) => k.startsWith("c") && (v.left || v.right));
-
   return (
     <>
       {/* <lg: lanes keep a readable minimum width, so a week scrolls sideways. */}
       <div className="lg:hidden">
-        <p className="mb-2 text-xs text-ink/50">
-          {t("tapEventHint")}
-          {swipeHint && (
-            <>
-              {" · "}
-              <span className="font-semibold text-ink/70">{t("swipeDaysHint")}</span>
-            </>
-          )}
-        </p>
         {weeks.map((week, w) => weekRow(week, w, true))}
         {legendRow}
       </div>
 
       {/* ≥lg: one day × hour grid per week. */}
       <div className="hidden lg:block">
-        {touchUI && <p className="mb-2 text-xs text-ink/50">{t("tapEventHint")}</p>}
         {weeks.map((week, w) => weekRow(week, w, false))}
         {legendRow}
       </div>

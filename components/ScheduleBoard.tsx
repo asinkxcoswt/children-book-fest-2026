@@ -1,6 +1,6 @@
 import type { FestivalEvent } from "@/types/content";
-import { getCategories, getCategory, getFestivalDates, hasSessionVenues, sessionVenue } from "@/lib/content";
-import { formatDate, formatWeekday, formatMonth } from "@/lib/i18n";
+import { getCategories, getCategory, getFestivalDates, getVenue, hasSessionVenues, isVenueClosed, sessionVenue } from "@/lib/content";
+import { formatDate, formatWeekday, formatMonth, t } from "@/lib/i18n";
 import ScheduleBoardGrid, { type BoardBlock, type BoardDay } from "@/components/ScheduleBoardGrid";
 import type { BoardEventDetail } from "@/components/ScheduleEventDrawer";
 
@@ -34,6 +34,7 @@ function assignLanes(sessions: { startMin: number; endMin: number }[]): number[]
 
 export default function ScheduleBoard({ events }: { events: FestivalEvent[] }) {
   const dates = getFestivalDates();
+  const venue = getVenue();
 
   // Raw sessions per date, then the axis is sized from the data so the board
   // never shows hours with nothing in them.
@@ -108,6 +109,7 @@ export default function ScheduleBoard({ events }: { events: FestivalEvent[] }) {
       month: formatMonth(date),
       lanes: laneCount,
       blocks,
+      closed: isVenueClosed(date),
     };
   });
 
@@ -121,7 +123,7 @@ export default function ScheduleBoard({ events }: { events: FestivalEvent[] }) {
       summary: event.summary,
       category: getCategory(event.category)?.name ?? "",
       color: getCategory(event.category)?.color ?? "peach",
-      venue: event.schedule.venue,
+      venue: `${event.schedule.venue} · ${venue.name}`,
       ageRange: event.ageRange,
       sessions: event.schedule.sessions.map((s) => ({
         key: `${s.date}${s.start}`,
@@ -139,12 +141,32 @@ export default function ScheduleBoard({ events }: { events: FestivalEvent[] }) {
   const weeks: BoardDay[][] = [];
   for (let i = 0; i < days.length; i += DAYS_PER_ROW) weeks.push(days.slice(i, i + DAYS_PER_ROW));
 
+  // Opening hours and closed days, stated once above the board; the closed
+  // days are also hatched out in the grid itself.
+  const closedList = venue.closedDates.map(formatDate).join(` ${t("and")} `);
+
   return (
-    <ScheduleBoardGrid
-      details={details}
-      legend={getCategories().map((cat) => ({ label: cat.name, color: cat.color }))}
-      weeks={weeks}
-      axis={{ hours, slotCount, slotsPerHour: 60 / SLOT_MINUTES }}
-    />
+    <>
+      <p className="mb-4 flex flex-wrap items-center gap-x-4 gap-y-1 text-sm text-ink/75">
+        <span>
+          {t("exhibitionOpenNote")}{" "}
+          <span className="font-semibold tabular-nums text-ink">
+            {venue.exhibition.open}–{venue.exhibition.close}
+          </span>
+        </span>
+        {venue.closedDates.length > 0 && (
+          <span className="flex items-center gap-2">
+            <span className="rounded-full bg-tomato/10 px-2 py-0.5 font-display text-xs text-tomato">{t("closed")}</span>
+            {t("venueClosedOn")} {closedList}
+          </span>
+        )}
+      </p>
+      <ScheduleBoardGrid
+        details={details}
+        legend={getCategories().map((cat) => ({ label: cat.name, color: cat.color }))}
+        weeks={weeks}
+        axis={{ hours, slotCount, slotsPerHour: 60 / SLOT_MINUTES }}
+      />
+    </>
   );
 }

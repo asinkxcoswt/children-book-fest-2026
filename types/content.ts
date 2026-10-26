@@ -95,3 +95,20 @@ export interface FestivalEvent {
 }
 
 export type Admission = "ticket" | "free" | "donation";
+
+/** The festival venue — one building for the whole run. Rooms per event live
+ *  in `EventSchedule.venue`; this is the place visitors travel to. */
+export interface Venue {
+  /** Short name used in chrome, e.g. "TCDC กรุงเทพฯ". */
+  name: string;
+  /** Official Thai name, and the English one it is signed with. */
+  fullName: string;
+  fullNameEn: string;
+  address: string;
+  /** Directions page on the venue's own site (opens in a new tab). */
+  mapUrl: string;
+  /** Free-to-visit exhibition: where it is and its daily opening hours. */
+  exhibition: { area: string; open: string; close: string };
+  /** ISO dates within the run on which the venue is closed. */
+  closedDates: string[];
+}
