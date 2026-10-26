@@ -1,0 +1,33 @@
+{
+  "slug": "animated-playground",
+  "thumbnail": "/content/events/animated-playground.jpeg",
+  "mascot": "/content/mascots/boy-reading-lion-book.png",
+  "title": "Animated Playground : ขยับ-ขยุ๊ก-ขยิ๊ก",
+  "summary": "เวิร์กชอปแอนิเมชันและ stop motion สำหรับเด็ก 7-12 ปี โดย Klowerº",
+  "presenter": "เกวลี วรุตม์โกเมน และ วาดฝัน ดิลกสัมพันธ์ จาก Klowerº",
+  "description": "👋Animated Playground: ขยับ-ขยุ๊ก-ขยิ๊ก\nAnimation Workshop by Klowerº\n.\n🌿จะเกิดอะไรขึ้น…\nถ้าตัวละครโปรดในหนังสือนิทาน หรือเพื่อนในจินตนาการคนโปรดของคุณ กระโดดออกมา ขยับ ขยุ๊ก ขยิ๊ก กัน?\n. \nWorkshop นี้จะชวนเด็กๆ มาทดลองสร้างภาพเคลื่อนไหวด้วยเทคนิค Animation พร้อมปลดปล่อยการเล่นไปกับจินตนาการ✨ \n.\nวาดเพื่อนคนโปรดมาจากบ้านได้เลย แล้วชวนเค้ามาเล่นด้วยกันนะ! :)\n.\nเราจะชวนกัน:\n🧩 เรียนรู้พื้นฐาน Animation แบบง่ายๆ\n🧩 เรียนรู้เทคนิคการถ่ายภาพเคลื่อนไหว stop motion\n🧩 ทดลองวาด/ขยับสิ่งของให้เกิดชีวิต คาแรกเตอร์ และการเคลื่อนไหว\n.\n🖍️ไม่จำเป็นต้องวาดรูปเก่ง หรือมีพื้นฐานมาก่อน\n👧🏻เหมาะกับเด็กประถม 8-12 ขวบ\nความยาวรวม 1 ชั่วโมงครึ่ง",
+  "category": "workshop",
+  "schedule": {
+    "venue": "ห้อง MDIC",
+    "sessions": [
+      {
+        "date": "2026-11-28",
+        "start": "11:00",
+        "end": "12:30",
+        "ticketCodes": [
+          "20261128-1100"
+        ]
+      }
+    ]
+  },
+  "ageRange": "เด็ก 7-12 ปี | ผู้ใหญ่ | ผู้สนใจทั่วไป",
+  "price": 450,
+  "gallery": [
+    {
+      "src": "/content/events/animated-playground.jpeg",
+      "alt": "มือเด็ก ๆ จัดวางบล็อกไม้และตัวต่อหลากสีบนกระดาษที่ระบายสีเทียนไว้เต็มแผ่น"
+    }
+  ],
+  "ticketEventCode": "cbf2026-animated-playground",
+  "admission": "ticket"
+}
