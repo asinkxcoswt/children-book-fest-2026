@@ -1,0 +1,33 @@
+{
+  "slug": "little-duck-buddy",
+  "thumbnail": "/content/events/little-duck-buddy.jpeg",
+  "mascot": "/content/mascots/two-friends-trading.png",
+  "title": "นิทานเป็ดน้อยบัดดี้",
+  "summary": "เล่านิทานพร้อมมาสคอตเป็ดน้อยบัดดี้ กับ Little Heart",
+  "presenter": "Little Heart",
+  "description": "เล่านิทานพร้อมมาสคอตเป็ดน้อยบัดดี้",
+  "category": "storytelling",
+  "schedule": {
+    "venue": "Main Stage ห้องแกลลอรี",
+    "sessions": [
+      {
+        "date": "2026-11-28",
+        "start": "14:00",
+        "end": "14:50",
+        "ticketCodes": [
+          "20261128-1400"
+        ]
+      }
+    ]
+  },
+  "ageRange": "เด็กๆ | ครอบครัว | ผู้สนใจทั่วไป",
+  "price": 0,
+  "gallery": [
+    {
+      "src": "/content/events/little-duck-buddy.jpeg",
+      "alt": "มาสคอตเป็ดน้อยสีเหลืองยืนบนเวทีกับนักเล่านิทานสองคน หน้าเด็ก ๆ ที่ยกมือปรบมือ"
+    }
+  ],
+  "ticketEventCode": "cbf2026-little-duck-buddy",
+  "admission": "free"
+}

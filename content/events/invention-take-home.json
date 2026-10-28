@@ -1,0 +1,33 @@
+{
+  "slug": "invention-take-home",
+  "thumbnail": "/content/events/invention-take-home.jpeg",
+  "mascot": "/content/mascots/girl-waving.png",
+  "title": "ทำสิ่งประดิษฐ์กลับบ้าน",
+  "summary": "เวิร์กชอปทำสิ่งประดิษฐ์กลับบ้าน กับ Little Heart",
+  "presenter": "Little Heart",
+  "description": "ทำสิ่งประดิษฐ์กลับบ้าน",
+  "category": "workshop",
+  "schedule": {
+    "venue": "Main Stage ห้องแกลลอรี",
+    "sessions": [
+      {
+        "date": "2026-12-12",
+        "start": "16:00",
+        "end": "16:50",
+        "ticketCodes": [
+          "20261212-1600"
+        ]
+      }
+    ]
+  },
+  "ageRange": "เด็กๆ | ครอบครัว | ผู้สนใจทั่วไป",
+  "price": 0,
+  "gallery": [
+    {
+      "src": "/content/events/invention-take-home.jpeg",
+      "alt": "หุ่นกระดาษสุนัขใส่หมวกซานตาบนไม้ไอติม ลำตัวเป็นกระดาษพับจีบสีแดง"
+    }
+  ],
+  "ticketEventCode": "cbf2026-invention-take-home",
+  "admission": "free"
+}
