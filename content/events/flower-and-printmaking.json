@@ -1,0 +1,33 @@
+{
+  "slug": "flower-and-printmaking",
+  "thumbnail": "/content/events/flower-and-printmaking.jpeg",
+  "mascot": "/content/mascots/girl-smelling-flower.png",
+  "title": "เรื่องเล่า ดอกไม้ และภาพพิมพ์",
+  "summary": "เวิร์กชอปภาพพิมพ์และดอกไม้ กับครูกิ๊บ ครูฮาจิ๊ และครูเจแปน จาก Madin Studio",
+  "presenter": "ครูกิ๊บ, ครูฮาจิ๊, ครูเจแปน (Madin Studio)",
+  "description": "เมื่อเรื่องเล่า ดอกไม้ และงานศิลปะต้องทำงานร่วมกันกับใจของคน ความงดงามและการเรัยนรู้ก็เกิดขึ้นพร้อมๆ กัน มาร่วมสนุกกับช่วงเวลาของกิจกรรม 3 อย่างด้วยกันเถิด",
+  "category": "workshop",
+  "schedule": {
+    "venue": "ห้อง MDIC",
+    "sessions": [
+      {
+        "date": "2026-12-12",
+        "start": "15:00",
+        "end": "16:50",
+        "ticketCodes": [
+          "20261212-1500"
+        ]
+      }
+    ]
+  },
+  "ageRange": "วัยรุ่น | ครู | ผู้ใหญ่ | ผู้สนใจทั่วไป",
+  "price": 299,
+  "gallery": [
+    {
+      "src": "/content/events/flower-and-printmaking.jpeg",
+      "alt": "ภาพพิมพ์ลายเด็กหญิงสองคนบนกระดาษ วางข้างแม่พิมพ์ยางแกะสลักและกิ่งดอกไม้แห้ง"
+    }
+  ],
+  "ticketEventCode": "cbf2026-flower-and-printmaking",
+  "admission": "ticket"
+}

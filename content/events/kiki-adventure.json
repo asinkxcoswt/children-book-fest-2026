@@ -1,0 +1,33 @@
+{
+  "slug": "kiki-adventure",
+  "thumbnail": "/content/events/kiki-adventure.jpeg",
+  "mascot": "/content/mascots/girl-shadow-puppet.png",
+  "title": "โรงละครเงา แม่มดกิกิผจญภัย",
+  "summary": "ละครเงาเรื่อง \"แม่มดกิกิผจญภัย\" โดย TK Park",
+  "presenter": "TK Park",
+  "description": "แสงและเงา ก่อเกิดเป็นภาพที่เรามองเห็นด้วยตา วิปครีมฟูนำมาซึ่งรสหวานละมุนในปาก เรื่องราวมหัศจรรย์ที่ได้ยินนำมาซึ่งความสนุกสนาน ทีมพี่ ๆ จากห้องสมุดเด็ก TK Park มาพร้อมกับ “แม่มดกิกิผจญภัย” ที่จะชวนเด็กๆ มาเอาใจช่วยไปกับการเติบโตของแม่มดน้อยกิกิ ผ่านเทคนิคการเล่าแสนตื่นตาตื่นใจในรูปแบบของโรงละครเงา พร้อมแต่งหน้าคัพเค้กจิ๋วๆ แสนอร่อยของตนเอง",
+  "category": "storytelling",
+  "schedule": {
+    "venue": "Main Stage ห้อง Gallery",
+    "sessions": [
+      {
+        "date": "2026-12-10",
+        "start": "15:00",
+        "end": "16:50",
+        "ticketCodes": [
+          "20261210-1500"
+        ]
+      }
+    ]
+  },
+  "ageRange": "เด็กๆ | ครอบครัว | ผู้สนใจทั่วไป",
+  "price": 0,
+  "gallery": [
+    {
+      "src": "/content/events/kiki-adventure.jpeg",
+      "alt": "เด็ก ๆ นั่งดูละครเงาบนจอโรงละครกระดาษสีน้ำเงินลายดาว เป็นเงาบ้านและตัวละคร"
+    }
+  ],
+  "ticketEventCode": "cbf2026-kiki-adventure",
+  "admission": "free"
+}
