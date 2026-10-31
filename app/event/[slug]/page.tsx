@@ -186,7 +186,8 @@ export default async function V4Event({ params }: { params: Promise<{ slug: stri
                   height={24}
                   className="h-6 w-6"
                 />
-                CowTicket ↗
+                {/* U+FE0E keeps iOS from drawing ↗ as an emoji. */}
+                CowTicket {"↗︎"}
               </a>
             </p>
           )}

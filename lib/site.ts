@@ -5,4 +5,4 @@ export const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:30
 
 /** The ticketing platform behind the purchase box. Credited there (and only
  *  there) — the one place a visitor is looking at the product. */
-export const COW_TICKET_URL = "https://cow-ticket.dev";
+export const COW_TICKET_URL = "https://cowticket.app";
