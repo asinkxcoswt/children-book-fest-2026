@@ -61,6 +61,13 @@ const ADD_ONS = [
     fields: [{ key: "name", type: "text", required: false, labelTh: "ชื่อบุตรธิดา", labelEn: "Child name" }],
   },
 ];
+/** Per-event changes to the default add-ons, keyed by slug then add-on code.
+ *  picture-book-sing-and-play: ฿150 covers exactly 1 child + 2 adults, no extras. */
+const ADD_ON_OVERRIDES_BY_SLUG = {
+  "picture-book-sing-and-play": { adult: { included: 2, max: 2 }, child: { included: 1, max: 1 } },
+};
+const addOnsFor = (slug) =>
+  ADD_ONS.map((a) => ({ ...a, ...ADD_ON_OVERRIDES_BY_SLUG[slug]?.[a.code] }));
 const DEFAULT_QUANTITY = 10000;
 /** One deliberately tiny event so the sold-out path is visible on the site. */
 const QUANTITY_BY_SLUG = { "how-stories-grow": 1 };
@@ -183,7 +190,7 @@ function desiredConfigs(event) {
     price: satang(event.price),
     quantity: QUANTITY_BY_SLUG[event.slug] ?? DEFAULT_QUANTITY,
     limitPerOrder: LIMIT_PER_ORDER,
-    addOns: ADD_ONS,
+    addOns: addOnsFor(event.slug),
     startSellingDate: null,
     endSellingDate: null,
     status: "ACTIVE",
