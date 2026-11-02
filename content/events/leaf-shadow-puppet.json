@@ -1,0 +1,33 @@
+{
+  "slug": "leaf-shadow-puppet",
+  "thumbnail": "/content/events/leaf-shadow-puppet.jpeg",
+  "mascot": "/content/mascots/girl-shadow-puppet.png",
+  "title": "ละครหุ่นใบไม้ พญาคันคากรบพญาแถน พร้อม Workshop หุ่นเงาใบไม้ปลา",
+  "summary": "ละครหุ่นเงาใบไม้จากตำนานพื้นบ้าน พร้อมทำหุ่นเงาใบไม้รูปปลา กับครูยอด กลุ่มนิทานใบไม้",
+  "presenter": "ครูยอด กลุ่มนิทานใบไม้",
+  "description": "เชิญชมละครหุ่นเงาที่ทำงานใบไม้ ในตำนานพื้นบ้าน พญาคันคากรบพญาแถน พร้อมทำหุ่นเงาใบไม้เป็นรูปปลากลับบ้านกัน",
+  "category": "storytelling",
+  "schedule": {
+    "venue": "Main Stage ห้อง Gallery",
+    "sessions": [
+      {
+        "date": "2026-12-10",
+        "start": "17:00",
+        "end": "17:50",
+        "ticketCodes": [
+          "20261210-1700"
+        ]
+      }
+    ]
+  },
+  "ageRange": "เด็กๆ | ครอบครัว | ผู้ใหญ่ | ผู้สนใจทั่วไป",
+  "price": 100,
+  "gallery": [
+    {
+      "src": "/content/events/leaf-shadow-puppet.jpeg",
+      "alt": "เด็กชายเชิดหุ่นเงาหน้าจอผ้าขาวกลางลานยามค่ำ มีเด็ก ๆ และผู้ใหญ่นั่งชม"
+    }
+  ],
+  "ticketEventCode": "cbf2026-leaf-shadow-puppet",
+  "admission": "ticket"
+}

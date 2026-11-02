@@ -1,0 +1,33 @@
+{
+  "slug": "picture-books-for-every-situation",
+  "thumbnail": "/content/events/picture-books-for-every-situation.jpeg",
+  "mascot": "/content/mascots/boy-reading-lion-book.png",
+  "title": "ดูแลกาย โอบอุ้มใจ: หนังสือภาพเพื่อการเติบโตของเด็กในทุกสถานการณ์",
+  "summary": "เสวนากรณีศึกษาหนังสือภาพ \"อานีสอยากสูง\" และ \"เสือน้อย\" ว่าด้วยการดูแลกายและใจเด็ก",
+  "presenter": "รศ.นพ.เทอดพงศ์ ทองศรีราช, คุณภัทร พิศาลบุตร, คุณสุดใจ พรหมเกิด, คุณเจริญพงษ์ ชูเลิศ และ ผศ.อนุสรา ดีไหว้",
+  "description": "ชวนพ่อแม่ ครู และคนทำงานด้านเด็ก มาคุยเรื่องการดูแลกายและโอบอุ้มใจเด็ก ผ่านหนังสือภาพ “อานีสอยากสูง” และ “เสือน้อย” ตั้งแต่โภชนาการในชีวิตประจำวัน ไปจนถึงการรับฟังและดูแลเด็กในวันที่เผชิญความเปลี่ยนแปลง เช่นเมื่อเกิดสงคราม หรือ อุทกภัย",
+  "category": "seminar",
+  "schedule": {
+    "venue": "ห้อง Auditorium",
+    "sessions": [
+      {
+        "date": "2026-12-10",
+        "start": "11:00",
+        "end": "12:30",
+        "ticketCodes": [
+          "20261210-1100"
+        ]
+      }
+    ]
+  },
+  "ageRange": "นักวาดภาพประกอบ | นักเขียน | ครู",
+  "price": 0,
+  "gallery": [
+    {
+      "src": "/content/events/picture-books-for-every-situation.jpeg",
+      "alt": "ปกหนังสือภาพ \"อานีสอยากสูง\" และ \"เสือน้อย\" วางคู่กัน พร้อมภาพวิทยากรห้าคน"
+    }
+  ],
+  "ticketEventCode": "cbf2026-picture-books-for-every-situation",
+  "admission": "free"
+}

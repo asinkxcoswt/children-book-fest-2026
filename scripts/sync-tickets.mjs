@@ -83,6 +83,7 @@ const ADD_ON_OVERRIDES_BY_SLUG = {
     adult: { included: 2, max: 2, countsAsSeat: false },
     child: { included: 1, max: 1, countsAsSeat: false },
   },
+  "picture-books-for-every-situation": NONE,
   "pop-up-doll-room": {
     adult: { ...PAIR_ONLY.adult, countsAsSeat: false },
     child: { ...PAIR_ONLY.child, countsAsSeat: false },
