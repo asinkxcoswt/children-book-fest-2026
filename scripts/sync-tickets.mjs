@@ -132,7 +132,8 @@ const PURCHASE_FORM = [
 ];
 /** Year-prefixed: codes are permanent and unique per account, so the 2027
  *  edition must not collide with this one on the same account. */
-const eventCodeFor = (slug) => `cbf2026-${slug}`;
+const EVENT_CODE_PREFIX = "cbf2026-";
+const eventCodeFor = (slug) => `${EVENT_CODE_PREFIX}${slug}`;
 
 /** Session times in content are Thailand local wall-clock. */
 const TH_OFFSET = "+07:00";
@@ -329,7 +330,25 @@ async function listEvents() {
   return byCode;
 }
 
-async function syncEvent(event, existingEvents) {
+/** Every event lives in one workspace, and POST /events needs its id. Use the
+ *  workspace our existing events already sit in; on a fresh account, the only
+ *  open workspace. TICKET_WORKSPACE_ID overrides both. */
+async function resolveWorkspaceId(existingEvents) {
+  if (process.env.TICKET_WORKSPACE_ID) return process.env.TICKET_WORKSPACE_ID;
+  const ours = new Set(
+    [...existingEvents.values()]
+      .filter((e) => e.eventCode.startsWith(EVENT_CODE_PREFIX) && e.workspace)
+      .map((e) => e.workspace.id),
+  );
+  if (ours.size === 1) return [...ours][0];
+  const { data } = await api(`/workspaces?accountId=${encodeURIComponent(ACCOUNT_ID)}`);
+  const open = data.filter((w) => !w.archivedAt);
+  if (ours.size === 0 && open.length === 1) return open[0].id;
+  const list = data.map((w) => `${w.id} (${w.name}${w.archivedAt ? ", archived" : ""})`).join(", ");
+  throw new Error(`can't pick a workspace — set TICKET_WORKSPACE_ID to one of: ${list}`);
+}
+
+async function syncEvent(event, existingEvents, workspaceId) {
   const eventCode = eventCodeFor(event.slug);
   const desired = {
     name: event.title,
@@ -343,11 +362,10 @@ async function syncEvent(event, existingEvents) {
 
   if (!current) {
     plan("create", "event");
-    if (!DRY_RUN) await api("/events", { method: "POST", body: { eventCode, ...desired } });
+    if (!DRY_RUN) await api("/events", { method: "POST", body: { workspaceId, eventCode, ...desired } });
   } else {
-    if (current.archivedAt) {
-      plan("unarchive", "event");
-      if (!DRY_RUN) await api("/events/archive", { method: "POST", body: { eventCode, archived: false } });
+    if (current.workspace?.archivedAt) {
+      log(`  ⚠ its workspace "${current.workspace.name}" is archived — reopen it in the app to sell`);
     }
     const changed = diff(current, desired, EVENT_FIELDS);
     if (Object.keys(changed).length) {
@@ -400,10 +418,12 @@ const events = loadEvents();
 log(`${DRY_RUN ? "DRY RUN — " : ""}syncing ${events.length} events to ${API}`);
 const existingEvents = await listEvents();
 log(`${existingEvents.size} event(s) already on the account`);
+const workspaceId = await resolveWorkspaceId(existingEvents);
+log(`new events go to workspace ${workspaceId}`);
 
 for (const event of events) {
   try {
-    await syncEvent(event, existingEvents);
+    await syncEvent(event, existingEvents, workspaceId);
   } catch (err) {
     failures.push(`${event.slug}: ${err.message}`);
     console.error(`  FAILED: ${err.message}`);
