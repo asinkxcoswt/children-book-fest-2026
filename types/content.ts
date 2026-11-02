@@ -79,8 +79,11 @@ export interface FestivalEvent {
    *  or donation box). The sync script pushes it to the ticket platform in
    *  satang; the site itself reads prices back from the platform. */
   price: number;
-  /** Seats, if shown. */
+  /** Seats per session. The sync script pushes it as the ticket quantity. */
   capacity?: number;
+  /** Capacity as the organiser words it (e.g. "8 คู่ (16 คน)", "20 ครอบครัว").
+   *  Shown instead of the bare seat count when set. */
+  capacityLabel?: string;
   gallery: GalleryImage[];
   /** Event code registered in the ticket platform. When set, the site sells tickets
    *  in-app through the ticket API instead of linking out. */

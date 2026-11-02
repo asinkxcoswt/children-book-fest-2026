@@ -22,6 +22,8 @@
   },
   "ageRange": "เด็ก ๆ 7-12 ปี",
   "price": 350,
+  "capacity": 30,
+  "capacityLabel": "20-30 คน",
   "gallery": [
     {
       "src": "/content/events/tekwando-train.jpeg",

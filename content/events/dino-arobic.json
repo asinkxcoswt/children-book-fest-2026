@@ -22,6 +22,8 @@
   },
   "ageRange": "เด็กๆ | ครอบครัว | ผู้สนใจทั่วไป",
   "price": 0,
+  "capacity": 30,
+  "capacityLabel": "30 คน",
   "gallery": [
     {
       "src": "/content/events/dino-arobic.jpeg",

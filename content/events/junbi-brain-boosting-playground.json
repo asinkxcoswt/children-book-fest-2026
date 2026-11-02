@@ -22,6 +22,8 @@
   },
   "ageRange": "เด็ก 4-12 ปี",
   "price": 150,
+  "capacity": 30,
+  "capacityLabel": "30 คน",
   "gallery": [
     {
       "src": "/content/events/junbi-brain-boosting-playground.jpeg",

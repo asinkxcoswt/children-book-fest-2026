@@ -22,6 +22,8 @@
   },
   "ageRange": "เด็กๆ | ครอบครัว | ผู้สนใจทั่วไป",
   "price": 0,
+  "capacity": 10,
+  "capacityLabel": "10 คน",
   "gallery": [
     {
       "src": "/content/events/kitchen-monster.jpeg",

@@ -22,6 +22,8 @@
   },
   "ageRange": "ผู้ใหญ่ | ผู้สนใจทั่วไป",
   "price": 350,
+  "capacity": 30,
+  "capacityLabel": "ไม่เกิน 30 คน",
   "gallery": [
     {
       "src": "/content/events/look-closer-read-picture.jpeg",

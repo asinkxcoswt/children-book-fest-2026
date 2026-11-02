@@ -22,6 +22,8 @@
   },
   "ageRange": "เด็กๆ | ครอบครัว | ผู้สนใจทั่วไป",
   "price": 0,
+  "capacity": 60,
+  "capacityLabel": "50-60 คน",
   "gallery": [
     {
       "src": "/content/events/my-memories-with-grandma.jpeg",

@@ -46,6 +46,8 @@
   },
   "ageRange": "เด็กๆ | ครอบครัว | ผู้สนใจทั่วไป",
   "price": 200,
+  "capacity": 50,
+  "capacityLabel": "50 คน/รอบ",
   "gallery": [
     {
       "src": "/content/events/international-picture-book.jpeg",

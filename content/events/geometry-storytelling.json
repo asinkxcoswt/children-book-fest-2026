@@ -22,6 +22,8 @@
   },
   "ageRange": "นักศึกษา | ผู้สนใจทั่วไป | นักวาดภาพประกอบ",
   "price": 200,
+  "capacity": 20,
+  "capacityLabel": "20 คน",
   "gallery": [
     {
       "src": "/content/events/geometry-storytelling.jpeg",

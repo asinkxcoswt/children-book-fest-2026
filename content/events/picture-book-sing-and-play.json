@@ -22,6 +22,8 @@
   },
   "ageRange": "เด็กอายุ 2-4 ปี และครอบครัว",
   "price": 150,
+  "capacity": 10,
+  "capacityLabel": "10 ครอบครัว",
   "gallery": [
     {
       "src": "/content/events/picture-book-sing-and-play.jpeg",

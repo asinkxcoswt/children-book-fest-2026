@@ -22,6 +22,8 @@
   },
   "ageRange": "ผู้ใหญ่ | ผู้สนใจทั่วไป",
   "price": 100,
+  "capacity": 30,
+  "capacityLabel": "30 คน",
   "gallery": [
     {
       "src": "/content/events/understand-sensitivity.jpeg",

@@ -22,6 +22,8 @@
   },
   "ageRange": "เด็กๆ | ครอบครัว | ผู้สนใจทั่วไป",
   "price": 150,
+  "capacity": 20,
+  "capacityLabel": "20 คน",
   "gallery": [
     {
       "src": "/content/events/never-fly-owl.jpeg",

@@ -31,6 +31,8 @@
   },
   "ageRange": "อายุ 8 ปีขึ้นไป",
   "price": 990,
+  "capacity": 10,
+  "capacityLabel": "8-10 คน/รอบ",
   "gallery": [
     {
       "src": "/content/events/pop-up-doll-room.jpeg",

@@ -22,6 +22,8 @@
   },
   "ageRange": "เด็กๆ | ครอบครัว | ผู้สนใจทั่วไป",
   "price": 0,
+  "capacity": 20,
+  "capacityLabel": "20 ครอบครัว",
   "gallery": [
     {
       "src": "/content/events/dinosour-adventure-in-library.jpeg",

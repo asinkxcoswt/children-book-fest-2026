@@ -110,11 +110,11 @@ export default async function V4Event({ params }: { params: Promise<{ slug: stri
               <dt className="font-display text-ink/60">{t("ages")}</dt>
               <dd className="text-ink">{event.ageRange}</dd>
             </div>
-            {event.capacity && (
+            {(event.capacityLabel || event.capacity) && (
               <div>
                 <dt className="font-display text-ink/60">{t("capacity")}</dt>
                 <dd className="text-ink">
-                  {event.capacity} {t("seats")}
+                  {event.capacityLabel ?? `${event.capacity} ${t("seats")}`}
                 </dd>
               </div>
             )}

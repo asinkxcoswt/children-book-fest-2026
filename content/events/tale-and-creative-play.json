@@ -22,6 +22,8 @@
   },
   "ageRange": "ผู้ใหญ่ | ผู้สนใจทั่วไป",
   "price": 555,
+  "capacity": 15,
+  "capacityLabel": "15 คน",
   "gallery": [
     {
       "src": "/content/events/tale-and-creative-play.jpeg",

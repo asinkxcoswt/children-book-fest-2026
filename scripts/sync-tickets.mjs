@@ -61,16 +61,46 @@ const ADD_ONS = [
     fields: [{ key: "name", type: "text", required: false, labelTh: "ชื่อบุตรธิดา", labelEn: "Child name" }],
   },
 ];
-/** Per-event changes to the default add-ons, keyed by slug then add-on code.
- *  picture-book-sing-and-play: ฿150 covers exactly 1 child + 2 adults, no extras. */
+/** Per-event changes to the default add-ons, keyed by slug then add-on code,
+ *  mirroring what the organizer set in the portal. `null` = no add-ons at all
+ *  (a plain one-person ticket). */
+const NONE = null;
+const PAIR_ONLY = { adult: { included: 1, max: 1, extraPrice: 0 }, child: { included: 1, max: 1, extraPrice: 0 } };
+const NO_SEAT = { adult: { countsAsSeat: false }, child: { countsAsSeat: false } };
 const ADD_ON_OVERRIDES_BY_SLUG = {
-  "picture-book-sing-and-play": { adult: { included: 2, max: 2 }, child: { included: 1, max: 1 } },
+  "artful-parent-child-workshop": {
+    adult: { ...PAIR_ONLY.adult, countsAsSeat: false },
+    child: { ...PAIR_ONLY.child, countsAsSeat: false },
+  },
+  "dinosour-adventure-in-library": NONE,
+  "dino-arobic": NONE,
+  "kitchen-monster": NONE,
+  "lighthouse-firefly": NO_SEAT,
+  "miracle-gift": NONE,
+  "my-memories-with-grandma": NONE,
+  // ฿150 covers exactly 1 child + 2 adults, no extras.
+  "picture-book-sing-and-play": {
+    adult: { included: 2, max: 2, countsAsSeat: false },
+    child: { included: 1, max: 1, countsAsSeat: false },
+  },
+  "pop-up-doll-room": {
+    adult: { ...PAIR_ONLY.adult, countsAsSeat: false },
+    child: { ...PAIR_ONLY.child, countsAsSeat: false },
+  },
+  "puppet-show": NONE,
+  "puppet-theatre": PAIR_ONLY,
+  "tale-and-creative-play": PAIR_ONLY,
+  "tatu-and-patu": NONE,
+  "understand-sensitivity": PAIR_ONLY,
 };
-const addOnsFor = (slug) =>
-  ADD_ONS.map((a) => ({ ...a, ...ADD_ON_OVERRIDES_BY_SLUG[slug]?.[a.code] }));
+const addOnsFor = (slug) => {
+  const overrides = ADD_ON_OVERRIDES_BY_SLUG[slug];
+  if (overrides === NONE) return [];
+  return ADD_ONS.map((a) => ({ ...a, ...overrides?.[a.code] }));
+};
+/** Session quantity comes from content (`capacity`, in seats). Events without
+ *  one are effectively unlimited. */
 const DEFAULT_QUANTITY = 10000;
-/** One deliberately tiny event so the sold-out path is visible on the site. */
-const QUANTITY_BY_SLUG = { "how-stories-grow": 1 };
 const REFUND = {
   refundAllowed: false,
   refundTermTh: "บัตรที่ซื้อแล้วไม่สามารถขอคืนเงินได้",
@@ -188,7 +218,7 @@ function desiredConfigs(event) {
     ...sessionRange(s),
     group: null,
     price: satang(event.price),
-    quantity: QUANTITY_BY_SLUG[event.slug] ?? DEFAULT_QUANTITY,
+    quantity: event.capacity ?? DEFAULT_QUANTITY,
     limitPerOrder: LIMIT_PER_ORDER,
     addOns: addOnsFor(event.slug),
     startSellingDate: null,
