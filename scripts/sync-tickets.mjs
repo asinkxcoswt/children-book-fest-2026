@@ -24,7 +24,6 @@ const DRY_RUN = process.argv.includes("--dry-run");
 /** Content-side conventions. One ticket config per session; its code is
  *  <yyyymmdd>-<hhmm> and matches schedule.sessions[].ticketCodes in
  *  content/events/*.json. Prices are in satang (1000 = ฿10). */
-const TAG = "children-book-fest-2026";
 /** Sessions are stored chronologically, so a session's index is the round
  *  number a buyer counts in. CowTicket requires a name, and this is the one
  *  thing that identifies a ticket without restating the day and time the
@@ -334,7 +333,6 @@ async function syncEvent(event, existingEvents) {
   const eventCode = eventCodeFor(event.slug);
   const desired = {
     name: event.title,
-    tags: [TAG],
     ...REFUND,
     paymentMethods: PAYMENT_METHODS,
     // purchaseForm: PURCHASE_FORM,
@@ -352,8 +350,6 @@ async function syncEvent(event, existingEvents) {
       if (!DRY_RUN) await api("/events/archive", { method: "POST", body: { eventCode, archived: false } });
     }
     const changed = diff(current, desired, EVENT_FIELDS);
-    const tagsChanged = JSON.stringify(current.tags ?? []) !== JSON.stringify([TAG]);
-    if (tagsChanged) changed.tags = [TAG];
     if (Object.keys(changed).length) {
       plan("update", `event: ${Object.keys(changed).join(", ")}`);
       if (!DRY_RUN) await api("/events", { method: "PUT", body: { eventCode, ...changed } });
