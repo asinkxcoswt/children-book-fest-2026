@@ -179,12 +179,13 @@ export default async function V4Event({ params }: { params: Promise<{ slug: stri
                 rel="noopener noreferrer"
                 className="inline-flex items-center gap-1.5 rounded-md font-display text-sm text-ink underline decoration-ink/30 underline-offset-4 transition-colors hover:decoration-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ink focus-visible:ring-offset-2"
               >
+                {/* CowTicket head symbol (cowticket.app/brand), 256x170 source. */}
                 <Image
-                  src="/cow-ticket/cow-ticket-logo-transparent.svg"
+                  src="/cow-ticket/symbol-256.png"
                   alt=""
-                  width={24}
-                  height={24}
-                  className="h-6 w-6"
+                  width={256}
+                  height={170}
+                  className="h-6 w-auto"
                 />
                 {/* U+FE0E keeps iOS from drawing ↗ as an emoji. */}
                 CowTicket {"↗︎"}
