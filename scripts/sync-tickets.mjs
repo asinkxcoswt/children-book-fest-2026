@@ -100,7 +100,7 @@ const addOnsFor = (slug) => {
 };
 /** Session quantity comes from content (`capacity`, in seats). Events without
  *  one are effectively unlimited. */
-const DEFAULT_QUANTITY = 10000;
+const DEFAULT_QUANTITY = 100;
 const REFUND = {
   refundAllowed: false,
   refundTermTh: "บัตรที่ซื้อแล้วไม่สามารถขอคืนเงินได้",
