@@ -1,0 +1,33 @@
+{
+  "slug": "paper-boy-transformation",
+  "thumbnail": "/content/events/paper-boy-transformation.jpeg",
+  "mascot": "/content/mascots/girl-bunny-ears.png",
+  "title": "กระดาษแปลงร่างกับเด็กชายกระดาษ",
+  "summary": "ฟังนิทาน \"เด็กชายกระดาษ\" แล้วสร้างตัวละครสัตว์สามมิติจากกระดาษ",
+  "presenter": "กลุ่มวิทยากร: ก่อการ Holistic Care",
+  "description": "กิจกรรมเล่านิทานเรื่อง “เด็กชายกระดาษ” เพื่อชวนเด็ก ๆ เปิดจินตนาการและสำรวจความเป็นไปได้\nชวนเด็กและผู้ปกครองร่วมกันสร้างสรรค์ตัวละครสัตว์สามมิติจากกระดาษ ผ่านกระบวนการตัด พับ ประกอบ และตกแต่งตามจินตนาการของตนเอง",
+  "category": "workshop",
+  "schedule": {
+    "venue": "ห้อง Auditorium",
+    "sessions": [
+      {
+        "date": "2026-12-05",
+        "start": "11:00",
+        "end": "11:50",
+        "ticketCodes": [
+          "20261205-1100"
+        ]
+      }
+    ]
+  },
+  "ageRange": "เด็ก + พ่อแม่ | ครอบครัว",
+  "price": 150,
+  "gallery": [
+    {
+      "src": "/content/events/paper-boy-transformation.jpeg",
+      "alt": "ป๊อปอัปกระดาษรูปเด็กชายสีขาวยืนข้างแมวลายสีเหลืองบนพื้นหลังสีน้ำเงิน"
+    }
+  ],
+  "ticketEventCode": "cbf2026-paper-boy-transformation",
+  "admission": "ticket"
+}

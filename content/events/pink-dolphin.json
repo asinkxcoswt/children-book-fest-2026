@@ -1,0 +1,33 @@
+{
+  "slug": "pink-dolphin",
+  "thumbnail": "/content/events/pink-dolphin.jpeg",
+  "mascot": "/content/mascots/girl-smelling-flower.png",
+  "title": "แหวกว่ายทะเลไทย \"ไปกับโลมาสีชมพู\"",
+  "summary": "ฟังนิทาน \"โลมาสีชมพู\" แล้วทำสิ่งประดิษฐ์จากวัสดุเหลือใช้",
+  "presenter": "ป้ากุ๊กไก่ และ พี่โดนัท โครงการนิทานวิทยาศาสตร์น่ารู้",
+  "description": "ชวนเด็กๆ แหวกว่ายไปในทะเลไทยผ่านนิทาน “โลมาสีชมพู” โดยพี่ๆ โครงการ “นิทานวิทยาศาสตร์น่ารู้” พร้อมทำสิ่งประดิษฐ์จากวัสดุเหลือใช้ ผู้ร่วมกิจกรรมจะได้รับหนังสือนิทานเรื่อง “โลมาสีชมพู” และสิ่งประดิษฐ์กลับบ้านไปฟรีๆ",
+  "category": "storytelling",
+  "schedule": {
+    "venue": "Main Stage ห้องแกลลอรี",
+    "sessions": [
+      {
+        "date": "2026-12-13",
+        "start": "11:00",
+        "end": "11:50",
+        "ticketCodes": [
+          "20261213-1100"
+        ]
+      }
+    ]
+  },
+  "ageRange": "เด็กๆ | ครอบครัว | ผู้สนใจทั่วไป",
+  "price": 0,
+  "gallery": [
+    {
+      "src": "/content/events/pink-dolphin.jpeg",
+      "alt": "ภาพวาดโลมาสีชมพูและโลมาสีเทาว่ายน้ำในทะเล มีภูเขาและปะการังหลากสี"
+    }
+  ],
+  "ticketEventCode": "cbf2026-pink-dolphin",
+  "admission": "free"
+}
