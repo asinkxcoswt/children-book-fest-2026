@@ -22,6 +22,8 @@
   },
   "ageRange": "เด็กๆ | ครอบครัว",
   "price": 299,
+  "capacity": 30,
+  "capacityLabel": "30 คน",
   "gallery": [
     {
       "src": "/content/events/witch-kitchen.jpeg",

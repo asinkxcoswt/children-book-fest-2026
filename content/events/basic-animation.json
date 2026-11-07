@@ -22,6 +22,8 @@
   },
   "ageRange": "วัยรุ่น | ครู | ผู้ใหญ่ | ผู้สนใจทั่วไป",
   "price": 650,
+  "capacity": 12,
+  "capacityLabel": "12 คน",
   "gallery": [
     {
       "src": "/content/events/basic-animation.jpeg",

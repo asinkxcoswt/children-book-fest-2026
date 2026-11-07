@@ -22,6 +22,8 @@
   },
   "ageRange": "วัยรุ่น | ครู | ผู้ใหญ่ | ผู้สนใจทั่วไป",
   "price": 299,
+  "capacity": 15,
+  "capacityLabel": "10-15 คน",
   "gallery": [
     {
       "src": "/content/events/flower-and-printmaking.jpeg",

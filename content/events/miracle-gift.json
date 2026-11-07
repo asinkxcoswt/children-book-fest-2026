@@ -22,8 +22,7 @@
   },
   "ageRange": "เด็กๆ | ครอบครัว | ผู้สนใจทั่วไป",
   "price": 0,
-  "capacity": 20,
-  "capacityLabel": "20 คน",
+  "capacityLabel": "ไม่จำกัด",
   "gallery": [
     {
       "src": "/content/events/miracle-gift.jpeg",

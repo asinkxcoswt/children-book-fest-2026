@@ -22,6 +22,8 @@
   },
   "ageRange": "เด็กๆ | ครอบครัว",
   "price": 349,
+  "capacity": 30,
+  "capacityLabel": "30 คน",
   "gallery": [
     {
       "src": "/content/events/color-monster-comfort-book.jpeg",

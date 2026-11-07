@@ -65,8 +65,12 @@ const ADD_ONS = [
  *  (a plain one-person ticket). */
 const NONE = null;
 const PAIR_ONLY = { adult: { included: 1, max: 1, extraPrice: 0 }, child: { included: 1, max: 1, extraPrice: 0 } };
-const NO_SEAT = { adult: { countsAsSeat: false }, child: { countsAsSeat: false } };
 const ADD_ON_OVERRIDES_BY_SLUG = {
+  // Capacity is counted in families: one ticket = one seat, extras are free of seats.
+  "animated-playground": {
+    adult: { ...PAIR_ONLY.adult, countsAsSeat: false },
+    child: { ...PAIR_ONLY.child, countsAsSeat: false },
+  },
   "artful-parent-child-workshop": {
     adult: { ...PAIR_ONLY.adult, countsAsSeat: false },
     child: { ...PAIR_ONLY.child, countsAsSeat: false },
@@ -74,7 +78,7 @@ const ADD_ON_OVERRIDES_BY_SLUG = {
   "dinosour-adventure-in-library": NONE,
   "dino-arobic": NONE,
   "kitchen-monster": NONE,
-  "lighthouse-firefly": NO_SEAT,
+  "lighthouse-firefly": { adult: { countsAsSeat: false }, child: { countsAsSeat: false } },
   "miracle-gift": NONE,
   "my-memories-with-grandma": NONE,
   // ฿150 covers exactly 1 child + 2 adults, no extras.
@@ -99,9 +103,11 @@ const addOnsFor = (slug) => {
   if (overrides === NONE) return [];
   return ADD_ONS.map((a) => ({ ...a, ...overrides?.[a.code] }));
 };
-/** Session quantity comes from content (`capacity`, in seats). Events without
- *  one are effectively unlimited. */
-const DEFAULT_QUANTITY = 100;
+/** Session quantity comes from content (`capacity`, in seats). Without one, a
+ *  paid event defaults to 100 seats, and a free one ("ไม่จำกัดบนเว็บ") sends 0,
+ *  which CowTicket treats as unlimited. */
+const DEFAULT_PAID_QUANTITY = 100;
+const quantityFor = (event) => event.capacity ?? (event.price > 0 ? DEFAULT_PAID_QUANTITY : 1);
 const REFUND = {
   refundAllowed: false,
   refundTermTh: "บัตรที่ซื้อแล้วไม่สามารถขอคืนเงินได้",
@@ -220,7 +226,7 @@ function desiredConfigs(event) {
     ...sessionRange(s),
     group: null,
     price: satang(event.price),
-    quantity: event.capacity ?? DEFAULT_QUANTITY,
+    quantity: quantityFor(event),
     limitPerOrder: LIMIT_PER_ORDER,
     addOns: addOnsFor(event.slug),
     startSellingDate: null,
@@ -318,8 +324,51 @@ function diff(current, desired, fields) {
 // ── Reconcile ──────────────────────────────────────────────────────────────
 
 const log = (...args) => console.log(...args);
-const plan = (verb, what) => log(`  ${DRY_RUN ? "would " : ""}${verb} ${what}`);
 const failures = [];
+const warnings = [];
+/** One row per planned change, printed as a table at the end. */
+const rows = [];
+let upToDate = 0;
+/** slug → price in baht, filled once content is loaded, for the event column. */
+const priceBySlug = new Map();
+const eventLabel = (eventCode) => {
+  const slug = eventCode.replace(EVENT_CODE_PREFIX, "");
+  const price = priceBySlug.get(slug);
+  return price === undefined ? slug : `${slug} (${price > 0 ? `฿${price}` : "free"})`;
+};
+const plan = (action, eventCode, target, changes = "") =>
+  rows.push({ action, event: eventLabel(eventCode), target, changes });
+
+/** Human-readable value for the change column. */
+function show(field, v) {
+  if (v === null || v === undefined || v === "") return "—";
+  if (field === "price") return `฿${v / 100}`;
+  if (field === "quantity") return v === 0 ? "0 (unlimited)" : String(v);
+  if (field === "addOns") {
+    if (!v.length) return "none";
+    return v.map((a) => `${a.code} ${a.included}/${a.max}${a.countsAsSeat ? "" : " no-seat"}${a.extraPrice ? ` +฿${a.extraPrice / 100}` : ""}`).join(", ");
+  }
+  if (INSTANT_FIELDS.has(field)) {
+    return new Date(v).toLocaleString("sv-SE", { timeZone: "Asia/Bangkok" }).slice(0, 16);
+  }
+  return typeof v === "string" ? v : JSON.stringify(v);
+}
+const describe = (changed, current) =>
+  Object.keys(changed).map((f) => `${f}: ${show(f, current?.[f])} → ${show(f, changed[f])}`).join("; ");
+
+/** Display width: Thai combining marks take no column. */
+const width = (str) => [...str.replace(/[\u0E31\u0E34-\u0E3A\u0E47-\u0E4E]/g, "")].length;
+const pad = (str, n) => str + " ".repeat(Math.max(0, n - width(str)));
+function printTable(list, cols) {
+  const w = cols.map((c) => Math.max(width(c), ...list.map((r) => width(r[c]))));
+  const line = (cells) => "│ " + cells.map((c, i) => pad(c, w[i])).join(" │ ") + " │";
+  const rule = (l, m, r) => l + w.map((n) => "─".repeat(n + 2)).join(m) + r;
+  log(rule("┌", "┬", "┐"));
+  log(line(cols));
+  log(rule("├", "┼", "┤"));
+  for (const r of list) log(line(cols.map((c) => r[c])));
+  log(rule("└", "┴", "┘"));
+}
 
 async function listEvents() {
   const [active, archived] = await Promise.all([
@@ -359,21 +408,17 @@ async function syncEvent(event, existingEvents, workspaceId) {
   };
   const current = existingEvents.get(eventCode);
 
-  log(`\n${eventCode}  (${event.title})`);
-
   if (!current) {
-    plan("create", "event");
+    plan("create", eventCode, "event", event.title);
     if (!DRY_RUN) await api("/events", { method: "POST", body: { workspaceId, eventCode, ...desired } });
   } else {
     if (current.workspace?.archivedAt) {
-      log(`  ⚠ its workspace "${current.workspace.name}" is archived — reopen it in the app to sell`);
+      warnings.push(`${eventCode}: workspace "${current.workspace.name}" is archived — reopen it in the app to sell`);
     }
     const changed = diff(current, desired, EVENT_FIELDS);
     if (Object.keys(changed).length) {
-      plan("update", `event: ${Object.keys(changed).join(", ")}`);
+      plan("update", eventCode, "event", describe(changed, current));
       if (!DRY_RUN) await api("/events", { method: "PUT", body: { eventCode, ...changed } });
-    } else {
-      log("  event up to date");
     }
   }
 
@@ -391,18 +436,19 @@ async function syncEvent(event, existingEvents, workspaceId) {
     const have = existing.get(want.code);
     try {
       if (!have) {
-        plan("create", `ticket ${want.code}  ${want.sessionStartAt}  qty ${want.quantity}  ฿${want.price / 100}`);
+        plan("create", eventCode, want.code,
+          `${show("sessionStartAt", want.sessionStartAt)}  qty ${show("quantity", want.quantity)}  ${show("price", want.price)}  add-ons ${show("addOns", want.addOns)}`);
         if (!DRY_RUN) await api("/ticketConfigs", { method: "POST", body: { eventCode, ...want } });
       } else {
         const changed = diff(have, want, CONFIG_FIELDS);
         if (Object.keys(changed).length) {
-          plan("update", `ticket ${want.code}: ${Object.keys(changed).join(", ")}`);
+          plan("update", eventCode, want.code, describe(changed, have));
           if (!DRY_RUN) await api("/ticketConfigs", { method: "PUT", body: { id: have.id, ...changed } });
         }
       }
     } catch (err) {
       failures.push(`${eventCode}/${want.code}: ${err.message}`);
-      console.error(`  FAILED ${want.code}: ${err.message}`);
+      plan("FAILED", eventCode, want.code, err.message);
     }
   }
 
@@ -410,12 +456,13 @@ async function syncEvent(event, existingEvents, workspaceId) {
   // never delete — it may carry orders.
   for (const [code, config] of existing) {
     if (wanted.some((w) => w.code === code) || config.status === "HIDDEN") continue;
-    plan("hide", `orphaned ticket ${code} (no longer in content)`);
+    plan("hide", eventCode, code, "no longer in content");
     if (!DRY_RUN) await api("/ticketConfigs", { method: "PUT", body: { id: config.id, status: "HIDDEN" } });
   }
 }
 
 const events = loadEvents();
+for (const e of events) priceBySlug.set(e.slug, e.price ?? 0);
 log(`${DRY_RUN ? "DRY RUN — " : ""}syncing ${events.length} events to ${API}`);
 const existingEvents = await listEvents();
 log(`${existingEvents.size} event(s) already on the account`);
@@ -423,13 +470,25 @@ const workspaceId = await resolveWorkspaceId(existingEvents);
 log(`new events go to workspace ${workspaceId}`);
 
 for (const event of events) {
+  const before = rows.length;
   try {
     await syncEvent(event, existingEvents, workspaceId);
   } catch (err) {
     failures.push(`${event.slug}: ${err.message}`);
-    console.error(`  FAILED: ${err.message}`);
+    plan("FAILED", eventCodeFor(event.slug), "event", err.message);
   }
+  if (rows.length === before) upToDate++;
 }
+
+log("");
+if (rows.length) {
+  log(DRY_RUN ? "Planned changes (dry run — nothing sent):" : "Applied changes:");
+  printTable(rows, ["action", "event", "target", "changes"]);
+} else {
+  log("No changes.");
+}
+log(`${upToDate} event(s) already up to date.`);
+for (const w of warnings) log(`⚠ ${w}`);
 
 log(`\n${failures.length ? `${failures.length} failure(s):` : "done, no failures"}`);
 for (const f of failures) log(`  - ${f}`);

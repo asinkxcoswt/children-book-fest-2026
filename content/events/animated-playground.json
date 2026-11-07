@@ -22,6 +22,8 @@
   },
   "ageRange": "เด็ก 7-12 ปี | ผู้ใหญ่ | ผู้สนใจทั่วไป",
   "price": 450,
+  "capacity": 12,
+  "capacityLabel": "12 ครอบครัว",
   "gallery": [
     {
       "src": "/content/events/animated-playground.jpeg",

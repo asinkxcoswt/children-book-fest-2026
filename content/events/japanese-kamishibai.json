@@ -31,6 +31,7 @@
   },
   "ageRange": "เด็กๆ | ครอบครัว | ผู้สนใจทั่วไป",
   "price": 0,
+  "capacityLabel": "50 คน/รอบ",
   "gallery": [
     {
       "src": "/content/events/japanese-kamishibai.jpeg",

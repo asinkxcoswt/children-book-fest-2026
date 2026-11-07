@@ -22,6 +22,7 @@
   },
   "ageRange": "นักวาดภาพประกอบ | นักเขียน | ครู",
   "price": 0,
+  "capacityLabel": "50 คน",
   "gallery": [
     {
       "src": "/content/events/picture-books-for-every-situation.jpeg",

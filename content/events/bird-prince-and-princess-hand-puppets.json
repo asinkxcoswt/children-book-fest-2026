@@ -22,6 +22,7 @@
   },
   "ageRange": "เด็ก | พ่อแม่ | ครอบครัว",
   "price": 0,
+  "capacityLabel": "50 คน",
   "gallery": [
     {
       "src": "/content/events/bird-prince-and-princess-hand-puppets.jpeg",

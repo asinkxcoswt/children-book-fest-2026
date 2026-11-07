@@ -22,6 +22,7 @@
   },
   "ageRange": "เด็กๆ | ครอบครัว | ผู้สนใจทั่วไป",
   "price": 0,
+  "capacityLabel": "30-40 คน",
   "gallery": [
     {
       "src": "/content/events/a-day-without-internet.jpeg",

@@ -22,8 +22,7 @@
   },
   "ageRange": "เด็กๆ | ครอบครัว | ผู้สนใจทั่วไป",
   "price": 0,
-  "capacity": 30,
-  "capacityLabel": "30 คน",
+  "capacityLabel": "20 ครอบครัว (ไม่เกิน 3 คน)",
   "gallery": [
     {
       "src": "/content/events/puppet-show.jpeg",

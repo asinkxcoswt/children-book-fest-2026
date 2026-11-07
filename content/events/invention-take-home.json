@@ -22,6 +22,7 @@
   },
   "ageRange": "เด็กๆ | ครอบครัว | ผู้สนใจทั่วไป",
   "price": 0,
+  "capacityLabel": "15 ครอบครัว",
   "gallery": [
     {
       "src": "/content/events/invention-take-home.jpeg",
