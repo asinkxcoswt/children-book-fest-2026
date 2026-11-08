@@ -1,0 +1,35 @@
+{
+  "slug": "parents-different-elephants",
+  "thumbnail": "/content/events/parents-different-elephants.jpeg",
+  "mascot": "/content/mascots/girl-smelling-flower.png",
+  "title": "พ่อแม่จ๋า ช้างของเราไม่เหมือนกัน",
+  "summary": "เวิร์กชอปชวนพ่อแม่พักใจ สำรวจความรู้สึกภายใน ผ่านเกม นิทานภาพ นิทานเพลง และศิลปะ กับครูไนซ์ บ้านต่างใจ",
+  "presenter": "ครูไนซ์ กะวิตา พุฒแดง (บ้านต่างใจ)",
+  "description": "เวิร์คชอบกระบวนการที่จะชวนคุณพ่อ หรือ คุณแม่ เข้ามาพักใจสำรวจความรู้สึกภายในของตัวเอง เพราะนอกจากความรัก ความใส่ใจ ความรับผิดชอบที่เรามีต่อลูกและครอบครัว อีกคนที่เรามักมองข้ามเสมอคือตัวตนและความรู้สึกของเราเอง - วงกลมเกมกระบวนการกระตุ้น critical thinking และ เสริมแรงความยืดหยุ่นให้ inner child คุณพ่อคุณแม่ได้ออกมาวิ่งเล่น ต่อด้วยการฟังนิทานภาพ และนิทานเพลง หลับตาทำศิลปะเพื่อให้ตัวเราและลูกรักกลับมาเชื่อมโยงกันได้มากยิ่งขึ้น",
+  "category": "workshop",
+  "schedule": {
+    "venue": "ห้อง Auditorium",
+    "sessions": [
+      {
+        "date": "2026-11-29",
+        "start": "14:00",
+        "end": "15:50",
+        "ticketCodes": [
+          "20261129-1400"
+        ]
+      }
+    ]
+  },
+  "ageRange": "คุณครู | ผู้ปกครอง | ผู้สนใจทั่วไป",
+  "price": 689,
+  "capacity": 20,
+  "capacityLabel": "20 คน",
+  "gallery": [
+    {
+      "src": "/content/events/parents-different-elephants.jpeg",
+      "alt": "ผู้ใหญ่นั่งบนพื้นไม้ ใช้มือระบายสีบนกระดาษดำ มีจานสีวางอยู่รอบตัว"
+    }
+  ],
+  "ticketEventCode": "cbf2026-parents-different-elephants",
+  "admission": "ticket"
+}
