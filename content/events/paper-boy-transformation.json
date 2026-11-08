@@ -22,6 +22,8 @@
   },
   "ageRange": "เด็ก + พ่อแม่ | ครอบครัว",
   "price": 150,
+  "capacity": 30,
+  "capacityLabel": "30 คน",
   "gallery": [
     {
       "src": "/content/events/paper-boy-transformation.jpeg",

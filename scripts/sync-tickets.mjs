@@ -107,7 +107,7 @@ const addOnsFor = (slug) => {
  *  paid event defaults to 100 seats, and a free one ("ไม่จำกัดบนเว็บ") sends 0,
  *  which CowTicket treats as unlimited. */
 const DEFAULT_PAID_QUANTITY = 100;
-const quantityFor = (event) => event.capacity ?? (event.price > 0 ? DEFAULT_PAID_QUANTITY : 1);
+const quantityFor = (event) => event.capacity ?? (event.price > 0 ? DEFAULT_PAID_QUANTITY : 0);
 const REFUND = {
   refundAllowed: false,
   refundTermTh: "บัตรที่ซื้อแล้วไม่สามารถขอคืนเงินได้",
