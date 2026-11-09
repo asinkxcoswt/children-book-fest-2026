@@ -94,6 +94,7 @@ const ADD_ON_OVERRIDES_BY_SLUG = {
   },
   "puppet-show": NONE,
   "puppet-theatre": PAIR_ONLY,
+  "starry-tale": NONE,
   "tale-and-creative-play": PAIR_ONLY,
   "tatu-and-patu": NONE,
   "understand-sensitivity": PAIR_ONLY,

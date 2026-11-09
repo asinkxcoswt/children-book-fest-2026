@@ -95,6 +95,9 @@ export interface FestivalEvent {
    *  explicit editorial content — an empty ticket response alone also means
    *  "sales paused", which must NOT read as "free, walk in". */
   admission: Admission;
+  /** Optional per-event remark about payment shown above the ticket box,
+   *  e.g. that the price is a deposit refunded on the day. */
+  admissionNote?: string;
 }
 
 export type Admission = "ticket" | "free" | "donation";

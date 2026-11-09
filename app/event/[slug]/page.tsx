@@ -147,6 +147,11 @@ export default async function V4Event({ params }: { params: Promise<{ slug: stri
             )}
             <ShareButton title={event.title} text={event.summary} />
           </div>
+          {event.admissionNote && (
+            <p className="mb-4 rounded-xl border-2 border-ink/10 bg-sunshine/30 px-4 py-3 text-base text-ink">
+              {event.admissionNote}
+            </p>
+          )}
           <div>
             {event.admission !== "ticket" ? (
               // Free or donation-box event: nothing to sell, so no purchase UI
