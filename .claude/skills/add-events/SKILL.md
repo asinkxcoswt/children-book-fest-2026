@@ -48,7 +48,7 @@ For a **replaced poster**, only overwrite the image (and update fields the user 
 ## 5. Ticket add-ons
 
 Do **not** add entries to `ADD_ON_OVERRIDES_BY_SLUG` in `scripts/sync-tickets.mjs` unless the
-user asks (defaults apply), **except** adults-only events (ageRange has no children/families) → always set `NONE` — but only if nothing is sold yet: CowTicket refuses to remove an add-on any order already includes, so an event with sales keeps its add-ons. Free events with no tickets → ask whether to set `NONE`.
+user asks (defaults apply), **except** adults-only events (ageRange has no children/families) → always set `NONE` — but only if nothing is sold yet: CowTicket refuses to remove an add-on any order already includes, so an event with sales keeps its add-ons. Free events (price 0) → always set `NONE` too (same caveat — and note `sold: 0` is not proof: cancelled/expired orders still lock add-ons, so a dry run can pass and the real sync still fail).
 Never run the sync for real; the user runs it.
 
 ## 6. Notion

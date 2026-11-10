@@ -66,6 +66,24 @@ const ADD_ONS = [
 const NONE = null;
 const PAIR_ONLY = { adult: { included: 1, max: 1, extraPrice: 0 }, child: { included: 1, max: 1, extraPrice: 0 } };
 const ADD_ON_OVERRIDES_BY_SLUG = {
+  // Free events: no add-ons.
+  "a-day-without-internet": NONE,
+  "anis-wants-to-grow-tall": NONE,
+  "big-giant": NONE,
+  "big-tasty-worm": NONE,
+  "bird-prince-and-princess-hand-puppets": NONE,
+  "butt-detective": NONE,
+  "dark-company-secret": NONE,
+  "giant-pear-reporter": NONE,
+  "invention-take-home": NONE,
+  "japanese-kamishibai": NONE,
+  "kiki-adventure": NONE,
+  "little-duck-buddy": NONE,
+  "mystery-seed-marionettes": NONE,
+  "one-miracle-day": NONE,
+  "pink-dolphin": NONE,
+  "spinning-wheels": NONE,
+  "storytelling-techniques": NONE,
   // Capacity is counted in families: one ticket = one seat, extras are free of seats.
   "animated-playground": {
     adult: { ...PAIR_ONLY.adult, countsAsSeat: false },
@@ -81,10 +99,11 @@ const ADD_ON_OVERRIDES_BY_SLUG = {
   // Adults-only events that had already sold tickets with add-ons keep them
   // (CowTicket refuses to remove an add-on any order includes).
   "kitchen-monster": NONE,
+  // Free, but an order already includes its add-ons, so CowTicket won't remove them.
+  "lighthouse-firefly": { adult: { countsAsSeat: false }, child: { countsAsSeat: false } },
   "librarian-storyteller-workshop": NONE,
   "look-club-talk": NONE,
   "look-club-workshop": NONE,
-  "lighthouse-firefly": { adult: { countsAsSeat: false }, child: { countsAsSeat: false } },
   "miracle-gift": NONE,
   "my-memories-with-grandma": NONE,
   // ฿150 covers exactly 1 child + 2 adults, no extras.
