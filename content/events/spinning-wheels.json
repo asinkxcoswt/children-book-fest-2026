@@ -1,0 +1,33 @@
+{
+  "slug": "spinning-wheels",
+  "thumbnail": "/content/events/spinning-wheels.jpeg",
+  "mascot": "/content/mascots/girl-maracas.png",
+  "title": "ล้อหมุนไปกับครูชีวัน",
+  "summary": "เล่านิทานจากหนังสือภาพเล่มใหม่ \"ล้อหมุน\" กับครูชีวัน",
+  "presenter": "ครูชีวัน (สำนักพิมพ์ขวัญเจ้าเอย)",
+  "description": "มาติดล้อ...แล้วหมุนไปด้วยกัน กับหนังสือเล่มใหม่ของครูชีวัน\n\"ล้อหมุน\" ที่ต้องมาติดตามว่า หมุนไปไหน แล้วมีใครมาหมุนด้วยบ้างนะ",
+  "category": "storytelling",
+  "schedule": {
+    "venue": "Main Stage ห้องแกลลอรี",
+    "sessions": [
+      {
+        "date": "2026-12-06",
+        "start": "12:00",
+        "end": "12:50",
+        "ticketCodes": [
+          "20261206-1200"
+        ]
+      }
+    ]
+  },
+  "ageRange": "เด็กๆ | ครอบครัว | ผู้สนใจทั่วไป",
+  "price": 0,
+  "gallery": [
+    {
+      "src": "/content/events/spinning-wheels.jpeg",
+      "alt": "ปกหนังสือภาพ \"ล้อหมุน\" สีฟ้ามีวงล้อหลากสี ข้างรูปครูชีวันถือตุ๊กตา"
+    }
+  ],
+  "ticketEventCode": "cbf2026-spinning-wheels",
+  "admission": "free"
+}
