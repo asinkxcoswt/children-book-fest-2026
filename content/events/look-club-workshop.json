@@ -1,0 +1,33 @@
+{
+  "slug": "look-club-workshop",
+  "thumbnail": "/content/events/look-club-workshop.jpeg",
+  "mascot": "/content/mascots/boy-reading-lion-book.png",
+  "title": "Look Club Workshop: The Maker’s Lens",
+  "summary": "เวิร์กชอปลงมือทำหนังสือภาพ ปลดล็อกความคิดให้กลายเป็นเรื่องเล่า กับคุณยูคิโกะ ฮิโรมาสึ",
+  "presenter": "Yukiko Hiromatsu (นักเขียน บรรณาธิการ และภัณฑารักษ์ด้านหนังสือภาพ)",
+  "description": "สานอักษร Mappa โดยการสนับสนุนของ The Japan Foundation, Bangkok ร่วมกันจัด 👀LOOK CLUB WORKSHOP ลงมือทำหนังสือภาพ❣️\n\nนำโดยวิทยากรผู้เชี่ยวชาญด้านหนังสือภาพชาวญี่ปุ่น คุณยูคิโกะ ฮิโรมาสึ(เป็นใคร ทำอะไร อ่านท้ายโพสค่ะ) มาช่วยปลดล็อกความคิด ปลดปล่อยพลังสร้างสรรค์ ให้กลายเป็นเรื่องเล่าผ่านหนังสือภาพ\n\nชวนสำรวจโลกแห่งการเล่าเรื่องด้วยภาพ อานุภาพของการพลิกหน้ากระดาษ และกระบวนการสร้างสรรค์หนังสือที่เอื้อต่อการ \"อ่านภาพ\" (Visual Reading) เพื่อเปิดพื้นที่ให้เด็กๆ ได้ตั้งคำถามและสัมผัสคุณค่าทางสุนทรียภาพผ่านมุมมองของตัวเขาเอง",
+  "category": "workshop",
+  "schedule": {
+    "venue": "ห้อง MDIC",
+    "sessions": [
+      {
+        "date": "2026-12-13",
+        "start": "13:00",
+        "end": "15:50",
+        "ticketCodes": [
+          "20261213-1300"
+        ]
+      }
+    ]
+  },
+  "ageRange": "ผู้ใหญ่ | ผู้คนทั่วไป",
+  "price": 980,
+  "gallery": [
+    {
+      "src": "/content/events/look-club-workshop.jpeg",
+      "alt": "โปสเตอร์ Look Club Workshop พื้นฟ้า มือสีขาวสองข้าง และรูปวิทยากร Yukiko Hiromatsu"
+    }
+  ],
+  "ticketEventCode": "cbf2026-look-club-workshop",
+  "admission": "ticket"
+}

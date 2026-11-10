@@ -1,0 +1,33 @@
+{
+  "slug": "look-club-talk",
+  "thumbnail": "/content/events/look-club-talk.jpeg",
+  "mascot": "/content/mascots/girl-glasses-reading.png",
+  "title": "Look Club Talk: The Joy of Turning Pages",
+  "summary": "ฟังผู้เชี่ยวชาญหนังสือภาพชาวญี่ปุ่นเล่ากลไกของหนังสือภาพ และวัฒนธรรมการอ่านภาพในประเทศญี่ปุ่น",
+  "presenter": "Yukiko Hiromatsu ร่วมเสวนากับ ครูก้า กรองทอง บุญประคอง, คุณศานนท์ หวังสร้างบุญ และ เกื้อกมล นิยม ดำเนินรายการโดย แม่บี มิรา เวฬุภาค (Mappa)",
+  "description": "สานอักษร Mappa โดยการสนับสนุนของ The Japan Foundation, Bangkok ร่วมกันจัด 👀LOOK CLUB TALK เป็นครั้งแรก❣️\n\nครั้งนี้ เราชวนผู้เชี่ยวชาญด้านหนังสือภาพชาวญี่ปุ่น คุณยูคิโกะ ฮิโรมาสึ(เป็นใคร ทำอะไร อ่านท้ายโพสค่ะ) มาเผยกลไกของ 'หนังสือนิทานภาพที่ดี' พร้อมร่วมพูดคุยถึงการสอดแทรกหนังสือภาพและวัฒนธรรมการอ่านภาพ (Visual Reading Culture) เข้าเป็นส่วนหนึ่งของพื้นที่สาธารณะ ระบบการศึกษา และชีวิตประจำวันในประเทศญี่ปุ่น\n\n🗣💬 ปิดท้ายด้วยการเสวนาแลกเปลี่ยนร่วมกับนักการศึกษาผู้กำหนดนโยบาย และคนทำหนังสือเด็กของไทย ครูก้า กรองทอง บุญประคอง จากโรงเรียนจิตตเมตต์ คุณศานนท์ หวังสร้างบุญ รองผู้ว่า กทม. และ พี่เกื้อ จากสำนักพิมพ์สานอักษร ดำเนินรายการโดยแม่บี Mappa\n\n👀LOOK CLUB TALK 🎤🎨📖\n\"The Joy of Turning Pages\"",
+  "category": "seminar",
+  "schedule": {
+    "venue": "ห้อง MDIC",
+    "sessions": [
+      {
+        "date": "2026-12-12",
+        "start": "13:00",
+        "end": "14:50",
+        "ticketCodes": [
+          "20261212-1300"
+        ]
+      }
+    ]
+  },
+  "ageRange": "ผู้ใหญ่ | ผู้คนทั่วไป",
+  "price": 50,
+  "gallery": [
+    {
+      "src": "/content/events/look-club-talk.jpeg",
+      "alt": "โปสเตอร์ Look Club Talk พื้นเหลือง ม่านเวทีสีเขียว รูปวิทยากรรับเชิญ Yukiko Hiromatsu และผู้ร่วมเสวนา"
+    }
+  ],
+  "ticketEventCode": "cbf2026-look-club-talk",
+  "admission": "ticket"
+}

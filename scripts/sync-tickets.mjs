@@ -77,7 +77,13 @@ const ADD_ON_OVERRIDES_BY_SLUG = {
   },
   "dinosour-adventure-in-library": NONE,
   "dino-arobic": NONE,
+  // Adults-only events (no children in ageRange): a plain one-person ticket.
+  // Adults-only events that had already sold tickets with add-ons keep them
+  // (CowTicket refuses to remove an add-on any order includes).
   "kitchen-monster": NONE,
+  "librarian-storyteller-workshop": NONE,
+  "look-club-talk": NONE,
+  "look-club-workshop": NONE,
   "lighthouse-firefly": { adult: { countsAsSeat: false }, child: { countsAsSeat: false } },
   "miracle-gift": NONE,
   "my-memories-with-grandma": NONE,
