@@ -98,6 +98,12 @@ const ADD_ON_OVERRIDES_BY_SLUG = {
   // Adults-only events (no children in ageRange): a plain one-person ticket.
   // Adults-only events that had already sold tickets with add-ons keep them
   // (CowTicket refuses to remove an add-on any order includes).
+  // Sold before it went adults-only: add-on codes stay, but the child is zeroed
+  // so new tickets are one adult only.
+  "look-closer-read-picture": {
+    adult: { included: 1, max: 1, extraPrice: 0 },
+    child: { included: 0, max: 0, extraPrice: 0 },
+  },
   "kitchen-monster": NONE,
   // Free, but an order already includes its add-ons, so CowTicket won't remove them.
   "lighthouse-firefly": { adult: { countsAsSeat: false }, child: { countsAsSeat: false } },

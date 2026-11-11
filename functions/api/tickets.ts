@@ -31,7 +31,11 @@ export async function onRequestGet({ request, env }: Ctx): Promise<Response> {
         sessionDate: c.sessionDate ?? null,
         // Per-ticket add-ons and how a ticket is counted against stock.
         capacityUnit: c.capacityUnit ?? "tickets",
-        addOns: (c.addOns ?? []).map((a) => ({
+        // An add-on with max 0 can never be chosen (it is how an add-on that
+        // orders already include gets switched off, since CowTicket won't
+        // remove it), so the buyer never sees it. Omitted add-ons default to
+        // `included` (0) when ordering.
+        addOns: (c.addOns ?? []).filter((a) => a.max > 0).map((a) => ({
           code: a.code,
           name: a.name,
           included: a.included,
