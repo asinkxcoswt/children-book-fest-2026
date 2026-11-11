@@ -1,0 +1,36 @@
+{
+  "slug": "art-for-the-heart",
+  "thumbnail": "/content/events/art-for-the-heart.jpeg",
+  "mascot": "/content/mascots/girl-smelling-flower.png",
+  "title": "ศิลปะดูแลหัวใจในวันที่โลกไม่เหมือนเดิม",
+  "summary": "เวิร์กช็อปศิลปะบำบัดเพื่อปรับมุมมองและสร้างความสงบใจ กับครูน้ำ รัสนากร อมรพงศ์",
+  "presenter": "ครูน้ำ รัสนากร อมรพงศ์",
+  "description": "การทำศิลปะบำบัดช่วยเปลี่ยนพลังงาน ปรับมุมมอง และเปิดพื้นที่ให้ถอยมาเป็นผู้สังเกตเพื่อสร้างความสัมพันธ์ใหม่กับปัญหา เกิดความคิดที่ชัดเจน ความรู้สึกสงบ และความสร้างสรรค์",
+  "category": "workshop",
+  "schedule": {
+    "venue": "ห้อง Auditorium",
+    "sessions": [
+      {
+        "date": "2026-12-10",
+        "start": "13:30",
+        "end": "17:30",
+        "ticketCodes": [
+          "20261210-1330"
+        ]
+      }
+    ]
+  },
+  "ageRange": "คุณครู | อาสาสมัคร | ผู้สนใจทั่วไป",
+  "price": 100,
+  "capacity": 30,
+  "capacityLabel": "30 คน",
+  "gallery": [
+    {
+      "src": "/content/events/art-for-the-heart.jpeg",
+      "alt": "ผู้ใหญ่นั่งทำงานศิลปะรอบโต๊ะในห้องที่มีหน้าต่างบานสูง"
+    }
+  ],
+  "ticketEventCode": "cbf2026-art-for-the-heart",
+  "admission": "ticket",
+  "admissionNote": "กิจกรรมนี้ฟรี ค่าบัตร 100 บาทเป็นค่ามัดจำ รับคืนหน้างาน"
+}

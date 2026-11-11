@@ -1,0 +1,49 @@
+{
+  "slug": "moomin-mymble-little-my",
+  "thumbnail": "/content/events/moomin-mymble-little-my.jpeg",
+  "mascot": "/content/mascots/boy-magnifier.png",
+  "title": "The Book about Moomin, Mymble and Little My",
+  "summary": "แอนิเมชันจากหนังสือภาพมูมินเล่มแรกของตูเว ยานส์ซอน โดยสถานเอกอัครราชทูตฟินแลนด์",
+  "presenter": "Embassy of Finland, Bangkok",
+  "description": "“หนังสือภาพที่ไม่เหมือนเล่มไหน” — The Book about Moomin, Mymble and Little My เป็นหนังสือภาพมูมินเล่มแรกของ ตูเว ยานส์ซอน นักเขียนชาวฟินแลนด์ ตีพิมพ์ครั้งแรกในปี ค.ศ. 1952 เป็นภาษาสวีเดน ในชื่อ Hur gick det sen? Boken om Mymlan, Mumintrollet och Lilla My ซึ่งแปลว่า “แล้วเกิดอะไรขึ้นต่อ? เรื่องราวของมิมเบิล มูมินโทรลล์ และลิตเติลมาย”",
+  "category": "storytelling",
+  "schedule": {
+    "venue": "ห้อง Auditorium",
+    "sessions": [
+      {
+        "date": "2026-11-28",
+        "start": "13:00",
+        "end": "13:50",
+        "ticketCodes": [
+          "20261128-1300"
+        ]
+      },
+      {
+        "date": "2026-11-29",
+        "start": "16:00",
+        "end": "16:50",
+        "ticketCodes": [
+          "20261129-1600"
+        ]
+      },
+      {
+        "date": "2026-12-06",
+        "start": "12:00",
+        "end": "12:50",
+        "ticketCodes": [
+          "20261206-1200"
+        ]
+      }
+    ]
+  },
+  "ageRange": "เด็กๆ | ครอบครัว | ผู้สนใจทั่วไป",
+  "price": 0,
+  "gallery": [
+    {
+      "src": "/content/events/moomin-mymble-little-my.jpeg",
+      "alt": "ภาพจากแอนิเมชันมูมิน มูมินโทรลล์ มิมเบิล และลิตเติลมายถือร่มแดงลอยอยู่กลางสวนกุหลาบ ในกรอบฟิล์มภาพยนตร์"
+    }
+  ],
+  "ticketEventCode": "cbf2026-moomin-mymble-little-my",
+  "admission": "free"
+}

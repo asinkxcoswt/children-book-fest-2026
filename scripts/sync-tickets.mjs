@@ -68,6 +68,9 @@ const PAIR_ONLY = { adult: { included: 1, max: 1, extraPrice: 0 }, child: { incl
 const ADD_ON_OVERRIDES_BY_SLUG = {
   // Free events: no add-ons.
   "a-day-without-internet": NONE,
+  "art-for-the-heart": NONE,
+  "moomin-mymble-little-my": NONE,
+  "who-will-comfort-toffle": NONE,
   "anis-wants-to-grow-tall": NONE,
   "big-giant": NONE,
   "big-tasty-worm": NONE,

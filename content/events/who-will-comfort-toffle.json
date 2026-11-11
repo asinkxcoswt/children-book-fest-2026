@@ -1,0 +1,49 @@
+{
+  "slug": "who-will-comfort-toffle",
+  "thumbnail": "/content/events/who-will-comfort-toffle.jpeg",
+  "mascot": "/content/mascots/girl-waving.png",
+  "title": "Who Will Comfort Toffle?",
+  "summary": "แอนิเมชันจากหนังสือภาพของตูเว ยานส์ซอน ว่าด้วยความกล้าหาญและมิตรภาพ โดยสถานเอกอัครราชทูตฟินแลนด์",
+  "presenter": "Embassy of Finland, Bangkok",
+  "description": "ใครจะปลอบทอฟเฟิล?\nทอฟเฟิลผู้โดดเดี่ยวเรียนรู้ที่จะก้าวข้ามความกลัวของตนเอง เมื่อต้องช่วยมิฟเฟิลให้รอดพ้นจากกร็อก เรื่องราวเหนือกาลเวลาเกี่ยวกับความกล้าหาญและมิตรภาพนี้ ดัดแปลงจากหนังสือภาพอันเป็นที่รู้จักของตูเว ยานส์ซอน ซึ่งตีพิมพ์ในปี ค.ศ. 1960",
+  "category": "storytelling",
+  "schedule": {
+    "venue": "ห้อง Auditorium",
+    "sessions": [
+      {
+        "date": "2026-11-28",
+        "start": "13:00",
+        "end": "13:50",
+        "ticketCodes": [
+          "20261128-1300"
+        ]
+      },
+      {
+        "date": "2026-11-29",
+        "start": "16:00",
+        "end": "16:50",
+        "ticketCodes": [
+          "20261129-1600"
+        ]
+      },
+      {
+        "date": "2026-12-06",
+        "start": "12:00",
+        "end": "12:50",
+        "ticketCodes": [
+          "20261206-1200"
+        ]
+      }
+    ]
+  },
+  "ageRange": "เด็กๆ | ครอบครัว | ผู้สนใจทั่วไป",
+  "price": 0,
+  "gallery": [
+    {
+      "src": "/content/events/who-will-comfort-toffle.jpeg",
+      "alt": "ภาพจากแอนิเมชัน สนัฟคินเป่าขลุ่ยในทุ่งดอกไม้หลากสี โดยมีทอฟเฟิลแอบมองอยู่ ในกรอบฟิล์มภาพยนตร์"
+    }
+  ],
+  "ticketEventCode": "cbf2026-who-will-comfort-toffle",
+  "admission": "free"
+}
