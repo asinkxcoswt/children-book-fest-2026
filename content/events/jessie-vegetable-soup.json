@@ -1,0 +1,33 @@
+{
+  "slug": "jessie-vegetable-soup",
+  "thumbnail": "/content/events/jessie-vegetable-soup.jpeg",
+  "mascot": "/content/mascots/girl-waving.png",
+  "title": "นิทานจานโปรด: เจสซี่กับซุปผักแสนอร่อย",
+  "summary": "ฟังนิทานชุด Jessie Frog กับผู้แต่ง Rathakorn P. พร้อมพบมาสคอตเจสซี่",
+  "presenter": "Rathakorn P.",
+  "description": "ชวนน้องๆ หนูๆ มาฟังนิทานสุดหรรษาจากพี่ Rathakorn P. ผู้แต่งและวาดภาพประกอบนิทานชุด Jessie Frog ร่วมเอาใจช่วยกบเจสซี่และเพื่อนๆ ทำซุปผักแสนอร่อย พร้อมเซอร์ไพรส์พิเศษ! พบกับ \"มาสคอตเจสซี่\" ที่จะออกมาทักทายและถ่ายรูปกับเด็กๆ อย่างใกล้ชิด",
+  "category": "storytelling",
+  "schedule": {
+    "venue": "Main Stage ห้องแกลลอรี",
+    "sessions": [
+      {
+        "date": "2026-12-05",
+        "start": "11:00",
+        "end": "11:50",
+        "ticketCodes": [
+          "20261205-1100"
+        ]
+      }
+    ]
+  },
+  "ageRange": "เด็กๆ | ครอบครัว | ผู้สนใจทั่วไป",
+  "price": 0,
+  "gallery": [
+    {
+      "src": "/content/events/jessie-vegetable-soup.jpeg",
+      "alt": "ชายเสื้อเขียวเปิดหนังสือภาพเจสซี่กับซุปผักแสนอร่อยให้เด็กๆ ที่นั่งฟังดู พร้อมภาพการ์ตูนกบเจสซี่และเพื่อนๆ"
+    }
+  ],
+  "ticketEventCode": "cbf2026-jessie-vegetable-soup",
+  "admission": "free"
+}
