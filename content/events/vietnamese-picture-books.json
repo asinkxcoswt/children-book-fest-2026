@@ -5,7 +5,7 @@
   "title": "หนังสือภาพจากเพื่อนบ้าน: เวียดนามอ่านอะไร",
   "summary": "สำรวจหนังสือภาพและโลกการอ่านของเด็กเวียดนามกับผู้ก่อตั้ง Slowbooks",
   "presenter": "Ms. Nguyen Huu Quynh Huong (Slowbooks Founder)",
-  "description": "ชวนเปิดหน้าหนังสือภาพเวียดนาม สำรวจเรื่องเล่าและโลกการอ่านของเด็ก ๆ กับ Ms. Nguyen Huu Quynh Huong ผู้ก่อตั้ง Slowbooks\nพูดคุยเป็นภาษาอังกฤษตลอดกิจกรรม ไม่มีล่ามแปลภาษา",
+  "description": "Have you ever come across a picture book from Vietnam? Or wondered what stories our neighbours are reading?\n\nThis year, we’re delighted to welcome Ms. Nguyen Huu Quynh Huong to the Children’s Picture Book Festival!\n\nQuynh Huong is the founder of Slowbooks, a passionate picture book advocate who travels the world sharing her love of picture books. Most recently, she has been nominated for two of the most prestigious international awards in children’s literature: the Astrid Lindgren Memorial Award (ALMA) and the Hans Christian Andersen Award.\n\nJoin us for a special talk as we discover the world of Vietnamese picture books and get to know our neighbour a little better through the stories they tell.\n\nThe session will be conducted in English",
   "category": "seminar",
   "schedule": {
     "venue": "ห้อง MDIC",
@@ -21,7 +21,7 @@
     ]
   },
   "ageRange": "ครอบครัว | ผู้สนใจทั่วไป",
-  "price": 0,
+  "price": 50,
   "gallery": [
     {
       "src": "/content/events/vietnamese-picture-books.jpeg",
@@ -29,5 +29,5 @@
     }
   ],
   "ticketEventCode": "cbf2026-vietnamese-picture-books",
-  "admission": "free"
+  "admission": "ticket"
 }

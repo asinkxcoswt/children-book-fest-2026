@@ -69,7 +69,6 @@ const ADD_ON_OVERRIDES_BY_SLUG = {
   // Free events: no add-ons.
   "a-day-without-internet": NONE,
   "jessie-vegetable-soup": NONE,
-  "vietnamese-picture-books": NONE,
   "art-for-the-heart": NONE,
   "moomin-mymble-little-my": NONE,
   "who-will-comfort-toffle": NONE,
@@ -136,6 +135,11 @@ const ADD_ON_OVERRIDES_BY_SLUG = {
   "tale-and-creative-play": PAIR_ONLY,
   "tatu-and-patu": NONE,
   "understand-sensitivity": PAIR_ONLY,
+  // Paid talk, adults only: 1 adult included, up to 4, ฿50 per extra adult.
+  "vietnamese-picture-books": {
+    adult: { included: 1, max: 4, extraPrice: 5000, countsAsSeat: true },
+    child: { included: 0, max: 0, extraPrice: 0 },
+  },
 };
 const addOnsFor = (slug) => {
   const overrides = ADD_ON_OVERRIDES_BY_SLUG[slug];
