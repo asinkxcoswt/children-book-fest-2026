@@ -202,7 +202,7 @@ export default async function V4Event({ params }: { params: Promise<{ slug: stri
 
       {/* Remaining gallery images, after the details, each at its own ratio. */}
       {gallery.length > 0 && (
-        <div className="mt-12 grid gap-4 sm:grid-cols-2">
+        <div className="mt-12 grid items-start gap-4 sm:grid-cols-2">
           {gallery.map((img, i) => (
             <div key={`${i}-${img.src}`} className="overflow-hidden rounded-2xl border-2 border-ink/10">
               <Image
