@@ -88,6 +88,7 @@ const ADD_ON_OVERRIDES_BY_SLUG = {
   "pink-dolphin": NONE,
   "spinning-wheels": NONE,
   "storytelling-techniques": NONE,
+  "chibu-cat-tail": NONE,
   // Capacity is counted in families: one ticket = one seat, extras are free of seats.
   "animated-playground": {
     adult: { ...PAIR_ONLY.adult, countsAsSeat: false },
