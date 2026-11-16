@@ -15,7 +15,8 @@
     "lint": "eslint",
     "typecheck": "tsc --noEmit",
     "check": "pnpm lint && pnpm typecheck",
-    "sync:tickets": "node --env-file=.env.local scripts/sync-tickets.mjs"
+    "sync:tickets": "node --env-file=.env.local scripts/sync-tickets.mjs",
+    "pull:events": "node --env-file=.env.local scripts/pull-events.mjs"
   },
   "dependencies": {
     "next": "16.2.9",
