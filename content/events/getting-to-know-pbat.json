@@ -1,0 +1,33 @@
+{
+  "slug": "getting-to-know-pbat",
+  "thumbnail": "/content/events/getting-to-know-pbat.jpeg",
+  "mascot": "/content/mascots/girl-sitting.png",
+  "title": "LET'S TALK PICTURE BOOKS! Getting to Know PBAT",
+  "summary": "ล้อมวงคุยทำความรู้จักสมาคมหนังสือภาพ (PBAT) และร่วมสร้างชุมชนหนังสือภาพไปด้วยกัน",
+  "presenter": "สมาคมหนังสือภาพ (PBAT): ณัฐภัทร อุรุพงศา, บุลวัชร เสรีชัยพร, ดนุพล กิ่งสุคนธ์, กฤษณะ กาญจนาภา และ วชิราวรรณ ทับเสือ",
+  "description": "ชวนมาล้อมวงพูดคุย ทำความรู้จักกับ PBAT อย่างใกล้ชิด ฟังเรื่องราว ความตั้งใจ และสิ่งที่สมาคมอยากลงมือทำ พร้อมชวนทุกคนมาร่วมเป็นส่วนหนึ่งของการสร้างชุมชนหนังสือภาพที่เปิดกว้างสำหรับทุกคน",
+  "category": "seminar",
+  "schedule": {
+    "venue": "Main Stage ห้องแกลลอรี",
+    "sessions": [
+      {
+        "date": "2026-12-13",
+        "start": "12:00",
+        "end": "12:50",
+        "ticketCodes": [
+          "20261213-1200"
+        ]
+      }
+    ]
+  },
+  "ageRange": "ผู้สนใจทั่วไป",
+  "price": 0,
+  "gallery": [
+    {
+      "src": "/content/events/getting-to-know-pbat.jpeg",
+      "alt": "โปสเตอร์สมาคมหนังสือภาพ ตัวอักษร PBAT ลายภาพวาดก้อนหินมีดวงตา บนเวทีม่านสีเขียว พร้อมภาพวิทยากรห้าคนในกรอบวงกลม"
+    }
+  ],
+  "ticketEventCode": "cbf2026-getting-to-know-pbat",
+  "admission": "free"
+}
