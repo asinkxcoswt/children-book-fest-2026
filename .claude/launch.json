@@ -6,6 +6,12 @@
       "runtimeExecutable": "pnpm",
       "runtimeArgs": ["preview", "--port", "8788"],
       "port": 8788
+    },
+    {
+      "name": "next-dev",
+      "runtimeExecutable": "npx",
+      "runtimeArgs": ["-y", "pnpm@11", "dev"],
+      "port": 3000
     }
   ]
 }

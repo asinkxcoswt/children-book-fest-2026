@@ -97,12 +97,18 @@ export default function TicketPurchase({
   eventCode,
   color,
   pass,
+  preloaded,
 }: {
   slug: string;
   /** The platform's event code — public, it is in every ticket URL. */
   eventCode: string;
   color: ColorToken;
   pass: PassSource;
+  /** Ticket data already in hand, used instead of fetching /api/tickets. The
+   *  organizer's preview passes the list from its own CowTicket response, so
+   *  page and tickets come from the same place. Keep the object stable
+   *  (memoised): a new one reloads the box and resets the buyer's picks. */
+  preloaded?: TicketsResponse;
 }) {
   const c = tokenClasses(color);
 
@@ -148,8 +154,12 @@ export default function TicketPurchase({
 
   useEffect(() => {
     let alive = true;
-    fetch(`/api/tickets?eventCode=${encodeURIComponent(eventCode)}`)
-      .then((res) => (res.ok ? res.json() : Promise.reject()))
+    const load: Promise<TicketsResponse> = preloaded
+      ? Promise.resolve(preloaded)
+      : fetch(`/api/tickets?eventCode=${encodeURIComponent(eventCode)}`).then((res) =>
+          res.ok ? res.json() : Promise.reject(),
+        );
+    load
       .then(
         (data: TicketsResponse) => {
           if (!alive) return;
@@ -171,7 +181,7 @@ export default function TicketPurchase({
     return () => {
       alive = false;
     };
-  }, [eventCode]);
+  }, [eventCode, preloaded]);
 
   const byCode = new Map((tickets ?? []).map((tk) => [tk.code, tk]));
   const optionOf = (box: Box) => (box.code ? byCode.get(box.code) : undefined);

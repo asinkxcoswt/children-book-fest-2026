@@ -9,8 +9,9 @@ export default function robots(): MetadataRoute.Robots {
     rules: {
       userAgent: "*",
       allow: "/",
-      // API routes carry no indexable content.
-      disallow: ["/api/"],
+      // API routes carry no indexable content; previews are unpublished
+      // proposals (the page also says noindex).
+      disallow: ["/api/", "/preview"],
     },
     sitemap: `${SITE_URL}/sitemap.xml`,
   };
