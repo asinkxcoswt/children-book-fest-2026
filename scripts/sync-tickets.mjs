@@ -126,6 +126,7 @@ const ADD_ON_OVERRIDES_BY_SLUG = {
   "paper-boy-transformation": PAIR_ONLY,
   // Adults only (งดเด็กเข้าร่วม): a plain one-person ticket.
   "parents-different-elephants": NONE,
+  "playful-books": NONE,
   "picture-books-for-every-situation": NONE,
   "pop-up-doll-room": {
     adult: { ...PAIR_ONLY.adult, countsAsSeat: false },

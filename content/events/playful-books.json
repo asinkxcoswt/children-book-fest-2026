@@ -1,0 +1,35 @@
+{
+  "slug": "playful-books",
+  "thumbnail": "/content/events/playful-books.jpeg",
+  "mascot": "/content/mascots/boy-magnifier-book.png",
+  "title": "เล่นหนังสือกับหนังสือมีลูกเล่น",
+  "summary": "ชวนลองอ่าน ลองสัมผัสหนังสือนิทานภาพที่มีลูกเล่น กับ พี่โอ๋ คัธริน กอประคอง จาก Is Plern",
+  "presenter": "พี่โอ๋ คัธริน กอประคอง จาก Is Plern",
+  "description": "มาพบกับหนังสือมีลูกเล่น ไม่ว่าจะเป็นเรื่องราว หรือ เทคนิคพิเศษ\n\nISPlern : อ่าน เล่น ให้เป็นเรื่อง จะชวนทุก ๆ คนมาดูว่าหนังสือนิทานภาพแต่ละเล่ม มีการออกแบบหรือนำเสนอให้มีลูกเล่นน่าสนใจอย่างไร ทั้งหนังสือแนวโต้ตอบ (Interactive Book) หนังสือประเภทสัมผัส (Sensory Book) หนังสือแนว Concept Book หรือหนังสือที่นำวัสดุพิเศษมาใช้เพื่อทำให้หนังสือในแต่ละเรื่องน่าสนใจมากกว่าเดิม โดย IsPlern นำหนังสือมาร่วมให้ลองอ่าน ลองสัมผัสด้วยกัน",
+  "category": "workshop",
+  "schedule": {
+    "venue": "ห้อง MDIC",
+    "sessions": [
+      {
+        "date": "2026-12-05",
+        "start": "15:00",
+        "end": "17:50",
+        "ticketCodes": [
+          "20261205-1500"
+        ]
+      }
+    ]
+  },
+  "ageRange": "นักศึกษา | ครู | ผู้สนใจทั่วไป",
+  "price": 100,
+  "capacity": 30,
+  "capacityLabel": "30 คน",
+  "gallery": [
+    {
+      "src": "/content/events/playful-books.jpeg",
+      "alt": "เด็ก ๆ และผู้ใหญ่รุมกันใช้นิ้วไล่ลวดลายบนหน้าหนังสือภาพลายเรขาคณิตหลากสีที่กางเรียงอยู่บนโต๊ะ"
+    }
+  ],
+  "ticketEventCode": "cbf2026-playful-books",
+  "admission": "ticket"
+}
