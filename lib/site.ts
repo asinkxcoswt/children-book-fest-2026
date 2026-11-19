@@ -11,4 +11,4 @@ export const COW_TICKET_URL = "https://cowticket.app";
  *  calls from the browser. A BUILD variable — baked into the page — so set
  *  NEXT_PUBLIC_COWTICKET_PUBLIC_URL where the site is built when prod differs. */
 export const COWTICKET_PUBLIC_URL =
-  process.env.NEXT_PUBLIC_COWTICKET_PUBLIC_URL ?? "https://cowticket.dev";
+  process.env.NEXT_PUBLIC_COWTICKET_PUBLIC_URL ?? "https://cow-ticket.dev";
