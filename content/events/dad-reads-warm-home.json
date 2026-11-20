@@ -1,0 +1,35 @@
+{
+  "slug": "dad-reads-warm-home",
+  "thumbnail": "/content/events/dad-reads-warm-home.jpeg",
+  "mascot": "/content/mascots/two-friends-trading.png",
+  "title": "พ่ออ่านบ้านอุ่น",
+  "summary": "พบคุณลุงตุ๊บปอง นักเขียนและนักเล่านิทาน ที่จะมาชวนพ่อ ๆ อ่านหนังสือกับลูกให้บ้านอบอุ่นในวันพ่อ",
+  "presenter": "มูลนิธิหนังสือเพื่อเด็ก",
+  "description": "พบกับนักเขียน นักเล่า นักร้องนิทาน คุณลุงตุ๊บปอง เรืองศักดิ์ ปิ่นประทีป กรรมการผู้จัดการ มูลนิธิหนังสือเพื่อเด็ก ที่จะมาชวนพ่ออ่านให้บ้านอ่านในวันพ่อ",
+  "category": "storytelling",
+  "schedule": {
+    "venue": "Main Stage ห้อง Gallery",
+    "sessions": [
+      {
+        "date": "2026-12-05",
+        "start": "13:00",
+        "end": "13:50",
+        "ticketCodes": [
+          "tk-5a49sr"
+        ]
+      }
+    ]
+  },
+  "ageRange": "เด็กๆ | ครอบครัว | ผู้สนใจทั่วไป",
+  "price": 0,
+  "capacity": 30,
+  "capacityLabel": "30 คน",
+  "gallery": [
+    {
+      "src": "/content/events/dad-reads-warm-home.jpeg",
+      "alt": "พ่ออ่านบ้านอุ่น"
+    }
+  ],
+  "ticketEventCode": "evt-vw39d5",
+  "admission": "free"
+}
