@@ -1,0 +1,34 @@
+{
+  "slug": "not-so-scary-stories",
+  "thumbnail": "/content/events/not-so-scary-stories.jpeg",
+  "mascot": "/content/mascots/girl-shadow-puppet.png",
+  "title": "Not-So-Scary Stories: เรื่องเล่าสำหรับเด็กใจกล้า",
+  "summary": "ละครหุ่นเชิดนิทานสยองขวัญเบาๆ สำหรับเด็กใจกล้า จากหนังสือที่ได้รางวัล Bologna Ragazzi Award 2025",
+  "presenter": "SandClock Books และ Goethe-Institut Thailand",
+  "description": "SandClock Books กับ Goethe-Institut Thailand  ขอชวนทุกคนมาร่วมทดสอบความกล้าไปกับกิจกรรมเล่านิทานประกอบหุ่นเชิดสุดหลอน!\n\n“Not-So-Scary Stories: เรื่องเล่าสำหรับเด็กใจกล้า” ละครหุ่นเชิดที่สร้างมาจากหนังสือเรื่อง “นิทานเรื่องนี้ (ไม่เห็นจะ) น่ากลัว!” (Bologna Ragazzi Award 2025) นำแสดงโดย “CREAM Bangkok”\n\nในค่ำคืนหนึ่งที่พ่อแม่ต้องไปงานวันเกิด “บอริส” และ “เซเลสท์” สองพี่น้องจึงต้องอาศัยอยู่บ้านตามลำพัง พี่ชายอย่างบอริสรับหน้าที่ดูแลเซเลสท์ น้องสาวจอมแสบของเขา กิจวัตรก่อนนอนธรรมดาเลยกลายเป็นเรื่องพิเศษ โดยเฉพาะอย่างยิ่งเมื่อเซเลสท์ขอให้บอริสเล่านิทานก่อนนอนให้เธอฟัง\n\nแต่จะต้องไม่ใช่นิทานสำหรับเด็กๆ ด้วยนะ เพราะเซเลสท์อยากฟังเรื่องสยองขวัญต่างหาก!\n\nใครอยากฟังเรื่องราวสยองขวัญที่เต็มไปด้วยความ (ไม่) น่ากลัว ห้ามพลาดเด็ดขาด\n\nวันอาทิตย์ที่ 6 ธันวาคม 2569 \nเวลา 13.00 -13.50 น.\nสถานที่ TCDC ณ เวทีกลาง",
+  "category": "storytelling",
+  "schedule": {
+    "venue": "Main Stage ห้องแกลลอรี",
+    "sessions": [
+      {
+        "date": "2026-12-06",
+        "start": "13:00",
+        "end": "13:50",
+        "ticketCodes": [
+          "tk-2rws4b"
+        ]
+      }
+    ]
+  },
+  "ageRange": "เด็กๆ | ผู้ปกครอง | ผู้สนใจทั่วไป",
+  "price": 0,
+  "capacity": 30,
+  "gallery": [
+    {
+      "src": "/content/events/not-so-scary-stories.jpeg",
+      "alt": "Not-So-Scary Stories: เรื่องเล่าสำหรับเด็กใจกล้า"
+    }
+  ],
+  "ticketEventCode": "evt-shp6dv",
+  "admission": "free"
+}
